@@ -1,0 +1,222 @@
+@import '@fontsource/im-fell-english/400.css';
+@import '@fontsource/im-fell-english/400-italic.css';
+@import '@fontsource/alegreya-sans/400.css';
+@import '@fontsource/alegreya-sans/400-italic.css';
+@import '@fontsource/alegreya-sans/500.css';
+@import '@fontsource/alegreya-sans/700.css';
+@import '@fontsource/caveat/600.css';
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Alegreya Sans', system-ui, sans-serif;
+  --font-fell: 'IM Fell English', Georgia, serif;
+  --font-hand: 'Caveat', cursive;
+
+  --color-desk: #241911;
+  --color-leather: #5b2b23;
+  --color-paper: #f6ecd6;
+  --color-paper-deep: #efe2c4;
+  --color-note: #fbf3df;
+  --color-ink: #2b2118;
+  --color-ink-soft: #6e5a44;
+  --color-cream: #f3e3c0;
+  --color-cream-soft: #c9b48e;
+  --color-wax: #a32c25;
+  --color-wax-deep: #7f1d17;
+  --color-gold: #e3b54a;
+  --color-quill: #2b4a8a;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--color-desk);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+
+  input,
+  textarea {
+    user-select: text;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(43 33 24 / 0.25) transparent;
+  }
+
+  :focus-visible {
+    outline: 2.5px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* The desk under a reading lamp. */
+  .desk {
+    background: radial-gradient(ellipse 75% 70% at 58% 48%, #4a3426 0%, #2e2016 62%, #1c130d 100%);
+  }
+
+  /* Leather cover, cream pages, a page stack along the bottom edge. */
+  .book-cover {
+    background: var(--color-leather);
+    border-radius: 14px;
+    box-shadow: 0 30px 60px rgb(0 0 0 / 0.55), inset 0 0 0 2px #7a3c31;
+  }
+
+  .book-pages {
+    position: relative;
+    background: var(--color-paper);
+    border-radius: 6px;
+    box-shadow: 0 2px 0 #e7d8b8, 0 4px 0 #d3bf96, 0 6px 0 #e7d8b8;
+  }
+
+  /* Shadow where the pages fold into the spine. */
+  .book-pages::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 calc(50% - 44px);
+    width: 88px;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      rgb(90 60 30 / 0),
+      rgb(90 60 30 / 0.16) 42%,
+      rgb(60 40 20 / 0.34) 50%,
+      rgb(90 60 30 / 0.16) 58%,
+      rgb(90 60 30 / 0)
+    );
+  }
+
+  .ribbon {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%);
+    box-shadow: inset -4px 0 0 rgb(0 0 0 / 0.18);
+  }
+
+  /* A rule with a small diamond in the middle, under each page title. */
+  .page-rule {
+    position: relative;
+    border-bottom: 1px solid var(--color-ink);
+  }
+
+  .page-rule::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 5px);
+    bottom: -6px;
+    width: 10px;
+    height: 10px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-ink);
+    transform: rotate(45deg);
+  }
+
+  /* Today's date, circled in red ink by hand. */
+  .ink-circle {
+    position: relative;
+  }
+
+  .ink-circle::after {
+    content: '';
+    position: absolute;
+    left: -9px;
+    top: -7px;
+    width: calc(100% + 18px);
+    height: calc(100% + 12px);
+    border: 2px solid var(--color-wax);
+    border-radius: 50% 45% 55% 50%;
+    transform: rotate(-8deg);
+  }
+
+  .blot {
+    border-radius: 60% 40% 55% 45%;
+  }
+
+  .blot-lg {
+    border-radius: 58% 42% 55% 45% / 48% 55% 45% 52%;
+  }
+
+  .pinned-note {
+    position: relative;
+    transform: rotate(-1.5deg);
+    box-shadow: 0 8px 18px rgb(0 0 0 / 0.35);
+  }
+
+  .pinned-note::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: calc(50% - 7px);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--color-wax);
+    box-shadow: inset -2px -2px 0 rgb(0 0 0 / 0.3), 0 2px 3px rgb(0 0 0 / 0.45);
+  }
+
+  .loose-page {
+    transform: rotate(0.8deg);
+    box-shadow: 0 10px 20px rgb(0 0 0 / 0.35);
+  }
+
+  .seal {
+    border: 1.5px dashed rgb(243 227 192 / 0.5);
+  }
+
+  .seal-on {
+    border: none;
+    background: var(--color-wax);
+    box-shadow: inset 0 0 0 3px var(--color-wax-deep), 0 1px 0 rgb(0 0 0 / 0.45);
+  }
+
+  /* Subject ink: a darker cut of the subject colour, readable on paper. */
+  .subject-ink {
+    color: color-mix(in oklab, var(--subject) 72%, #2b2118);
+  }
+
+  /* Hand-drawn checkbox; the tick draws itself in. */
+  .tick {
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    transition: stroke-dashoffset 0.35s ease;
+  }
+
+  .is-done .tick {
+    stroke-dashoffset: 0;
+  }
+
+  .drop-target {
+    background: rgb(227 181 74 / 0.16);
+    box-shadow: inset 0 0 0 2px rgb(227 181 74 / 0.6);
+  }
+
+  .stack-book {
+    box-shadow: inset 0 -3px 0 rgb(0 0 0 / 0.28), 0 2px 0 rgb(0 0 0 / 0.25);
+  }
+
+  dialog::backdrop {
+    background: rgb(20 12 8 / 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

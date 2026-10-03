@@ -1,0 +1,27 @@
+{
+  "include": [
+    "electron.vite.config.ts",
+    "vitest.config.mts",
+    "src/main/**/*",
+    "src/preload/**/*",
+    "src/renderer/src/types.ts",
+    "src/renderer/src/companions/types.ts",
+    "src/renderer/src/companions/pixel/sprite.ts",
+    "src/renderer/src/companions/pixel/animate.ts",
+    "src/renderer/src/companions/pixel/species.ts",
+    "src/renderer/src/companions/pixel/face.ts"
+  ],
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "types": [
+      "node",
+      "electron-vite/node"
+    ],
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  }
+}
