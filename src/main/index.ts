@@ -12,12 +12,16 @@ import { installIfReady, keepUpToDate } from './updater'
 //   SPELLBOOK_DEMO=1           fill the book with sample homework (own data folder)
 //   SPELLBOOK_DEMO=empty       start with an empty book (own data folder)
 //   SPELLBOOK_TODAY=2026-09-30 pretend it is that day, to check the week rules
+//   SPELLBOOK_THEME=garden     open the book in that theme (see src/renderer/src/themes.ts)
 //   SPELLBOOK_SHOT=<file.png>  save a screenshot of the window and quit
+//   SPELLBOOK_SIZE=1280x945    the window's inside at that size, e.g. a small laptop maximised
 //   SPELLBOOK_SHOT_JS=<code>   run this in the page first, e.g. to open a dialog
 //   SPELLBOOK_LAB=1            open the companion lab: every animal in every mood
 const demo = process.env.SPELLBOOK_DEMO === '1'
 const today = process.env.SPELLBOOK_TODAY ?? null
+const theme = process.env.SPELLBOOK_THEME ?? null
 const shot = process.env.SPELLBOOK_SHOT
+const [width, height] = (process.env.SPELLBOOK_SIZE ?? '1440x960').split('x').map(Number)
 
 // Started by Windows at login, or restarted after an update that installed while the book was
 // put away: stay in the tray until it is opened.
@@ -50,8 +54,8 @@ let quitting = false
 
 function createWindow(): void {
   win = new BrowserWindow({
-    width: 1440,
-    height: 960,
+    width,
+    height,
     minWidth: 1100,
     minHeight: 700,
     useContentSize: true,
@@ -141,7 +145,7 @@ async function capture(file: string): Promise<void> {
   app.quit()
 }
 
-ipcMain.handle('boot', () => ({ data: readData(dataFile()), demo, today }))
+ipcMain.handle('boot', () => ({ data: readData(dataFile()), demo, today, theme }))
 ipcMain.handle('save', (_event, data: unknown) => writeData(dataFile(), data))
 ipcMain.on('save-now', (event, data: unknown) => {
   writeData(dataFile(), data)

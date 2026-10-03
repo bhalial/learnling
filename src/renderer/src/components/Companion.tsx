@@ -2,21 +2,37 @@ import { useEffect, useRef } from 'react'
 import { coatFor, eyesFor, SPECIES } from '../companions'
 import { momentOf } from '../companions/pixel/animate'
 import { CANVAS_HEIGHT, CANVAS_WIDTH, momentKey, paint, type Look } from '../companions/pixel/draw'
+import type { Headwear } from '../companions/pixel/face'
 import type { CompanionLook, Mood } from '../companions/types'
 
 /**
  * A companion in pixel art, animated. `scale` is how many screen pixels one art pixel
  * gets (whole numbers keep the pixels crisp). `pulse` changes on every event, so a second
  * celebration in a row plays again; `seed` keeps animals side by side from blinking in
- * unison.
+ * unison. `headwear` is what the hat slot holds, which the theme decides.
  */
-export function Companion({ look, mood, pulse = 0, scale, seed = 0 }: { look: CompanionLook; mood: Mood; pulse?: number; scale: number; seed?: number }) {
+export function Companion({
+  look,
+  mood,
+  pulse = 0,
+  scale,
+  seed = 0,
+  headwear
+}: {
+  look: CompanionLook
+  mood: Mood
+  pulse?: number
+  scale: number
+  seed?: number
+  headwear?: Headwear
+}) {
   const canvas = useRef<HTMLCanvasElement>(null)
   const art: Look = {
     animal: SPECIES[look.species].art,
     coat: coatFor(look.species, look.coat),
     eyes: eyesFor(look.eyes),
-    accessory: look.accessory
+    accessory: look.accessory,
+    headwear
   }
 
   // The drawing loop reads these, so a new look or mood never restarts it.

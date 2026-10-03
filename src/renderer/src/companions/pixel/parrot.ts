@@ -98,7 +98,7 @@ export const parrot: PixelAnimal = {
     }
   },
   anchor: [28, 6],
-  frame(pose, accessory) {
+  frame(pose, accessory, headwear) {
     const head = TOP + 1 - pose.bob
     const layers: Placed[] = [
       { grid: TAIL[pose.tail], x: 25, y: TOP + 30 },
@@ -111,7 +111,7 @@ export const parrot: PixelAnimal = {
       { grid: BEAK[pose.mouth], x: 15, y: head + 19 }
     ]
     if (accessory === 'collar') layers.push({ grid: BOW_TIE, x: 14, y: TOP + 29 })
-    if (accessory === 'hat') layers.push(hat(head + 4))
+    if (accessory === 'hat') layers.push(...hat(head + 4, head, headwear))
     return compose(WIDTH, HEIGHT, layers)
   }
 }

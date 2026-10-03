@@ -93,7 +93,7 @@ export const dog: PixelAnimal = {
     snow: { ...NOSE, o: '#9a8466', b: '#f4efe6', d: '#e2d9c8', l: '#fffdf8', w: '#ffffff', v: '#ece4d6', e: '#d9c7ab', E: '#c4ae8c' }
   },
   anchor: [28, 6],
-  frame(pose, accessory) {
+  frame(pose, accessory, headwear) {
     const head = TOP + 1 - pose.bob
     const layers: Placed[] = [
       { grid: TAIL[pose.tail], x: 29, y: TOP + 28 },
@@ -105,7 +105,7 @@ export const dog: PixelAnimal = {
       { grid: flipX(EAR), x: 29, y: head + 8 }
     ]
     if (accessory === 'collar') layers.push({ grid: COLLAR, x: 8, y: TOP + 29 })
-    if (accessory === 'hat') layers.push(hat(head + 4))
+    if (accessory === 'hat') layers.push(...hat(head + 4, head, headwear))
     return compose(WIDTH, HEIGHT, layers)
   }
 }

@@ -1,9 +1,10 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
-import { dictionaries } from './i18n'
+import { wordsFor } from './i18n'
 import { reminderDue, reminderMessage } from './lib/reminder'
 import { useBook } from './store'
+import { applyTheme } from './themes'
 import './styles.css'
 
 const MINUTE = 60_000
@@ -11,6 +12,8 @@ const MINUTE = 60_000
 async function start(): Promise<void> {
   const book = useBook.getState()
   book.boot(await window.spellbook.boot())
+  // Dressed in its theme before the first paint; App keeps it in step after that.
+  applyTheme(useBook.getState().data.theme)
   void window.spellbook.applySettings(useBook.getState().data.app)
 
   // Save shortly after each change, and once more, blocking, when the window closes.
@@ -67,7 +70,7 @@ async function remind(): Promise<void> {
     setReminder({ lastSent: today })
     if (data.magister && useBook.getState().sync.state !== 'login') await syncMagister()
     const fresh = useBook.getState()
-    const message = reminderMessage(fresh.data, fresh.today, fresh.sync, dictionaries[fresh.data.lang])
+    const message = reminderMessage(fresh.data, fresh.today, fresh.sync, wordsFor(fresh.data.lang, fresh.data.theme))
     if (message) await window.spellbook.notify(message.title, message.body)
   } finally {
     reminding = false

@@ -5,6 +5,38 @@ export function subjectInUse(data: Pick<SpellbookData, 'tasks' | 'timetable'>, i
   return data.tasks.some((t) => t.given.subjectId === id) || Object.values(data.timetable).some((day) => day.includes(id))
 }
 
+/** Timetable abbreviations for common subjects, whether the school names them in Dutch or English. */
+const SHORT: Record<string, string> = {
+  nederlands: 'NE', dutch: 'NE', engels: 'EN', english: 'EN', frans: 'FA', french: 'FR', duits: 'DU', german: 'GER',
+  spaans: 'SP', spanish: 'SPA', latijn: 'LA', latin: 'LAT', grieks: 'GR', greek: 'GRE',
+  wiskunde: 'WI', mathematics: 'MATH', maths: 'MATH', math: 'MATH',
+  biologie: 'BI', biology: 'BIO', geschiedenis: 'GS', history: 'HIS', aardrijkskunde: 'AK', geography: 'GEO',
+  natuurkunde: 'NA', physics: 'PHY', scheikunde: 'SK', chemistry: 'CHEM', economie: 'EC', economics: 'ECO',
+  muziek: 'MU', music: 'MUS', kunst: 'KU', art: 'ART', tekenen: 'TE', drama: 'DR',
+  'lichamelijke opvoeding': 'LO', gym: 'LO', pe: 'PE', 'physical education': 'PE',
+  mentoruur: 'MEN', mentor: 'MEN', informatica: 'IN', techniek: 'TECH', science: 'SCI'
+}
+
+/**
+ * A subject's short name, for the timetable line: the student's own if they gave one, a
+ * known abbreviation, the name itself when it is short, or else its initials ("Moderne talen
+ * en culturen" → "MTC").
+ */
+export function shortName(subject: Pick<Subject, 'name' | 'short'>): string {
+  const own = subject.short?.trim()
+  if (own) return own
+  const name = subject.name.trim()
+  const known = SHORT[name.toLowerCase()]
+  if (known) return known
+  if (name.length <= 5) return name.toUpperCase()
+  const words = name.split(/\s+/).filter((word) => word.length > 2)
+  if (words.length > 1) return words.map((word) => word[0]).join('').toUpperCase().slice(0, 4)
+  return name.slice(0, 4).toUpperCase()
+}
+
+/** The name on a task: the whole name while it fits, the short one when it is long. */
+export const labelName = (subject: Pick<Subject, 'name' | 'short'>): string => (subject.name.trim().length <= 12 ? subject.name : shortName(subject))
+
 /** "Nederlands_" → "Nederlands", "biology" → "Biology". */
 export function cleanSubjectName(name: string): string {
   const clean = name.replace(/_+/g, ' ').replace(/\s+/g, ' ').trim()

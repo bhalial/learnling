@@ -7,15 +7,15 @@ English and Dutch.
 **Website and download: <https://bhalial.github.io/learnling/>**
 
 The book always shows two weeks: this week and next on school days, the two coming
-weeks from Saturday on. Homework is a *spell* to tick off; homework without a description
-is a *mystery scroll* to decipher; tests and quizzes get training
-rounds planned before them. A companion does the talking: a cat, dog, parrot, whale or robot,
-renamable and dressable.
+weeks from Saturday on. Homework is a task to tick off; homework without a description
+is a mystery to fill in; tests and quizzes get training rounds planned before them. A
+companion does the talking: a cat, dog, parrot, whale or robot, renamable and dressable.
+Six themes give it all their own look and words: a spellbook, a vegetable garden, an ocean
+dive, a space mission, a questlog or a plain notebook.
 
-The app was called **Spellbook** until 3 October 2026. That name now belongs to the storybook
-theme ("My Spellbook" at the top of the page), so later themes can bring their own book. In the
-code the old name lives on in internal names: `SPELLBOOK_*` switches, `window.spellbook`,
-`SpellbookData` and this folder.
+The app was called **Spellbook** until 3 October 2026. That name now belongs to the first
+theme ("My Spellbook" at the top of the page). In the code the old name lives on in
+internal names: `SPELLBOOK_*` switches, `window.spellbook`, `SpellbookData` and this folder.
 
 ## Running
 
@@ -41,7 +41,9 @@ The book lives in `%APPDATA%/learnling/learnling.json` (previous save next to it
 | `SPELLBOOK_DEMO=1` | A filled sample book, in its own data folder (`%TEMP%/spellbook-demo-1`). |
 | `SPELLBOOK_DEMO=empty` | A fresh empty book, in its own data folder. |
 | `SPELLBOOK_TODAY=2026-10-03` | Pretend it is that day, e.g. a Saturday to see the page turn. |
+| `SPELLBOOK_THEME=garden` | Open the book in that theme (`magic`, `garden`, `ocean`, `space`, `quest`, `notebook`). |
 | `SPELLBOOK_SHOT=out.png` | Save a screenshot of the window and quit (`SPELLBOOK_SHOT_DELAY` ms, default 1500). |
+| `SPELLBOOK_SIZE=1280x945` | The window's inside at that size: here a 1280×1024 laptop with the window maximised. |
 | `SPELLBOOK_SHOT_JS=…` | Run this in the page before the screenshot, e.g. to open a dialog. |
 | `SPELLBOOK_LAB=1` | Open the companion lab: every animal in every mood. |
 
@@ -120,6 +122,30 @@ away (the real message, or a sample when nothing is waiting); the timing rules a
 the window hides it to the tray so reminders keep coming; *Start with Windows* only takes effect
 in the installed app.
 
+## Themes
+
+Settings → *Theme* picks one of six; a book from before themes is a spellbook. A theme
+changes how things look and what they are called, never what they are: a task is a spell, a
+seed, a dive, a mission or a quest, and a test stays called a test, with the theme's own name
+next to it (*Harvest*, *Boss fight*).
+
+- `src/renderer/src/themes.ts`: the list, and per theme its colours, fonts and the
+  companion's headwear. `applyTheme` turns the colours into the `--color-*` variables the
+  Tailwind classes read (`bg-paper`, `text-ink`…), so the components wear any theme.
+- `themeWords.ts`: each theme's words, laid over the plain ones in `i18n.ts` (which are the
+  notebook's); `useWords()` gives a component the words for the book's language and theme.
+- `styles.css`: the shapes per theme (`:root[data-theme=…]`): two separate pages instead of
+  one book, wooden beds, a spiral, the companion's note as a dialogue box or a sticky note.
+- `components/ThemeParts.tsx`: what has to be drawn differently: icons, the week's progress
+  (seals, leaves, pearls, fuel, an XP bar, tick boxes), what the companion stands on, the
+  tick box and the test badge.
+- Readability is a rule, not a hope: `themes.test.ts` checks every text colour against what
+  it sits on at 4.5:1, in every theme, and subject colours are darkened per colour just
+  enough to read on the page (`lib/color.ts`).
+
+Adding a theme: an id in `ThemeId` (`types.ts`), an entry in `THEMES` and `THEME_WORDS`, its
+rules in `styles.css` and its parts in `ThemeParts.tsx`; then `npm test`.
+
 ## Companions
 
 The companion is a pixel-art cat, dog, parrot, whale or robot, drawn in code as text grids
@@ -132,7 +158,7 @@ and animated on a plain canvas: `src/renderer/src/companions/`.
   blush and hat), `animate.ts` (what every mood looks like, for every animal), one file per
   animal, and `draw.ts`, which `components/Companion.tsx` uses to paint it.
 - Moods: `idle`, `happy`, `talk`, `curious`, `sleep`, `proud`. Which one shows comes from
-  `mood.ts` (night → sleep, a mystery scroll → curious, today done → proud) and from
+  `mood.ts` (night → sleep, a mystery task → curious, today done → proud) and from
   reactions (ticking off → happy, moving → talk).
 - **Style guide: [docs/companions.md](docs/companions.md).** Read it before changing or
   adding an animal; faces especially.

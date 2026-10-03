@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DndContext, DragOverlay, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { useBook } from './store'
+import { applyTheme } from './themes'
 import { Book } from './components/Book'
 import { CompanionLab } from './components/CompanionLab'
 import { Settings } from './components/Settings'
@@ -12,8 +13,11 @@ import { TopBar } from './components/TopBar'
 export function App() {
   const tasks = useBook((s) => s.data.tasks)
   const plan = useBook((s) => s.plan)
+  const theme = useBook((s) => s.data.theme)
   const [dragging, setDragging] = useState<string | null>(null)
   const [lab, setLab] = useState(location.hash.startsWith('#lab'))
+
+  useEffect(() => applyTheme(theme), [theme])
 
   useEffect(() => {
     const onHash = (): void => setLab(location.hash.startsWith('#lab'))
@@ -42,7 +46,7 @@ export function App() {
     <DndContext sensors={sensors} onDragStart={start} onDragEnd={end} onDragCancel={() => setDragging(null)}>
       <div className="desk flex h-full flex-col">
         <TopBar />
-        <main className="flex min-h-0 flex-1 gap-7 px-7 pb-7">
+        <main className="flex min-h-0 flex-1 gap-5 px-5 pb-5">
           <Side />
           <Book />
         </main>

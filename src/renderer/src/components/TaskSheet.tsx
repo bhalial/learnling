@@ -1,9 +1,10 @@
 import { useState, type CSSProperties, type FormEvent } from 'react'
-import { dictionaries, dueWhen, shortDay } from '../i18n'
+import { dueWhen, shortDay } from '../i18n'
 import { addDays, daysBetween, nextSchoolDay, windowStart } from '../lib/dates'
 import { nextLesson } from '../lib/lessons'
 import { isTrial, TRAINING_ROUNDS, trainingDays, wording } from '../lib/tasks'
-import { useBook, type Sheet } from '../store'
+import { useBook, useWords, type Sheet } from '../store'
+import { subjectInkFor } from '../themes'
 import type { IsoDate, Kind, Task } from '../types'
 import { Modal, SheetHeader } from './Modal'
 
@@ -13,7 +14,7 @@ export function TaskSheet() {
   const sheet = useBook((s) => s.sheet)
   const openSheet = useBook((s) => s.openSheet)
   const tasks = useBook((s) => s.data.tasks)
-  const t = dictionaries[useBook((s) => s.data.lang)]
+  const t = useWords()
   const magisterTask = sheet?.mode === 'edit' ? tasks.find((task) => task.id === sheet.id && task.origin === 'magister') : undefined
 
   return (
@@ -32,7 +33,7 @@ function MagisterTask({ task }: { task: Task }) {
   const data = useBook((s) => s.data)
   const today = useBook((s) => s.today)
   const { setNote, openSheet } = useBook.getState()
-  const t = dictionaries[data.lang]
+  const t = useWords()
   const [note, setNoteText] = useState(task.own.note ?? '')
   const subject = data.subjects.find((s) => s.id === task.given.subjectId)
   const { kind, due, text } = task.given
@@ -46,7 +47,7 @@ function MagisterTask({ task }: { task: Task }) {
   return (
     <form onSubmit={save} className="flex flex-col gap-5 px-8 pb-6">
       <SheetHeader closeLabel={t.close} onClose={() => openSheet(null)}>
-        <h2 className="subject-ink m-0 font-fell text-[30px] font-normal" style={{ '--subject': subject?.color } as CSSProperties}>
+        <h2 className="subject-ink m-0 font-fell text-[30px] font-normal" style={{ '--subject-ink': subject && subjectInkFor(subject.color, data.theme) } as CSSProperties}>
           {subject?.name} · {t.kinds[kind]}
         </h2>
         <p className="m-0 text-[15px] italic text-ink-soft">
@@ -89,7 +90,7 @@ function TaskForm({ sheet }: { sheet: NonNullable<Sheet> }) {
   const data = useBook((s) => s.data)
   const today = useBook((s) => s.today)
   const { addTask, updateTask, removeTask, openSheet } = useBook.getState()
-  const t = dictionaries[data.lang]
+  const t = useWords()
 
   const existing = sheet.mode === 'edit' ? data.tasks.find((task) => task.id === sheet.id) : undefined
   const presetDue = existing?.given.due ?? (sheet.mode === 'new' ? sheet.due : undefined)

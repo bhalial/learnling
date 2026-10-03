@@ -91,7 +91,7 @@ export const cat: PixelAnimal = {
     cream: { ...NOSE, o: '#9a7650', b: '#f3e0bf', d: '#dcc095', l: '#fbefd8', w: '#fffbf3', v: '#eadfcc' }
   },
   anchor: [28, 4],
-  frame(pose, accessory) {
+  frame(pose, accessory, headwear) {
     const head = TOP + 1 - pose.bob
     const layers: Placed[] = [
       { grid: TAIL[pose.tail], x: 29, y: TOP + 26 },
@@ -101,7 +101,7 @@ export const cat: PixelAnimal = {
       { grid: MOUTH[pose.mouth], x: 15, y: head + 21 }
     ]
     if (accessory === 'collar') layers.push({ grid: COLLAR, x: 8, y: TOP + 29 })
-    if (accessory === 'hat') layers.push(hat(head + 7))
+    if (accessory === 'hat') layers.push(...hat(head + 7, head, headwear))
     return compose(WIDTH, HEIGHT, layers)
   }
 }

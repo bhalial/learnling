@@ -1,9 +1,14 @@
 import type { IsoDate, Kind, Lang } from './types'
 import { asDate, daysBetween } from './lib/dates'
+import type { ThemeId } from './themes'
+import { THEME_WORDS } from './themeWords'
 
+/**
+ * The app's words in plain language: a planner with tasks. Every theme but the notebook
+ * swaps some of them for its own (themeWords.ts); `wordsFor` puts the two together.
+ */
 const en = {
-  title: 'My Spellbook',
-  weeks: (a: number, b: number) => `Weeks ${a}–${b}`,
+  title: 'My planner',
   thisWeek: 'This week',
   nextWeek: 'Next week',
   comingWeek: 'Coming week',
@@ -11,12 +16,12 @@ const en = {
   week: (n: number) => `Week ${n}`,
   today: 'Today',
   weekend: 'Weekend',
-  newSpell: 'New spell',
+  newTask: 'New task',
   addOn: (day: string) => `Add something for ${day}`,
   settings: 'Settings',
   close: 'Close',
-  progress: (done: number, total: number) => `${done} of ${total} spells cast this week`,
-  progressEmpty: 'No spells yet this week',
+  progress: (done: number, total: number) => `${done} of ${total} done this week`,
+  progressEmpty: 'Nothing planned yet this week',
 
   kinds: {
     homework: 'Homework',
@@ -26,11 +31,14 @@ const en = {
     bring: 'Bring',
     test: 'Test',
     quiz: 'Quiz',
-    study: 'Training'
+    study: 'Practice'
   } satisfies Record<Kind, string>,
+  /** A theme's own name for a test and a quiz, shown next to the plain word. */
+  testName: null as string | null,
+  quizName: null as string | null,
   round: (n: number, of: number) => `Round ${n} of ${of}`,
   mysteryText: 'Homework set, but what?',
-  decipher: 'Decipher',
+  decipher: 'Fill in',
   decipherPrompt: 'What’s the homework?',
   mine: 'written by you',
   markDone: 'Mark done',
@@ -43,7 +51,7 @@ const en = {
   wasPlanned: (day: string) => `planned ${day}`,
   inDays: (n: number) => (n === 0 ? 'today' : n === 1 ? 'tomorrow' : `in ${n} days`),
 
-  attention: 'Needs attention',
+  attention: 'Still to do',
   attentionHint: 'Drag these to a new day, or tick them off.',
   further: 'Further ahead',
   noLessons: 'No lessons',
@@ -90,20 +98,20 @@ const en = {
   off: 'Off',
 
   sheet: {
-    newTitle: 'A new spell',
-    editTitle: 'Change this spell',
+    newTitle: 'A new task',
+    editTitle: 'Change this task',
     subject: 'Subject',
     kind: 'What kind?',
     what: 'What do you need to do?',
     whatTrial: 'What is it about?',
     placeholder: 'e.g. p. 52, questions 1–4',
     placeholderTrial: 'e.g. Ancient Egypt, ch. 2 §1–4',
-    emptyHint: 'Don’t know yet? Leave it empty and decipher it later.',
+    emptyHint: 'Don’t know yet? Leave it empty and fill it in later.',
     due: 'When is it due?',
     nextLesson: 'next lesson',
     otherDate: 'Another day',
-    training: (n: number) => `I’ll plan ${n} training rounds before it.`,
-    add: 'Write it in the book',
+    training: (n: number) => `I’ll plan ${n} practice rounds before it.`,
+    add: 'Add to my planner',
     save: 'Save',
     remove: 'Remove',
     noSubjects: 'Add your subjects in Settings first.'
@@ -118,6 +126,7 @@ const en = {
     catNamePlaceholder: 'Give it a name',
     subjects: 'Subjects',
     subjectName: 'Subject name',
+    subjectShort: 'Short name, for the timetable line',
     addSubject: 'Add subject',
     removeSubject: 'Remove subject',
     inUse: 'Still used in your book or timetable',
@@ -126,30 +135,32 @@ const en = {
     timetable: 'Timetable',
     timetableHint: 'Pick a day, then tap subjects in the order of your lessons. Tap a lesson to remove it.',
     timetableMagister: 'Magister fills in your real lessons. This timetable is only used where Magister has nothing.',
-    language: 'Language'
+    language: 'Language',
+    theme: 'Theme',
+    themeHint: 'Pick how your planner looks. Your companion dresses to match.'
   },
 
   dress: (name: string, animal: string) => (name ? `Dress up ${name}` : `Dress up your ${animal.toLowerCase()}`),
-  hat: 'Wizard hat',
+  hat: 'Bow',
   nothing: 'Nothing',
 
   cat: {
     setup: 'Hi! Connect Magister or fill in your timetable, then I can help you plan.',
     setupButton: 'Open settings',
-    mystery: (subject: string) => `${subject} set homework, but nobody wrote down what. Decipher it before you forget!`,
-    late: (n: number) => (n === 1 ? 'One spell slipped past its day. Drag it to a new one?' : `${n} spells slipped past their day. Drag them to a new one?`),
-    trialSoon: (subject: string, kind: string, when: string) => `${subject} ${kind.toLowerCase()} ${when}. A training round today?`,
-    left: (n: number) => (n === 1 ? 'One spell left for today.' : `${n} spells left for today.`),
+    mystery: (subject: string) => `${subject} set homework, but nobody wrote down what. Fill it in before you forget!`,
+    late: (n: number) => (n === 1 ? 'One task slipped past its day. Drag it to a new one?' : `${n} tasks slipped past their day. Drag them to a new one?`),
+    trialSoon: (subject: string, kind: string, when: string) => `${subject} ${kind.toLowerCase()} ${when}. Some practice today?`,
+    left: (n: number) => (n === 1 ? 'One task left for today.' : `${n} tasks left for today.`),
     clear: 'Today’s page is clear. Go play some Minecraft!',
-    empty: 'Nothing in the book yet. Tap “New spell” when a teacher gives homework.',
-    yay: (n: number) => (n === 0 ? 'Purr-fect! That was the last one for today.' : `Purr-fect! ${n} left for today.`),
-    decoded: 'Scroll deciphered! Now it can’t sneak away.',
-    dress: 'Ooh. Very magical.',
-    added: 'Written in the book!',
+    empty: 'Your planner is empty. Tap “New task” when a teacher gives homework.',
+    yay: (n: number) => (n === 0 ? 'Nice! That was the last one for today.' : `Nice! ${n} left for today.`),
+    decoded: 'Filled in! Now it can’t sneak away.',
+    dress: 'Ooh, that suits you.',
+    added: 'In your planner!',
     moved: 'Moved. I’ll remind you on the day.',
     tooLate: 'That day is after it’s due. Pick an earlier one!',
     undo: 'No worries, I’ll keep an eye on it.',
-    synced: (n: number) => (n === 1 ? 'Magister brought one new spell.' : `Magister brought ${n} new spells.`),
+    synced: (n: number) => (n === 1 ? 'Magister brought one new task.' : `Magister brought ${n} new tasks.`),
     login: 'Magister wants you to log in again. Tap the button up top.'
   }
 }
@@ -157,8 +168,7 @@ const en = {
 export type Dict = typeof en
 
 const nl: Dict = {
-  title: 'Mijn spreukenboek',
-  weeks: (a, b) => `Week ${a}–${b}`,
+  title: 'Mijn planner',
   thisWeek: 'Deze week',
   nextWeek: 'Volgende week',
   comingWeek: 'Komende week',
@@ -166,12 +176,12 @@ const nl: Dict = {
   week: (n) => `Week ${n}`,
   today: 'Vandaag',
   weekend: 'Weekend',
-  newSpell: 'Nieuwe spreuk',
+  newTask: 'Nieuwe taak',
   addOn: (day) => `Iets toevoegen voor ${day}`,
   settings: 'Instellingen',
   close: 'Sluiten',
-  progress: (done, total) => `${done} van ${total} spreuken gelukt deze week`,
-  progressEmpty: 'Nog geen spreuken deze week',
+  progress: (done, total) => `${done} van ${total} taken af deze week`,
+  progressEmpty: 'Nog niks gepland deze week',
 
   kinds: {
     homework: 'Huiswerk',
@@ -181,11 +191,13 @@ const nl: Dict = {
     bring: 'Meenemen',
     test: 'Toets',
     quiz: 'SO',
-    study: 'Training'
+    study: 'Oefenen'
   },
+  testName: null,
+  quizName: null,
   round: (n, of) => `Ronde ${n} van ${of}`,
   mysteryText: 'Huiswerk opgegeven, maar wat?',
-  decipher: 'Ontcijfer',
+  decipher: 'Invullen',
   decipherPrompt: 'Wat is het huiswerk?',
   mine: 'door jou geschreven',
   markDone: 'Afvinken',
@@ -198,7 +210,7 @@ const nl: Dict = {
   wasPlanned: (day) => `gepland ${day}`,
   inDays: (n) => (n === 0 ? 'vandaag' : n === 1 ? 'morgen' : `over ${n} dagen`),
 
-  attention: 'Aandacht nodig',
+  attention: 'Nog doen',
   attentionHint: 'Sleep ze naar een nieuwe dag, of vink ze af.',
   further: 'Verder vooruit',
   noLessons: 'Geen lessen',
@@ -245,20 +257,20 @@ const nl: Dict = {
   off: 'Uit',
 
   sheet: {
-    newTitle: 'Een nieuwe spreuk',
-    editTitle: 'Deze spreuk aanpassen',
+    newTitle: 'Een nieuwe taak',
+    editTitle: 'Deze taak aanpassen',
     subject: 'Vak',
     kind: 'Wat voor soort?',
     what: 'Wat moet je doen?',
     whatTrial: 'Waar gaat het over?',
     placeholder: 'bijv. blz. 52, vragen 1–4',
     placeholderTrial: 'bijv. Oud-Egypte, H2 §1–4',
-    emptyHint: 'Weet je het nog niet? Laat het leeg en ontcijfer het later.',
+    emptyHint: 'Weet je het nog niet? Laat het leeg en vul het later in.',
     due: 'Wanneer moet het af?',
     nextLesson: 'volgende les',
     otherDate: 'Andere dag',
-    training: (n) => `Ik plan er ${n} trainingsrondes voor in.`,
-    add: 'Schrijf in het boek',
+    training: (n) => `Ik plan er ${n} oefenrondes voor in.`,
+    add: 'Zet in mijn planner',
     save: 'Opslaan',
     remove: 'Verwijderen',
     noSubjects: 'Zet eerst je vakken in Instellingen.'
@@ -273,6 +285,7 @@ const nl: Dict = {
     catNamePlaceholder: 'Geef een naam',
     subjects: 'Vakken',
     subjectName: 'Naam van het vak',
+    subjectShort: 'Afkorting, voor de lessenregel',
     addSubject: 'Vak toevoegen',
     removeSubject: 'Vak verwijderen',
     inUse: 'Wordt nog gebruikt in je boek of rooster',
@@ -281,35 +294,64 @@ const nl: Dict = {
     timetable: 'Rooster',
     timetableHint: 'Kies een dag en tik de vakken aan in de volgorde van je lessen. Tik op een les om hem weg te halen.',
     timetableMagister: 'Magister vult je echte lessen in. Dit rooster wordt alleen gebruikt waar Magister niks heeft.',
-    language: 'Taal'
+    language: 'Taal',
+    theme: 'Thema',
+    themeHint: 'Kies hoe je planner eruitziet. Je maatje kleedt zich erbij aan.'
   },
 
   dress: (name, animal) => (name ? `Kleed ${name} aan` : `Kleed je ${animal.toLowerCase()} aan`),
-  hat: 'Tovenaarshoed',
+  hat: 'Strik',
   nothing: 'Niets',
 
   cat: {
     setup: 'Hoi! Koppel Magister of vul je rooster in, dan kan ik je helpen plannen.',
     setupButton: 'Open instellingen',
-    mystery: (subject) => `${subject} gaf huiswerk, maar er staat niet bij wát. Ontcijfer het voor je het vergeet!`,
-    late: (n) => (n === 1 ? 'Er is één spreuk over zijn dag heen geglipt. Naar een nieuwe dag slepen?' : `Er zijn ${n} spreuken over hun dag heen geglipt. Naar een nieuwe dag slepen?`),
-    trialSoon: (subject, kind, when) => `${kind} ${subject.toLowerCase()} ${when}. Vandaag een trainingsronde?`,
-    left: (n) => (n === 1 ? 'Nog één spreuk voor vandaag.' : `Nog ${n} spreuken voor vandaag.`),
+    mystery: (subject) => `${subject} gaf huiswerk, maar er staat niet bij wát. Vul het in voor je het vergeet!`,
+    late: (n) => (n === 1 ? 'Er is één taak over zijn dag heen geglipt. Naar een nieuwe dag slepen?' : `Er zijn ${n} taken over hun dag heen geglipt. Naar een nieuwe dag slepen?`),
+    trialSoon: (subject, kind, when) => `${kind} ${subject.toLowerCase()} ${when}. Vandaag even oefenen?`,
+    left: (n) => (n === 1 ? 'Nog één taak voor vandaag.' : `Nog ${n} taken voor vandaag.`),
     clear: 'De pagina van vandaag is leeg. Ga lekker Minecraften!',
-    empty: 'Er staat nog niks in het boek. Tik op “Nieuwe spreuk” als je huiswerk krijgt.',
-    yay: (n) => (n === 0 ? 'Spinnend goed! Dat was de laatste voor vandaag.' : `Spinnend goed! Nog ${n} voor vandaag.`),
-    decoded: 'Rol ontcijferd! Nu kan hij niet meer wegsluipen.',
-    dress: 'Ooh. Heel magisch.',
-    added: 'Staat in het boek!',
+    empty: 'Je planner is nog leeg. Tik op “Nieuwe taak” als je huiswerk krijgt.',
+    yay: (n) => (n === 0 ? 'Top! Dat was de laatste voor vandaag.' : `Top! Nog ${n} voor vandaag.`),
+    decoded: 'Ingevuld! Nu kan het niet meer wegsluipen.',
+    dress: 'Ooh, staat je goed.',
+    added: 'Staat in je planner!',
     moved: 'Verplaatst. Ik herinner je eraan op die dag.',
     tooLate: 'Die dag is ná de inleverdag. Kies een eerdere!',
     undo: 'Geen zorgen, ik hou hem in de gaten.',
-    synced: (n) => (n === 1 ? 'Magister bracht één nieuwe spreuk.' : `Magister bracht ${n} nieuwe spreuken.`),
+    synced: (n) => (n === 1 ? 'Magister bracht één nieuwe taak.' : `Magister bracht ${n} nieuwe taken.`),
     login: 'Magister wil dat je opnieuw inlogt. Tik op de knop bovenin.'
   }
 }
 
+/** The plain words, without a theme: what the notebook theme uses. */
 export const dictionaries: Record<Lang, Dict> = { en, nl }
+
+/**
+ * What a theme may change: any word, and within a group (cat, sheet, kinds…) any single
+ * one of its words.
+ */
+export type ThemeWords = {
+  [K in keyof Dict]?: Dict[K] extends (...args: never[]) => unknown ? Dict[K] : Dict[K] extends object ? Partial<Dict[K]> : Dict[K]
+}
+
+const merged = new Map<string, Dict>()
+
+/** The words for a language in a theme: the plain words with the theme's own laid over them. */
+export function wordsFor(lang: Lang, theme: ThemeId): Dict {
+  const key = `${theme}:${lang}`
+  const known = merged.get(key)
+  if (known) return known
+  const base = dictionaries[lang] as Record<string, unknown>
+  const own = (THEME_WORDS[theme][lang] ?? {}) as Record<string, unknown>
+  const words = { ...base }
+  for (const [name, value] of Object.entries(own)) {
+    const plain = base[name]
+    words[name] = plain && typeof plain === 'object' ? { ...plain, ...(value as object) } : value
+  }
+  merged.set(key, words as Dict)
+  return words as Dict
+}
 
 const locale = (lang: Lang): string => (lang === 'nl' ? 'nl-NL' : 'en-GB')
 

@@ -1,5 +1,5 @@
 import type { Pose } from './animate'
-import type { Grid, Palette, Placed } from './sprite'
+import { flipX, type Grid, type Palette, type Placed } from './sprite'
 
 /**
  * The face every pixel animal shares, so they look like one family: the same eyes, the
@@ -66,10 +66,96 @@ const HAT: Grid = [
   '..qqqqqqqqqqqqqq..'
 ]
 
-/** The hat resting with its brim on the row `crown` (the top of the head). */
-export function hat(crown: number): Placed {
-  return { grid: HAT, x: 9, y: crown - HAT.length + 1 }
+/**
+ * What the head slot holds; every theme brings its own. They are outlined in `o`, the
+ * animal's own outline colour, so each one sits on its animal as if drawn with it.
+ */
+export type Headwear = 'wizard' | 'space' | 'crown' | 'straw' | 'goggles' | 'bow'
+
+/** A white space cap with an orange band and an antenna with a light. */
+const SPACE_CAP: Grid = [
+  '.......II.......',
+  '......oIIo......',
+  '.......oo.......',
+  '.......oo.......',
+  '....oooooooo....',
+  '...oWWWWWWWWo...',
+  '..oWWhWWWWWWWo..',
+  '..oWhWWWWWWWWo..',
+  '.oWWWWWWWWWWWWo.',
+  '.oOOOOOOOOOOOOo.',
+  'oooooooooooooooo'
+]
+
+/** A gold crown with a red and two blue gems. */
+const CROWN: Grid = [
+  'o.....oo.....o',
+  'oo...oyyo...oo',
+  'oyo.oyyyyo.oyo',
+  'oyyoyyyyyyoyyo',
+  'oyyyyyryyyyyyo',
+  'oyyDyyyyyyDyyo',
+  'oYYYYYYYYYYYYo',
+  'oooooooooooooo'
+]
+
+/** A straw hat with a red band and a wide brim. */
+const STRAW_HAT: Grid = [
+  '.......oooooooo.......',
+  '......oSSSSSSSSo......',
+  '......oSTSSSSTSo......',
+  '......orrrrrrrro......',
+  '..ooooSSSSSSSSSSoooo..',
+  '.oSSSSTSSSSSSSSTSSSSo.',
+  'oSSTSSSSSTSSSSTSSSSTSo',
+  '.oooooooooooooooooooo.'
+]
+
+/** A pink bow, worn on the side of the head. */
+const BOW: Grid = ['oo.....oo', 'oPoo.ooPo', 'oPPoZoPPo', 'oPoo.ooPo', 'oo.....oo']
+
+/**
+ * Swimming goggles around the eyes, with a strap and a snorkel up the left side. Every
+ * face has its eyes in the same place, so the goggles fit every animal; the lenses leave
+ * the eyes, and the nose and mouth below them, free.
+ */
+function goggles(head: number): Placed[] {
+  // A thick rim with room for the eye to look left and right inside it; the thin side faces
+  // the nose, so the nose stays free.
+  const LENS: Grid = ['.ooooooooo.', 'oXXXXXXXXXo', 'oXXXXXXXXXo', ...Array(7).fill('oX........o'), 'oXXXXXXXXXo', '.ooooooooo.']
+  const BAND: Grid = ['oooo', 'XXXX', 'oooo']
+  return [
+    { grid: ['ooo', 'oOo', 'oOo', ...Array(13).fill('oXo'), 'ooo'], x: 0, y: head + 1 },
+    { grid: BAND, x: 2, y: head + 15 },
+    { grid: BAND, x: 30, y: head + 15 },
+    { grid: LENS, x: 5, y: head + 12 },
+    { grid: flipX(LENS), x: 20, y: head + 12 },
+    { grid: BAND, x: 16, y: head + 15 }
+  ]
 }
+
+/**
+ * The headwear resting on the row `crown` (the top of the head; each animal knows where
+ * its own is). `head` is the head's top row, for the goggles, which sit on the eyes.
+ */
+export function hat(crown: number, head: number, headwear: Headwear = 'wizard'): Placed[] {
+  switch (headwear) {
+    case 'space':
+      return [{ grid: SPACE_CAP, x: 10, y: crown - SPACE_CAP.length + 1 }]
+    case 'crown':
+      return [{ grid: CROWN, x: 11, y: crown - CROWN.length + 1 }]
+    case 'straw':
+      return [{ grid: STRAW_HAT, x: 7, y: crown - STRAW_HAT.length + 1 }]
+    case 'bow':
+      return [{ grid: BOW, x: 22, y: crown + 1 }]
+    case 'goggles':
+      return goggles(head)
+    default:
+      return [{ grid: HAT, x: 9, y: crown - HAT.length + 1 }]
+  }
+}
+
+export const ALL_HEADWEAR: Headwear[] = ['wizard', 'space', 'crown', 'straw', 'goggles', 'bow']
 
 /** Colours every animal shares: blush, eyes, mouths and the gear. */
 export const SHARED: Palette = {
@@ -84,5 +170,19 @@ export const SHARED: Palette = {
   Y: '#d9a93c',
   y: '#f5d679',
   r: '#c0392b',
-  R: '#8f261b'
+  R: '#8f261b',
+  // space cap: white, cyan light, orange band
+  W: '#eef2f8',
+  I: '#5fe0ff',
+  O: '#ff9a3c',
+  // crown gems
+  D: '#3a95d6',
+  // straw
+  S: '#ecc874',
+  T: '#c9a24a',
+  // bow
+  P: '#f59ac1',
+  Z: '#d4688f',
+  // goggles and snorkel
+  X: '#34c6c3'
 }

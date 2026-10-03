@@ -88,7 +88,7 @@ export const robot: PixelAnimal = {
     lilac: { o: '#4e3b7a', b: '#b9a3e3', d: '#9a84cc', l: '#d9cdf3', f: '#faf7ff', c: '#4e3b7a', a: '#ff8fb8' }
   },
   anchor: [30, 4],
-  frame(pose, accessory) {
+  frame(pose, accessory, headwear) {
     const head = TOP + 1 - pose.bob
     // Where the others sway a tail, the robot swings its arms.
     const swing = pose.tail
@@ -107,7 +107,7 @@ export const robot: PixelAnimal = {
       { grid: MOUTH[pose.mouth], x: 15, y: head + 23 }
     ]
     if (accessory === 'collar') layers.push({ grid: BOW_TIE, x: 14, y: TOP + 28 })
-    if (accessory === 'hat') layers.push(hat(head + 6))
+    if (accessory === 'hat') layers.push(...hat(head + 6, head, headwear))
     return compose(WIDTH, HEIGHT, layers)
   }
 }

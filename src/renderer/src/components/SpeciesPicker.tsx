@@ -1,10 +1,21 @@
 import { ALL_SPECIES, SPECIES } from '../companions'
+import type { Headwear } from '../companions/pixel/face'
 import type { CompanionLook, Species } from '../companions/types'
 import type { Lang } from '../types'
 import { Companion } from './Companion'
 
 /** Every animal alive side by side, in the chosen colours; tap one to pick it. The chosen one cheers. */
-export function SpeciesPicker({ look, lang, onPick }: { look: CompanionLook; lang: Lang; onPick: (species: Species) => void }) {
+export function SpeciesPicker({
+  look,
+  lang,
+  headwear,
+  onPick
+}: {
+  look: CompanionLook
+  lang: Lang
+  headwear?: Headwear
+  onPick: (species: Species) => void
+}) {
   return (
     <div className="grid grid-cols-5 gap-2">
       {ALL_SPECIES.map((species, i) => {
@@ -17,7 +28,7 @@ export function SpeciesPicker({ look, lang, onPick }: { look: CompanionLook; lan
             aria-pressed={chosen}
             className={`flex flex-col items-center rounded-md pb-1.5 pt-1 font-fell text-[19px] ${chosen ? 'ring-[1.5px] ring-ink' : 'text-ink-soft'}`}
           >
-            <Companion look={{ ...look, species }} mood={chosen ? 'happy' : 'idle'} scale={3} seed={i} />
+            <Companion look={{ ...look, species }} mood={chosen ? 'happy' : 'idle'} scale={3} seed={i} headwear={headwear} />
             {SPECIES[species].name[lang]}
           </button>
         )

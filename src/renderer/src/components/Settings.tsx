@@ -1,19 +1,21 @@
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { ALL_EYE_COLORS, EYE_COLOR_NAMES, eyeSwatch, eyesFor } from '../companions'
-import { clock, dictionaries, weekdayName } from '../i18n'
+import { clock, weekdayName } from '../i18n'
 import { addDays, mondayOf } from '../lib/dates'
 import { reminderMessage } from '../lib/reminder'
 import { PALETTE } from '../lib/seed'
-import { subjectInUse } from '../lib/subjects'
-import { useBook } from '../store'
+import { shortName, subjectInUse } from '../lib/subjects'
+import { useBook, useWords } from '../store'
+import { ALL_THEMES, THEMES } from '../themes'
 import type { Lang, Weekday } from '../types'
+import { Companion } from './Companion'
 import { Modal, SheetHeader } from './Modal'
 import { SpeciesPicker } from './SpeciesPicker'
 
 export function Settings() {
   const open = useBook((s) => s.settingsOpen)
   const openSettings = useBook((s) => s.openSettings)
-  const t = dictionaries[useBook((s) => s.data.lang)]
+  const t = useWords()
 
   return (
     <Modal open={open} onClose={() => openSettings(false)} label={t.setup.title} width={860}>
@@ -46,8 +48,10 @@ function SettingsForm() {
   const {
     setCompanion,
     setLang,
+    setTheme,
     addSubject,
     renameSubject,
+    shortenSubject,
     recolorSubject,
     removeSubject,
     addLesson,
@@ -59,7 +63,7 @@ function SettingsForm() {
     syncMagister,
     disconnectMagister
   } = useBook.getState()
-  const t = dictionaries[data.lang]
+  const t = useWords()
   const [colorFor, setColorFor] = useState<string | null>(null)
   const [day, setDay] = useState<Weekday>(1)
   const [testSent, setTestSent] = useState(false)
@@ -111,6 +115,39 @@ function SettingsForm() {
         )}
       </section>
 
+      <section>
+        <h3 className={heading}>{t.setup.theme}</h3>
+        <p className="m-0 mb-3 text-[15px] italic text-ink-soft">{t.setup.themeHint}</p>
+        {/* Each theme shown in its own colours and font, with the companion in its headwear. */}
+        <div className="grid grid-cols-3 gap-3">
+          {ALL_THEMES.map((id, i) => {
+            const { colors, fonts, headwear, name } = THEMES[id]
+            const chosen = data.theme === id
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setTheme(id)}
+                aria-pressed={chosen}
+                className={`flex flex-col gap-2 rounded-md p-2 text-left ${chosen ? 'ring-2 ring-ink' : 'ring-1 ring-ink/20'}`}
+              >
+                <span className="flex h-[112px] items-end gap-2 overflow-hidden rounded-[6px] px-2 pt-2" style={{ background: colors.desk }}>
+                  <Companion look={data.companion} mood={chosen ? 'happy' : 'idle'} scale={2} seed={i} headwear={headwear} />
+                  <span className="mb-3 flex h-14 flex-1 flex-col justify-center gap-2 rounded-[4px] px-2.5" style={{ background: colors.paper }}>
+                    <span className="block h-1.5 w-4/5 rounded-full" style={{ background: colors.ink }} />
+                    <span className="block h-1.5 w-1/2 rounded-full" style={{ background: colors['ink-soft'] }} />
+                  </span>
+                  <span className="mb-3 block size-5 shrink-0 rounded-full" style={{ background: colors.button }} />
+                </span>
+                <span className="px-1 text-[19px] leading-tight" style={{ fontFamily: fonts.display, fontWeight: fonts.displayWeight }}>
+                  {name[data.lang]}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
       <section className="grid grid-cols-2 gap-8">
         <div>
           <h3 className={heading}>{t.reminder.title}</h3>
@@ -152,7 +189,7 @@ function SettingsForm() {
       <section>
         <h3 className={heading}>{t.setup.companion}</h3>
         <p className="m-0 mb-2 text-[15px] italic text-ink-soft">{t.setup.companionHint}</p>
-        <SpeciesPicker look={data.companion} lang={data.lang} onPick={(species) => setCompanion({ species })} />
+        <SpeciesPicker look={data.companion} lang={data.lang} headwear={THEMES[data.theme].headwear} onPick={(species) => setCompanion({ species })} />
         <div className="mt-3 flex items-center gap-4">
           <span className="text-[17px]">{t.setup.eyeColor}</span>
           <div className="flex gap-2.5">
@@ -208,6 +245,16 @@ function SettingsForm() {
                     spellCheck={false}
                     className="h-11 min-w-0 flex-1 border-0 border-b border-ink/25 bg-transparent px-1 text-[17px] outline-none focus:border-ink"
                   />
+                  <input
+                    value={subject.short ?? ''}
+                    onChange={(e) => shortenSubject(subject.id, e.target.value)}
+                    aria-label={t.setup.subjectShort}
+                    title={t.setup.subjectShort}
+                    placeholder={shortName({ name: subject.name })}
+                    maxLength={5}
+                    spellCheck={false}
+                    className="h-11 w-[4.5rem] shrink-0 border-0 border-b border-ink/25 bg-transparent px-1 text-center text-[15px] font-bold uppercase tracking-wide outline-none placeholder:text-ink-soft focus:border-ink"
+                  />
                   <button
                     type="button"
                     onClick={() => removeSubject(subject.id)}
@@ -238,7 +285,7 @@ function SettingsForm() {
                             aria-label={owner ? `${color} (${owner.name})` : color}
                             title={owner?.name}
                             aria-pressed={subject.color === color}
-                            className={`blot-lg grid size-9 place-items-center text-[11px] font-bold uppercase text-paper ${subject.color === color ? 'outline-2 outline-offset-2 outline-ink outline-solid' : ''}`}
+                            className={`blot-lg grid size-9 place-items-center text-[11px] font-bold uppercase text-[#fffaf0] ${subject.color === color ? 'outline-2 outline-offset-2 outline-ink outline-solid' : ''}`}
                             style={{ background: color }}
                           >
                             {owner?.name.slice(0, 2)}

@@ -79,7 +79,7 @@ export const whale: PixelAnimal = {
     deep: { o: '#16203a', b: '#34476e', d: '#273859', l: '#4a5f8a', w: '#d6deeb', v: '#b5c2d6' }
   },
   anchor: [30, 6],
-  frame(pose, accessory) {
+  frame(pose, accessory, headwear) {
     // A swimmer: the whole whale floats up and down, not just its head.
     const top = TOP + 1 - pose.bob
     const layers: Placed[] = [
@@ -92,7 +92,7 @@ export const whale: PixelAnimal = {
       { grid: MOUTH[pose.mouth], x: 11, y: top + 22 }
     ]
     if (accessory === 'collar') layers.push({ grid: SCARF, x: 6, y: top + 29 }, { grid: SCARF_END, x: 9, y: top + 31 })
-    if (accessory === 'hat') layers.push(hat(top + 4))
+    if (accessory === 'hat') layers.push(...hat(top + 4, top, headwear))
     return compose(WIDTH, HEIGHT, layers)
   }
 }

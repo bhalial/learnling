@@ -1,12 +1,14 @@
 import { useState, type CSSProperties, type FormEvent } from 'react'
 import { useDraggable } from '@dnd-kit/core'
-import { dictionaries, dueWhen, shortDay } from '../i18n'
+import { dueWhen, shortDay } from '../i18n'
 import { daysBetween } from '../lib/dates'
 import { isDone, isMystery, isTrial, shownOn, wording } from '../lib/tasks'
+import { labelName } from '../lib/subjects'
 import { firstLine, pointsElsewhere } from '../lib/text'
-import { useBook } from '../store'
+import { useBook, useWords } from '../store'
+import { subjectInkFor } from '../themes'
 import type { Task } from '../types'
-import { Seal } from './Seal'
+import { DecipherIcon, Seal, TickBox } from './ThemeParts'
 
 type Place = 'page' | 'shelf' | 'overlay'
 
@@ -20,7 +22,7 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
   const removeTask = useBook((s) => s.removeTask)
   const [deciphering, setDeciphering] = useState(false)
 
-  const t = dictionaries[data.lang]
+  const t = useWords()
   const { kind, due, round, gone } = task.given
   const trial = isTrial(kind)
   const mystery = isMystery(task)
@@ -60,8 +62,8 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
     <div
       ref={setNodeRef}
       {...listeners}
-      style={{ '--subject': subject?.color ?? '#7a8594' } as CSSProperties}
-      className={`flex min-h-[50px] touch-manipulation items-center gap-3 rounded-md ${done ? 'is-done' : ''} ${
+      style={{ '--subject': subject?.color ?? '#7a8594', '--subject-ink': subjectInkFor(subject?.color ?? '#7a8594', data.theme) } as CSSProperties}
+      className={`flex min-h-[46px] touch-manipulation items-center gap-2.5 rounded-md ${done ? 'is-done' : ''} ${
         isDragging || gone ? 'opacity-40' : ''
       } ${place === 'overlay' ? 'bg-paper px-3 shadow-xl' : ''}`}
     >
@@ -86,23 +88,29 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
         </form>
       ) : (
         <button type="button" onClick={edit} className="flex min-w-0 flex-1 flex-col items-start text-left">
-          <span className="flex max-w-full items-baseline gap-2 overflow-hidden whitespace-nowrap">
-            <span className="subject-ink text-[11.5px] font-bold uppercase tracking-[0.1em]">{subject?.name}</span>
-            <span className="text-[13.5px] italic text-ink-soft">{t.kinds[kind]}</span>
-            {when && !gone && <span className="text-[13.5px] italic text-wax">{when}</span>}
-            {gone && <span className="text-[13.5px] italic text-ink-soft">{t.gone}</span>}
-            {fresh && <span className="rounded-sm bg-gold px-1.5 text-[12px] font-bold uppercase tracking-wide text-ink">{t.fresh}</span>}
-            {teams && <span className="text-[13.5px] italic text-quill">{t.seeTeams}</span>}
-            {task.own.note && <span className="text-[13.5px] italic text-quill">{t.mine}</span>}
+          {/* Subject, kind and what is special about it; too much for one line wraps rather than
+              vanish. Homework is what nearly everything is, so only the other kinds are named. */}
+          <span className="flex max-w-full flex-wrap items-baseline gap-x-2 overflow-hidden whitespace-nowrap">
+            <span className="subject-ink text-[11px] font-bold uppercase tracking-[0.1em]" title={subject?.name}>
+              {subject && labelName(subject)}
+            </span>
+            {kind !== 'homework' && <span className="text-[13px] italic text-ink-soft">{t.kinds[kind]}</span>}
+            {kind === 'test' && t.testName && <span className="trial-chip">{t.testName}</span>}
+            {kind === 'quiz' && t.quizName && <span className="trial-chip">{t.quizName}</span>}
+            {when && !gone && <span className="text-[13px] italic text-wax">{when}</span>}
+            {gone && <span className="text-[13px] italic text-ink-soft">{t.gone}</span>}
+            {fresh && <span className="rounded-sm bg-gold px-1.5 text-[12px] font-bold uppercase tracking-wide text-on-gold">{t.fresh}</span>}
+            {teams && <span className="text-[13px] italic text-quill">{t.seeTeams}</span>}
+            {task.own.note && <span className="text-[13px] italic text-quill">{t.mine}</span>}
           </span>
           <span
-            className={`block max-w-full leading-tight ${place === 'shelf' ? '' : 'truncate'} ${
+            className={`block max-w-full leading-tight ${place === 'shelf' ? '[overflow-wrap:anywhere]' : 'truncate'} ${
               task.own.note
-                ? 'font-hand text-[23px] leading-none text-quill'
+                ? 'font-hand text-[22px] leading-none text-quill'
                 : mystery
-                  ? 'text-[16.5px] italic text-[#8a6a3a]'
-                  : 'text-[16.5px]'
-            } ${trial ? 'font-bold' : ''} ${done || gone ? 'text-[#8a7a64] line-through' : ''}`}
+                  ? 'text-[16px] italic text-mystery'
+                  : 'text-[16px]'
+            } ${trial ? 'font-bold' : ''} ${done || gone ? 'text-done line-through' : ''}`}
           >
             {text}
           </span>
@@ -114,13 +122,11 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
           type="button"
           onClick={() => setDeciphering(true)}
           aria-label={t.decipher}
-          className={`flex h-11 shrink-0 items-center justify-center gap-2 rounded-sm border-[1.5px] border-ink bg-paper-deep font-fell text-[17px] ${
-            place === 'shelf' ? 'w-11' : 'px-3.5'
+          className={`flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-sm border-[1.5px] border-ink bg-paper-deep font-fell text-[16px] ${
+            place === 'shelf' ? 'w-11' : 'px-3'
           }`}
         >
-          <svg viewBox="0 0 24 24" className="size-5 fill-none stroke-ink stroke-[1.6]" aria-hidden="true">
-            <path d="M5 20 C 9 12, 14 6, 22 2 C 19 10, 13 16, 7 19 Z M5 20 L3 23" strokeLinejoin="round" strokeLinecap="round" />
-          </svg>
+          <DecipherIcon />
           {place !== 'shelf' && t.decipher}
         </button>
       )}
@@ -141,14 +147,7 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
           aria-pressed={done}
           className="size-11 shrink-0"
         >
-          <svg viewBox="0 0 42 42" className="size-11" aria-hidden="true">
-            <path
-              d="M8 9 C 14 7.5, 26 8, 34 8.5 C 35.5 16, 35 26, 34.5 34 C 26 35.5, 15 35, 8.5 34.5 C 7.5 26, 8 16, 8 9 Z"
-              className="fill-none stroke-ink stroke-2"
-              strokeLinejoin="round"
-            />
-            <path d="M13 22 L19 29 L35 8" className="tick fill-none stroke-quill stroke-[3.5]" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <TickBox />
         </button>
       )}
 

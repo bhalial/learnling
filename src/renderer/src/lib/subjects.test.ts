@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Subject } from '../types'
 import { PALETTE } from './seed'
-import { distinctColors, recolor } from './subjects'
+import { distinctColors, labelName, recolor, shortName } from './subjects'
 
 const subject = (id: string, color: string): Subject => ({ id, name: id, color })
 const colors = (subjects: Subject[]): string[] => subjects.map((s) => s.color)
@@ -36,5 +36,30 @@ describe('distinctColors', () => {
   it('has enough colours for a full Magister timetable', () => {
     const many = Array.from({ length: 16 }, (_, i) => subject(`s${i}`, ''))
     expect(new Set(colors(distinctColors(many))).size).toBe(16)
+  })
+})
+
+describe('shortName', () => {
+  it('knows the usual subjects, in Dutch and English', () => {
+    expect(shortName({ name: 'Nederlands' })).toBe('NE')
+    expect(shortName({ name: 'English' })).toBe('EN')
+    expect(shortName({ name: 'Mathematics' })).toBe('MATH')
+  })
+
+  it('makes one up for the rest: the name if short, else initials or a start', () => {
+    expect(shortName({ name: 'Nto2' })).toBe('NTO2')
+    expect(shortName({ name: 'Moderne talen en culturen' })).toBe('MTC')
+    expect(shortName({ name: 'Physical health education' })).toBe('PHE')
+    expect(shortName({ name: 'Specialisatieblok' })).toBe('SPEC')
+  })
+
+  it('keeps the student’s own', () => {
+    expect(shortName({ name: 'Moderne talen en culturen', short: 'MTC2' })).toBe('MTC2')
+    expect(shortName({ name: 'English', short: '  ' })).toBe('EN')
+  })
+
+  it('puts the whole name on a task while it fits', () => {
+    expect(labelName({ name: 'Geography' })).toBe('Geography')
+    expect(labelName({ name: 'Physical health education' })).toBe('PHE')
   })
 })

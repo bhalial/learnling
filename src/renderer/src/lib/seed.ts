@@ -29,6 +29,7 @@ export function freshBook(): SpellbookData {
   return {
     version: 1,
     lang: 'en',
+    theme: 'magic',
     subjects: SUBJECTS.map(([id, name, color]): Subject => ({ id, name, color })),
     timetable: { 1: [], 2: [], 3: [], 4: [], 5: [] },
     tasks: [],
@@ -42,12 +43,19 @@ export function freshBook(): SpellbookData {
 export function demoBook(today: IsoDate): SpellbookData {
   const book = freshBook()
   book.companion.name = 'Mochi'
+  // A bilingual school's long subject names, to see the book stay tidy with them.
+  book.subjects.push(
+    { id: 'mentor', name: 'Mentoruur', color: '#8a5a3c' },
+    { id: 'music', name: 'Music', color: '#5aa7c9' },
+    { id: 'languages', name: 'Moderne talen en culturen', color: '#9aa83a' },
+    { id: 'health', name: 'Physical health education', color: '#9c3f7c' }
+  )
   book.timetable = {
-    1: ['maths', 'english', 'dutch', 'biology', 'french', 'art'],
-    2: ['geography', 'maths', 'history', 'english', 'pe', 'dutch'],
-    3: ['biology', 'french', 'maths', 'history', 'english'],
-    4: ['dutch', 'geography', 'french', 'maths', 'art', 'english'],
-    5: ['history', 'english', 'biology', 'pe', 'maths']
+    1: ['mentor', 'music', 'maths', 'english', 'dutch', 'biology'],
+    2: ['geography', 'languages', 'health', 'health', 'history', 'english'],
+    3: ['biology', 'french', 'maths', 'history', 'english', 'music'],
+    4: ['mentor', 'dutch', 'geography', 'french', 'maths', 'art'],
+    5: ['history', 'english', 'languages', 'health', 'maths']
   }
 
   const monday = windowStart(today)
@@ -83,7 +91,12 @@ export function demoBook(today: IsoDate): SpellbookData {
     task(-3, 'dutch', 'handin', 'Toestemmingsformulier'),
     task(18, 'maths', 'test', 'Chapter 3: fractions'),
     task(3, 'geography', 'homework', 'Zie Teams opdrachten'),
-    task(8, 'maths', 'homework', 'p. 41, ex. 7–9')
+    task(8, 'maths', 'homework', 'p. 41, ex. 7–9'),
+    task(7, 'mentor', 'homework', 'Make a plan in your planner for one subject'),
+    task(8, 'languages', 'homework', 'Describe 3 family members in French'),
+    task(8, 'health', 'homework', 'Start video + practice plan'),
+    task(11, 'languages', 'homework', 'Exercise 4 of lesson 26'),
+    task(14, 'english', 'test', 'Listening test (PET part 1)')
   ]
   // The form from last week is still waiting.
   tasks[15].own = {}

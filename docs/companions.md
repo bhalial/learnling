@@ -38,8 +38,9 @@ better cat eyes". The 3D figures and the Blender plush before it are shelved in 
   `d` shade, `l` light, `w`/`v` the pale part (chest, belly, snout) and its shade. The
   swatch for a coat is its `b`.
 - Shared colours (`SHARED` in `face.ts`): `p` blush, `k` eye dark, `h` shine, `m`/`t`
-  mouth and tongue, `q`/`U`/`u`/`Y`/`y` the hat, `r`/`R` red gear. Don't reuse these
-  letters for anything else.
+  mouth and tongue, `q`/`U`/`u`/`Y`/`y` the hat, `r`/`R` red gear, and the themes'
+  headwear: `W`/`I`/`O` space cap, `D` crown gems, `S`/`T` straw, `P`/`Z` bow, `X` goggles.
+  Don't reuse these letters for anything else.
 
 ## Faces (the part that goes creepy first)
 
@@ -87,9 +88,14 @@ With reduced motion each mood is a single still picture.
 
 ## Gear
 
-- **Head slot**: the wizard hat, `hat(crown)` with the row the head's top is on. Whatever
-  makes the animal itself up there (a whale's tail, the robot's antenna) stands to the
-  right of the hat so it stays visible.
+- **Head slot**: what the theme puts there (`Headwear`, chosen by the theme in `themes.ts`):
+  the wizard hat, a space cap, a crown, a straw hat, swimming goggles with a snorkel, or a
+  bow. `hat(crown, head, headwear)` places it: hats rest their brim on the row the head's
+  top is on (`crown`, each animal knows its own), the bow sits on the right of the head,
+  and the goggles go round the eyes, which every face has in the same place, leaving the
+  nose and mouth free. Headwear is outlined in `o`, so it takes the animal's own outline.
+  Whatever makes the animal itself up there (a whale's tail, the robot's antenna) stands to
+  the right of the hat so it stays visible.
 - **Neck slot**: one item per animal, named in its definition (`neckwear`): bell collar,
   collar with tag, bow tie, scarf. Pick a colour that shows on every coat (the parrot's bow
   tie is purple because red vanished on the scarlet macaw).
@@ -97,11 +103,11 @@ With reduced motion each mood is a single still picture.
 ## Adding an animal
 
 1. Draw `companions/pixel/<animal>.ts` exporting a `PixelAnimal`: its layers, four coats
-   and a `frame(pose, accessory)` that uses `face()` and `hat()`.
+   and a `frame(pose, accessory, headwear)` that uses `face()` and `hat()`.
 2. Add the id to `Species` in `types.ts`, and the animal to `SPECIES` (names, coats,
    neckwear) and `ALL_SPECIES` in `companions/index.ts`.
-3. `npm test`: the companion tests check every pose, coat, eye colour and gear for missing
-   colours.
+3. `npm test`: the companion tests check every pose, coat, eye colour, gear and headwear
+   for missing colours.
 4. Look at it:
    - `npx vite-node art/pixel/preview.ts` writes `art/pixel/preview.html` (every animal,
      mood, coat, eye colour and gear, animated by the app's own code) and contact sheets

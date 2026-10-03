@@ -2,6 +2,9 @@ import type { CompanionLook } from './companions/types'
 
 export type Lang = 'en' | 'nl'
 
+/** How the book looks and talks: see themes.ts. */
+export type ThemeId = 'magic' | 'garden' | 'ocean' | 'space' | 'quest' | 'notebook'
+
 /** A calendar day as 'YYYY-MM-DD'. */
 export type IsoDate = string
 
@@ -13,6 +16,8 @@ export type Weekday = 1 | 2 | 3 | 4 | 5
 export interface Subject {
   id: string
   name: string
+  /** The student's own abbreviation for the timetable line; without one, it is made up (shortName). */
+  short?: string
   color: string
   /** Magister's subject id, so renaming never breaks the match. */
   externalId?: string
@@ -80,6 +85,7 @@ export interface MagisterLink {
 export interface SpellbookData {
   version: 1
   lang: Lang
+  theme: ThemeId
   subjects: Subject[]
   /** Subject ids per lesson, in order, for each school day. The fallback when Magister is not linked. */
   timetable: Record<Weekday, string[]>
@@ -96,6 +102,8 @@ export interface Boot {
   data: unknown
   demo: boolean
   today: IsoDate | null
+  /** SPELLBOOK_THEME: the theme a demo book starts in. */
+  theme: string | null
 }
 
 /** One appointment as the main process hands it over: Magister's fields, trimmed. */

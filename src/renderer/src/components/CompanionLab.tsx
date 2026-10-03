@@ -1,4 +1,5 @@
 import { ALL_SPECIES, SPECIES } from '../companions'
+import { ALL_HEADWEAR } from '../companions/pixel/face'
 import type { AccessoryId, Mood } from '../companions/types'
 import { Companion } from './Companion'
 
@@ -7,7 +8,7 @@ const GEAR: AccessoryId[] = ['hat', 'collar', 'none']
 
 /**
  * A development page for judging the pixel art. `#lab` shows every animal in every mood
- * side by side, in turns of coat and gear; `#lab=whale` shows one animal large.
+ * side by side, in turns of coat, gear and the themes' headwear; `#lab=whale` shows one animal large.
  */
 export function CompanionLab() {
   const only = ALL_SPECIES.find((species) => location.hash === `#lab=${species}`)
@@ -30,7 +31,7 @@ export function CompanionLab() {
           ...MOODS.map((mood, i) => {
             const coats = SPECIES[species].coats
             const look = { species, coat: coats[i % coats.length].id, accessory: GEAR[i % GEAR.length], eyes: 'green' }
-            return <Companion key={`${species}-${mood}`} look={look} mood={mood} scale={scale} seed={i} />
+            return <Companion key={`${species}-${mood}`} look={look} mood={mood} scale={scale} seed={i} headwear={ALL_HEADWEAR[i % ALL_HEADWEAR.length]} />
           })
         ])}
       </div>

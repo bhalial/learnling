@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import { coatFor, eyesFor, settleCompanion } from './companions'
+import { wordsFor, type Dict } from './i18n'
+import { themeFor, type ThemeId } from './themes'
 import type { AccessoryId } from './companions/types'
 import type { Boot, CompanionSettings, IsoDate, Kind, Lang, SpellbookData, Task, Weekday } from './types'
 import { addDays, mondayOf, todayIso, windowStart } from './lib/dates'
@@ -46,6 +48,7 @@ interface BookState {
   clearReaction(at: number): void
 
   setLang(lang: Lang): void
+  setTheme(theme: ThemeId): void
   addTask(draft: Draft): void
   updateTask(id: string, draft: Draft): void
   removeTask(id: string): void
@@ -58,6 +61,8 @@ interface BookState {
   setCompanion(patch: Partial<CompanionSettings>): void
   addSubject(): void
   renameSubject(id: string, name: string): void
+  /** The subject's own abbreviation; empty goes back to the made-up one. */
+  shortenSubject(id: string, short: string): void
   /** Takes the colour; a subject that had it gets this one's old colour. */
   recolorSubject(id: string, color: string): void
   removeSubject(id: string): void
@@ -81,7 +86,8 @@ const isBook = (data: unknown): data is SpellbookData =>
 
 /**
  * Brings an older book up to date: a `cat` became a `companion` (and later animals and eye
- * colours came along), and subjects now each have their own colour.
+ * colours came along), subjects now each have their own colour, and a book from before
+ * there were themes is a spellbook.
  */
 function upgrade(data: SpellbookData & { cat?: { name: string; fur: string; accessory: AccessoryId } }): SpellbookData {
   const { cat, ...book } = data
@@ -89,6 +95,7 @@ function upgrade(data: SpellbookData & { cat?: { name: string; fur: string; acce
   return {
     ...freshBook(),
     ...upgraded,
+    theme: themeFor(upgraded.theme),
     companion: settleCompanion(upgraded.companion ?? freshBook().companion),
     subjects: distinctColors(upgraded.subjects ?? freshBook().subjects)
   }
@@ -117,10 +124,11 @@ export const useBook = create<BookState>()((set, get) => {
     reaction: null,
     sync: { state: 'idle' },
 
-    boot({ data, demo, today }) {
+    boot({ data, demo, today, theme }) {
       const day = today ?? todayIso()
       // Books saved by an older version lack the newer settings; fill them in.
       const book = isBook(data) ? upgrade(data) : demo ? demoBook(day) : freshBook()
+      if (theme) book.theme = themeFor(theme)
       set({ ready: true, data: book, today: day, pinnedToday: Boolean(today) })
     },
 
@@ -135,6 +143,8 @@ export const useBook = create<BookState>()((set, get) => {
     },
 
     setLang: (lang) => change((data) => ({ ...data, lang })),
+    // The companion changes its headwear along with the theme, and says so.
+    setTheme: (theme) => change((data) => ({ ...data, theme }), 'dress'),
 
     addTask(draft) {
       const { today } = get()
@@ -228,6 +238,9 @@ export const useBook = create<BookState>()((set, get) => {
     renameSubject: (id, name) =>
       change((data) => ({ ...data, subjects: data.subjects.map((s) => (s.id === id ? { ...s, name } : s)) })),
 
+    shortenSubject: (id, short) =>
+      change((data) => ({ ...data, subjects: data.subjects.map((s) => (s.id === id ? { ...s, short: short.trim() || undefined } : s)) })),
+
     recolorSubject: (id, color) => change((data) => ({ ...data, subjects: recolor(data.subjects, id, color) })),
 
     removeSubject: (id) =>
@@ -293,4 +306,11 @@ export const useBook = create<BookState>()((set, get) => {
     }
   }
 })
+
+/** The words to show: the book's language, in the book's theme. */
+export function useWords(): Dict {
+  const lang = useBook((s) => s.data.lang)
+  const theme = useBook((s) => s.data.theme)
+  return wordsFor(lang, theme)
+}
 
