@@ -6,43 +6,15 @@
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { deflateSync } from 'node:zlib'
 import { build } from 'esbuild'
 import type { Pose } from '../../src/renderer/src/companions/pixel/animate'
 import { HEIGHT, paletteOf, WIDTH } from '../../src/renderer/src/companions/pixel/species'
 import { rgba } from '../../src/renderer/src/companions/pixel/sprite'
 import { ANIMALS } from './animals'
+import { png } from './png'
 
 const out = process.argv[2] ?? join(__dirname, 'renders')
 mkdirSync(out, { recursive: true })
-
-const CRC = Array.from({ length: 256 }, (_, n) => {
-  let c = n
-  for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1
-  return c >>> 0
-})
-const crc32 = (buf: Buffer): number => {
-  let c = 0xffffffff
-  for (const byte of buf) c = CRC[(c ^ byte) & 0xff] ^ (c >>> 8)
-  return (c ^ 0xffffffff) >>> 0
-}
-const chunk = (type: string, data: Buffer): Buffer => {
-  const head = Buffer.alloc(8)
-  head.writeUInt32BE(data.length, 0)
-  head.write(type, 4, 'ascii')
-  const tail = Buffer.alloc(4)
-  tail.writeUInt32BE(crc32(Buffer.concat([head.subarray(4), data])), 0)
-  return Buffer.concat([head, data, tail])
-}
-function png(width: number, height: number, pixels: Uint8ClampedArray): Buffer {
-  const raw = Buffer.alloc((width * 4 + 1) * height)
-  for (let y = 0; y < height; y++) Buffer.from(pixels.buffer, y * width * 4, width * 4).copy(raw, y * (width * 4 + 1) + 1)
-  const ihdr = Buffer.alloc(13)
-  ihdr.writeUInt32BE(width, 0)
-  ihdr.writeUInt32BE(height, 4)
-  ihdr.set([8, 6, 0, 0, 0], 8)
-  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0))])
-}
 
 /** Frames in a row, each scaled up, on the app's desk colour. */
 function sheet(frames: Uint8ClampedArray[], scale: number, background = [0x24, 0x19, 0x11]): Buffer {

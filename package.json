@@ -13,12 +13,14 @@
     "test": "vitest run",
     "pack": "electron-vite build && electron-builder --dir --publish never",
     "dist": "electron-vite build && electron-builder --publish never",
-    "icon": "electron scripts/make-icon.js"
+    "icon": "electron scripts/make-icon.js",
+    "site": "vite-node site/build.ts"
   },
   "devDependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@fontsource/alegreya-sans": "^5.3.0",
     "@fontsource/caveat": "^5.3.0",
+    "@fontsource/fredoka": "^5.3.0",
     "@fontsource/im-fell-english": "^5.3.0",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22.10.0",

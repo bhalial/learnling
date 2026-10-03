@@ -1,0 +1,52 @@
+# Builds the product page (site/) and publishes it on GitHub Pages:
+# https://bhalial.github.io/learnling/
+name: Site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'src/renderer/src/companions/**'
+      - 'art/pixel/png.ts'
+      - 'resources/icon.png'
+      - '.github/workflows/site.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      # The page only needs the companions' code, not Electron itself.
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

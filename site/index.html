@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="nl" data-lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learnling · je huiswerk in een toverboek</title>
+    <meta name="description" content="Learnling zet je huiswerk en toetsen van twee weken in één toverboek, met een pixelmaatje dat je helpt onthouden. Gratis voor Windows, met Magister." />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Learnling · je huiswerk in een toverboek" />
+    <meta property="og:description" content="Twee weken huiswerk en toetsen in één toverboek, met een pixelmaatje. Gratis voor Windows, met Magister." />
+    <meta property="og:url" content="https://bhalial.github.io/learnling/" />
+    <meta property="og:image" content="https://bhalial.github.io/learnling/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#241911" />
+    <link rel="canonical" href="https://bhalial.github.io/learnling/" />
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      // Pick the language before anything shows, so the page never flashes in the other one.
+      ;(function () {
+        var saved = null
+        try {
+          saved = localStorage.getItem('learnling-lang')
+        } catch (e) {}
+        var lang = saved || ((navigator.language || 'nl').slice(0, 2) === 'nl' ? 'nl' : 'en')
+        document.documentElement.dataset.lang = lang
+        document.documentElement.lang = lang
+      })()
+    </script>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="#top" aria-label="Learnling">
+        <img src="icon.png" alt="" width="36" height="36" />
+        <span>Learnling</span>
+      </a>
+      <div class="langs" role="group" aria-label="Taal / Language">
+        <button type="button" data-set-lang="nl">NL</button>
+        <button type="button" data-set-lang="en">EN</button>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-text">
+          <h1>
+            <span lang="nl">Je huiswerk, maar dan <em>magisch</em>.</span>
+            <span lang="en">Your homework, but make it <em>magic</em>.</span>
+          </h1>
+          <p class="lead">
+            <span lang="nl">Learnling zet je huiswerk en toetsen van twee weken in één toverboek. Met een maatje dat je helpt onthouden wat er moet gebeuren, en dat juicht als je iets afvinkt.</span>
+            <span lang="en">Learnling puts two weeks of homework and tests in one spellbook. With a buddy who helps you remember what needs doing, and cheers when you tick something off.</span>
+          </p>
+          <div class="cta">
+            <a class="button gold" id="download" href="https://github.com/bhalial/learnling/releases/latest">
+              <span lang="nl">Download gratis</span>
+              <span lang="en">Download for free</span>
+            </a>
+            <p class="fine">
+              <span lang="nl">Voor Windows 10 en 11 · geen account nodig</span>
+              <span lang="en">For Windows 10 and 11 · no account needed</span>
+              <span class="version" id="version"></span>
+            </p>
+            <p class="elsewhere" id="elsewhere" hidden>
+              <span lang="nl">Learnling werkt op een Windows-laptop of -pc. Open deze pagina daar om hem te downloaden.</span>
+              <span lang="en">Learnling runs on a Windows laptop or PC. Open this page there to download it.</span>
+            </p>
+          </div>
+        </div>
+        <div class="hero-stage" id="hero-stage">
+          <div class="bubble" id="hero-bubble" aria-live="polite"></div>
+          <div class="buddies" id="hero-buddies"></div>
+          <div class="books" aria-hidden="true"><span></span><span></span><span></span></div>
+          <p class="hint">
+            <span lang="nl">Tik op een maatje!</span>
+            <span lang="en">Tap a buddy!</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="features" id="features">
+        <h2>
+          <span lang="nl">Wat kan Learnling?</span>
+          <span lang="en">What does Learnling do?</span>
+        </h2>
+        <ul class="cards">
+          <li class="card">
+            <canvas data-icon="book" aria-hidden="true"></canvas>
+            <h3><span lang="nl">Twee weken, één boek</span><span lang="en">Two weeks, one book</span></h3>
+            <p>
+              <span lang="nl">Deze week links, volgende week rechts, met per dag je lessen erboven. Op zaterdag slaat het boek vanzelf om.</span>
+              <span lang="en">This week on the left, next week on the right, with each day's lessons on top. On Saturday the page turns by itself.</span>
+            </p>
+          </li>
+          <li class="card">
+            <canvas data-icon="letter" aria-hidden="true"></canvas>
+            <h3><span lang="nl">Haalt je huiswerk uit Magister</span><span lang="en">Gets your homework from Magister</span></h3>
+            <p>
+              <span lang="nl">Koppel Magister en je lessen, huiswerk en toetsen komen vanzelf binnen. Learnling leest alleen en verandert nooit iets. Geen Magister? Typ het er zelf in.</span>
+              <span lang="en">Connect Magister and your lessons, homework and tests come in by themselves. Learnling only reads and never changes a thing. No Magister? Type it in yourself.</span>
+            </p>
+          </li>
+          <li class="card">
+            <canvas data-icon="scroll" aria-hidden="true"></canvas>
+            <h3><span lang="nl">Mysterie-rollen</span><span lang="en">Mystery scrolls</span></h3>
+            <p>
+              <span lang="nl">Staat er alleen "zie Teams"? Dan wordt het een mysterie-rol. Schrijf in je eigen woorden op wat je echt moet doen, dan weet je het straks nog.</span>
+              <span lang="en">Does it just say "see Teams"? Then it becomes a mystery scroll. Write down what you really need to do in your own words, so you still know later.</span>
+            </p>
+          </li>
+          <li class="card">
+            <canvas data-icon="dumbbell" aria-hidden="true"></canvas>
+            <h3><span lang="nl">Oefenrondes voor toetsen</span><span lang="en">Training rounds for tests</span></h3>
+            <p>
+              <span lang="nl">Heb je een toets of een SO? Learnling plant er vanzelf oefenrondes voor, verspreid over de dagen ervoor. Geen stampen op de laatste avond.</span>
+              <span lang="en">Got a test or a quiz coming? Learnling plans training rounds in the days before it, all by itself. No cramming the night before.</span>
+            </p>
+          </li>
+          <li class="card">
+            <canvas data-icon="bell" aria-hidden="true"></canvas>
+            <h3><span lang="nl">Een seintje na school</span><span lang="en">A nudge after school</span></h3>
+            <p>
+              <span lang="nl">Om vier uur vertelt je maatje wat er nog op je wacht. Liever een ander tijdstip? Kies het zelf.</span>
+              <span lang="en">At four o'clock your buddy tells you what's still waiting. Rather another time? Pick your own.</span>
+            </p>
+          </li>
+          <li class="card">
+            <canvas data-icon="tick" aria-hidden="true"></canvas>
+            <h3><span lang="nl">Slepen en afvinken</span><span lang="en">Drag and tick</span></h3>
+            <p>
+              <span lang="nl">Sleep een taak naar een andere dag, ook met je vinger op een touchscreen. Afvinken voelt als een spreuk uitspreken.</span>
+              <span lang="en">Drag a task to another day, even with your finger on a touchscreen. Ticking it off feels like casting a spell.</span>
+            </p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="peek">
+        <h2>
+          <span lang="nl">Zo ziet het eruit</span>
+          <span lang="en">This is what it looks like</span>
+        </h2>
+        <figure class="window">
+          <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <img lang="nl" src="img/app-nl.png" width="1800" height="1200" loading="lazy" alt="Learnling met twee weken huiswerk in een open boek en een pixelkat met tovenaarshoed" />
+          <img lang="en" src="img/app-en.png" width="1800" height="1200" loading="lazy" alt="Learnling with two weeks of homework in an open book and a pixel cat in a wizard hat" />
+        </figure>
+      </section>
+
+      <section class="pick" id="buddy">
+        <h2>
+          <span lang="nl">Kies je maatje</span>
+          <span lang="en">Pick your buddy</span>
+        </h2>
+        <p class="intro">
+          <span lang="nl">Een kat, hond, papegaai, walvis of robot. Kies een kleur, een oogkleur en een hoed, en geef je maatje een naam. In de app kan dat allemaal ook.</span>
+          <span lang="en">A cat, dog, parrot, whale or robot. Pick a colour, an eye colour and a hat, and give your buddy a name. You can do all of this in the app too.</span>
+        </p>
+        <div class="picker">
+          <div class="pick-stage">
+            <div class="bubble" id="pick-bubble" aria-live="polite"></div>
+            <canvas id="pick-big" aria-label=""></canvas>
+            <div class="books small" aria-hidden="true"><span></span><span></span><span></span></div>
+          </div>
+          <div class="pick-controls">
+            <div class="choices species" id="pick-species"></div>
+            <div class="choice-row">
+              <span class="label"><span lang="nl">Kleur</span><span lang="en">Colour</span></span>
+              <div class="choices swatches" id="pick-coat"></div>
+            </div>
+            <div class="choice-row">
+              <span class="label"><span lang="nl">Ogen</span><span lang="en">Eyes</span></span>
+              <div class="choices swatches" id="pick-eyes"></div>
+            </div>
+            <div class="choice-row">
+              <span class="label"><span lang="nl">Aan</span><span lang="en">Wearing</span></span>
+              <div class="choices" id="pick-gear"></div>
+            </div>
+            <label class="choice-row">
+              <span class="label"><span lang="nl">Naam</span><span lang="en">Name</span></span>
+              <input id="pick-name" maxlength="16" autocomplete="off" spellcheck="false" />
+            </label>
+            <div class="choice-row">
+              <span class="label"><span lang="nl">Doe eens</span><span lang="en">Make it</span></span>
+              <div class="choices" id="pick-mood"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="install" id="install">
+        <h2>
+          <span lang="nl">Zo begin je</span>
+          <span lang="en">How to start</span>
+        </h2>
+        <ol class="steps">
+          <li>
+            <b>1</b>
+            <p>
+              <span lang="nl">Download Learnling met de gouden knop bovenaan en open het bestand.</span>
+              <span lang="en">Download Learnling with the gold button at the top and open the file.</span>
+            </p>
+          </li>
+          <li>
+            <b>2</b>
+            <p>
+              <span lang="nl">Zegt Windows <q>Windows heeft uw pc beschermd</q>? Klik op <i>Meer info</i> en dan <i>Toch uitvoeren</i>. Dat komt doordat Learnling nieuw is, niet doordat er iets mis is.</span>
+              <span lang="en">Does Windows say <q>Windows protected your PC</q>? Click <i>More info</i>, then <i>Run anyway</i>. That's because Learnling is new, not because something is wrong.</span>
+            </p>
+          </li>
+          <li>
+            <b>3</b>
+            <p>
+              <span lang="nl">Kies je maatje, koppel Magister of vul je rooster in, en je bent klaar. Zet <i>Starten met Windows</i> aan voor het seintje na school.</span>
+              <span lang="en">Pick your buddy, connect Magister or fill in your timetable, and you're done. Turn on <i>Start with Windows</i> for the nudge after school.</span>
+            </p>
+          </li>
+        </ol>
+        <p class="note">
+          <span lang="nl">Learnling werkt op Windows-laptops en -pc's, nog niet op Mac of Chromebook. Nieuwe versies installeren zichzelf.</span>
+          <span lang="en">Learnling runs on Windows laptops and PCs, not on Mac or Chromebook yet. New versions install themselves.</span>
+        </p>
+      </section>
+
+      <section class="parents" id="parents">
+        <h2>
+          <span lang="nl">Voor ouders</span>
+          <span lang="en">For parents</span>
+        </h2>
+        <ul>
+          <li>
+            <b><span lang="nl">Gratis.</span><span lang="en">Free.</span></b>
+            <span lang="nl">Geen account, geen reclame, geen abonnement.</span>
+            <span lang="en">No account, no ads, no subscription.</span>
+          </li>
+          <li>
+            <b><span lang="nl">Alles blijft op de laptop.</span><span lang="en">Everything stays on the laptop.</span></b>
+            <span lang="nl">Het huiswerkboek staat op de computer zelf. Er gaat niets naar een server van ons; er is geen server.</span>
+            <span lang="en">The homework book lives on the computer itself. Nothing goes to a server of ours; there is no server.</span>
+          </li>
+          <li>
+            <b><span lang="nl">Magister: alleen lezen.</span><span lang="en">Magister: read only.</span></b>
+            <span lang="nl">Inloggen gebeurt op de echte Magister-pagina. Learnling bewaart geen wachtwoord en verandert nooit iets in Magister.</span>
+            <span lang="en">Logging in happens on the real Magister page. Learnling stores no password and never changes anything in Magister.</span>
+          </li>
+          <li>
+            <b><span lang="nl">Open source.</span><span lang="en">Open source.</span></b>
+            <span lang="nl">Alle code staat op <a href="https://github.com/bhalial/learnling">GitHub</a>, dus iedereen kan zien wat de app doet.</span>
+            <span lang="en">All the code is on <a href="https://github.com/bhalial/learnling">GitHub</a>, so anyone can see what the app does.</span>
+          </li>
+        </ul>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        <span lang="nl">Learnling · gratis en open source ·</span>
+        <span lang="en">Learnling · free and open source ·</span>
+        <a href="https://github.com/bhalial/learnling">GitHub</a>
+      </p>
+      <p class="small">
+        <span lang="nl">Magister is een merk van Iddink. Learnling is daar niet aan verbonden.</span>
+        <span lang="en">Magister is a trademark of Iddink. Learnling is not affiliated with it.</span>
+      </p>
+    </footer>
+    <script src="app.js" defer></script>
+  </body>
+</html>

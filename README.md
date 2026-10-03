@@ -4,6 +4,8 @@ A two-week homework planner with a study buddy, for secondary-school students in
 Netherlands. A Windows desktop app (Electron + React + Tailwind 4), touchscreen-friendly, in
 English and Dutch.
 
+**Website and download: <https://bhalial.github.io/learnling/>**
+
 The book always shows two weeks: this week and next on school days, the two coming
 weeks from Saturday on. Homework is a *spell* to tick off; homework without a description
 is a *mystery scroll* to decipher; tests and quizzes get training
@@ -24,6 +26,7 @@ npm run build      # production bundles in out/
 npm run pack       # unpacked Windows app in dist/win-unpacked/
 npm run dist       # the installer: dist/Learnling-Setup-<version>.exe
 npm run icon       # redraw resources/icon.ico + icon.png from icon.svg
+npm run site       # the product page, in site/out
 npm test           # date and planning rules
 npm run typecheck
 ```
@@ -86,6 +89,14 @@ Building notes: electron-builder's own exe editing is off (it needs symlink righ
 grants in Developer Mode); `scripts/brand.js` runs as the `afterPack` hook and puts the icon and
 version into `Learnling.exe` with rcedit before the installer is built. The icon is drawn in
 `resources/icon.svg` (the book with the test seal); `npm run icon` renders the .ico and .png.
+
+## Website
+
+The product page is one static page in `site/`: `index.html` (Dutch and English side by side,
+picked with a toggle), `styles.css`, and `main.ts`, which brings the app's own pixel buddies to
+life on the page and points the download button at the newest release. `npm run site` bundles it
+into `site/out` with its fonts (no font CDN, no trackers) and draws `og.png` for shared links.
+Every push to `main` that touches it is published on GitHub Pages by `.github/workflows/site.yml`.
 
 ## Magister
 
