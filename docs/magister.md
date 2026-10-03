@@ -1,7 +1,7 @@
 # Magister: what the agenda data looks like
 
-Observed on 2 Oct 2026 in the Magister web app (parent account, agenda screen), read-only,
-over four weeks of one first-year TTO timetable. No official API exists; this is what the
+Observed in October 2026 in the Magister web app (agenda screen), read-only, over four
+weeks of one secondary-school timetable. No official API exists; this is what the
 web app itself requests. Nothing here is written back to Magister, ever.
 
 ## Requests
@@ -22,7 +22,7 @@ All on `https://<school>.magister.net`, with `Authorization: Bearer <access_toke
   renews silently through its session cookie on `accounts.magister.net`.
 - Plan for the app: a persistent Electron session; load the school page in a hidden window,
   let Magister's own code renew the token, read it from `sessionStorage`. Only when that
-  fails, show her the real login window. No password is ever stored.
+  fails, show the real login window. No password is ever stored.
 
 ## An appointment (`Items[]`)
 
@@ -58,15 +58,14 @@ Map 4 → quiz and treat unknown values as homework until we see them.
 
 ## Subjects
 
-Names are inconsistent (`Nederlands_`, `English_`, `mathematics_`, `music`, `nto2`,
-`Moderne talen en culturen`, `specialisatieblok`, `mentoruur`, …). On the first sync:
-match on `Vakken[].Id`, clean the name (trailing `_`, capital), and let her rename and
-recolour; keep the Magister id on the subject so renaming never breaks the match.
+Names are inconsistent (`Nederlands_`, `English_`, `mathematics_`, `music`, …). On the first sync:
+match on `Vakken[].Id`, clean the name (trailing `_`, capital), and allow renaming and
+recolouring; keep the Magister id on the subject so renaming never breaks the match.
 
 ## Consequences for the sync phase
 
 1. Show the first sentence of a teacher's text, the rest behind "read the whole scroll".
 2. A *mystery scroll* from Magister means: no text, no concrete reference, or "see Teams".
-   She can always write it down in her own words (`own.note`).
+   It can always be written down in one's own words (`own.note`).
 3. The timetable can come from Magister's lessons instead of the hand-made template.
 4. Sanitise `Inhoud` (it is HTML from teachers) before it goes anywhere near the DOM.

@@ -1,11 +1,12 @@
 # Learnling
 
-A two-week homework planner with a study buddy for a first-year VWO (TTO) student. Desktop app
-(Electron + React + Tailwind 4), made for her Windows touchscreen laptop.
+A two-week homework planner with a study buddy, for secondary-school students in the
+Netherlands. A Windows desktop app (Electron + React + Tailwind 4), touchscreen-friendly, in
+English and Dutch.
 
 The book always shows two weeks: this week and next on school days, the two coming
-weeks from Saturday on. Homework is a *spell* she ticks off; homework without a
-description is a *mystery scroll* she deciphers; tests and quizzes get training
+weeks from Saturday on. Homework is a *spell* to tick off; homework without a description
+is a *mystery scroll* to decipher; tests and quizzes get training
 rounds planned before them. A companion does the talking: a cat, dog, parrot, whale or robot,
 renamable and dressable.
 
@@ -27,7 +28,7 @@ npm test           # date and planning rules
 npm run typecheck
 ```
 
-Her data lives in `%APPDATA%/learnling/learnling.json` (previous save next to it as
+The book lives in `%APPDATA%/learnling/learnling.json` (previous save next to it as
 `.bak`). F12 opens the developer tools.
 
 ### Development switches
@@ -41,23 +42,23 @@ Her data lives in `%APPDATA%/learnling/learnling.json` (previous save next to it
 | `SPELLBOOK_SHOT_JS=…` | Run this in the page before the screenshot, e.g. to open a dialog. |
 | `SPELLBOOK_LAB=1` | Open the companion lab: every animal in every mood. |
 
-Demo runs never touch her real book.
+Demo runs never touch the real book.
 
-## Installing on her laptop
+## Installing
 
-`npm run dist` builds `dist/Learnling-Setup-<version>.exe`, one file to copy over. It is a
+`npm run dist` builds `dist/Learnling-Setup-<version>.exe`, one file to run. It is a
 one-click, per-user install (no admin rights): it installs to `%LOCALAPPDATA%/Programs/learnling`,
 puts Learnling on the desktop and in the Start menu, and opens the app. Uninstalling (Windows
-Settings → Apps) keeps her book in `%APPDATA%/learnling`. The installer for a released version
+Settings → Apps) keeps the book in `%APPDATA%/learnling`. The installer for a released version
 is also on the [releases page](https://github.com/bhalial/learnling/releases).
 
 The installer is not code-signed, so the first time Windows SmartScreen says it protected the PC:
 *More info* → *Run anyway*. After installing, turn on *Start with Windows* in Settings, or the
-afternoon reminder only comes on days she opens the app herself.
+afternoon reminder only comes on days the app was opened by hand.
 
 **Coming from Spellbook** (0.1.0): Learnling is a new app to Windows, so the installer leaves
 Spellbook in place. On its first start Learnling copies the old `%APPDATA%/spellbook` folder
-over (her book, and the Magister login with it; caches stay behind and the old folder stays as
+over (the book, and the Magister login with it; caches stay behind and the old folder stays as
 a backup; `src/main/migrate.ts`). Then remove Spellbook by hand in Windows Settings → Apps, or
 both apps send the afternoon reminder.
 
@@ -91,7 +92,7 @@ version into `Learnling.exe` with rcedit before the installer is built. The icon
 Settings → *Connect Magister* opens the real Magister login (student or parent account).
 After that the app reads Magister at start, every half hour and when the window comes back,
 always in a hidden Magister page that keeps its own login (`persist:magister` session). It only
-reads; nothing is ever written back. When the login has expired the top bar asks her to log in
+reads; nothing is ever written back. When the login has expired the top bar asks to log in
 again. What the data looks like, and why the sync works this way: [docs/magister.md](docs/magister.md).
 
 Merge rules (`src/renderer/src/lib/magister.ts`, tested): subjects match on Magister's id;
@@ -110,7 +111,7 @@ in the installed app.
 
 ## Companions
 
-Her companion is a pixel-art cat, dog, parrot, whale or robot, drawn in code as text grids
+The companion is a pixel-art cat, dog, parrot, whale or robot, drawn in code as text grids
 and animated on a plain canvas: `src/renderer/src/companions/`.
 
 - `types.ts` is the contract: species, mood, gear and the look (coat, eye colour).
@@ -134,18 +135,18 @@ and animated on a plain canvas: `src/renderer/src/companions/`.
 
 Every task has two halves (`src/renderer/src/types.ts`):
 
-- `given` — what was set: subject, kind, text, due day. Typed in by her now; later a
-  Magister sync may overwrite this half.
-- `own` — what she does with it: the day she plans it, when she ticked it, the words
-  she deciphered. A sync never touches this half.
+- `given` — what was set: subject, kind, text, due day. Typed in by hand or brought in by a
+  Magister sync, which may overwrite this half.
+- `own` — what the student does with it: the day it is planned for, when it was ticked off,
+  the words it was deciphered with. A sync never touches this half.
 
-That split is what lets Magister plug in later without ever undoing her work.
+That split is what lets Magister sync without ever undoing the student's own work.
 Planning rules (training rounds, the attention shelf, where a task shows) live in
 `src/renderer/src/lib/tasks.ts` and are covered by tests.
 
 ## Toolchain note
 
-This machine runs Node 20.11, so the toolchain is pinned to versions that install on
+The development machine runs Node 20.11, so the toolchain is pinned to versions that install on
 it: Electron 39, electron-vite 3, Vite 6, electron-builder 25 (26 pulls in an ESM-only hash
 library that Node 20.11 cannot require). After moving to Node 22.12+ these can go to
 Electron 44, electron-vite 5, Vite 7 and electron-builder 26 in one step.

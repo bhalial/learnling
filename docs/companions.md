@@ -9,10 +9,10 @@ animal file only decides its shape, its colours and what it wiggles.
 ## The look in one sentence
 
 A chunky, round, chibi sticker in pixel art, a big head on a small body, soft outlines, big
-dark eyes that shine, that always looks at her and never looks scary.
+dark eyes that shine, that always looks at you and never looks scary.
 
-The direction was chosen by the person it is for (October 2026): pixel art "but with better
-cat eyes". The 3D figures and the Blender plush before it are shelved in `art/threejs/` and
+The direction was chosen together with the first user (October 2026): pixel art, "but with
+better cat eyes". The 3D figures and the Blender plush before it are shelved in `art/threejs/` and
 `art/blender/`.
 
 ## Frame and layers
@@ -48,7 +48,7 @@ All of this is `face()` in `face.ts`; never draw eyes in an animal file.
 - **Big dark eyes with two shines**, a big one upper left and a small one lower right, the
   same on both eyes. The dark part reads as one big pupil.
 - **The eye colour is a glow along the bottom** of the eye (deep, rich, light), chosen in
-  Settings, the same for every animal. It was her pick out of three.
+  Settings, the same for every animal. It was picked out of three tries.
 - **Never a coloured iris around a small pupil, never a slit pupil**: both stare. That was
   the "too creepy" version. No eye whites, no lashes, no brows.
 - **Low on the face**: the bottom of the eyes on row 21 of the head, level with the nose,
@@ -77,8 +77,8 @@ its antenna.
 | Mood | When | What it does |
 | --- | --- | --- |
 | `idle` | nothing special | breathes, blinks, sways, now and then looks left or right |
-| `happy` | she ticks off, deciphers, dresses it up, new spells arrive | `^ ^` eyes, mouth open, a hop, sparkles |
-| `talk` | the note says something new, or she moves a spell | mouth opens and closes, small nods |
+| `happy` | a spell is ticked off or deciphered, the companion is dressed up, new spells arrive | `^ ^` eyes, mouth open, a hop, sparkles |
+| `talk` | the note says something new, or a spell is moved | mouth opens and closes, small nods |
 | `curious` | a mystery scroll is waiting | looks towards the book, small "o" mouth, a `?` |
 | `sleep` | 21:00–07:00 | eyes closed, slow breathing, floating z's |
 | `proud` | today's page is done | chin up, `^ ^` eyes, twinkling sparkles |
@@ -109,4 +109,4 @@ With reduced motion each mood is a single still picture.
    - `SPELLBOOK_LAB=1 npm run dev` shows every animal in every mood; `SPELLBOOK_LAB=<animal>`
      one animal large.
    - In the app at its real size: the side panel (6× scale) and the picker in Settings (3×).
-5. Ask the person it is for. If it looks even slightly off to her, it is off.
+5. Ask whoever is going to use it. If it looks even slightly off to them, it is off.
