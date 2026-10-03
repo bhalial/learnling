@@ -102,8 +102,9 @@ export interface Boot {
   data: unknown
   demo: boolean
   today: IsoDate | null
-  /** SPELLBOOK_THEME: the theme a demo book starts in. */
+  /** SPELLBOOK_THEME and SPELLBOOK_LANG: the theme and language to open the book in. */
   theme: string | null
+  lang: string | null
 }
 
 /** One appointment as the main process hands it over: Magister's fields, trimmed. */

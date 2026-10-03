@@ -1,12 +1,16 @@
 /**
  * The product page's script. The buddies here are the app's own: the same pixel art and
- * the same moods (src/renderer/src/companions), bundled by site/build.ts.
+ * the same moods (src/renderer/src/companions), bundled by site/build.ts. So are the themes:
+ * picking one dresses the page in it (themes.css) and the buddies in its headwear.
  */
 import { ACCESSORIES, ALL_EYE_COLORS, ALL_SPECIES, EYE_COLOR_NAMES, SPECIES, coatFor, eyeSwatch, swatchOf } from '../src/renderer/src/companions'
 import { momentOf } from '../src/renderer/src/companions/pixel/animate'
 import { CANVAS_HEIGHT, CANVAS_WIDTH, momentKey, paint, type Look } from '../src/renderer/src/companions/pixel/draw'
+import type { Headwear } from '../src/renderer/src/companions/pixel/face'
 import { rgba, type Grid, type Palette } from '../src/renderer/src/companions/pixel/sprite'
 import type { AccessoryId, CompanionLook, Mood, Species } from '../src/renderer/src/companions/types'
+import { wordsFor } from '../src/renderer/src/i18n'
+import { ALL_THEMES, THEMES, themeFor, type ThemeId } from '../src/renderer/src/themes'
 
 type Lang = 'nl' | 'en'
 const lang = (): Lang => (document.documentElement.dataset.lang === 'en' ? 'en' : 'nl')
@@ -14,9 +18,9 @@ const lang = (): Lang => (document.documentElement.dataset.lang === 'en' ? 'en' 
 const TEXT = {
   nl: {
     hero: [
-      'Nog 2 spreuken voor vandaag!',
+      'Nog 2 taken voor vandaag!',
       'Toets over 3 dagen. Oefenronde?',
-      'Er staat alleen "zie Teams"... Ontcijfer het!',
+      'Er staat alleen "zie Teams"... Zoek uit wat het is!',
       'Alles af! Ik ben trots op je.',
       'Wiskunde morgen, niet vergeten!',
       'Zullen we je rooster invullen?'
@@ -24,17 +28,16 @@ const TEXT = {
     poke: ['Hihi, dat kietelt!', 'Hoi!', 'Nog een keer!', 'Ik help je onthouden.'],
     hello: (name: string): string => (name ? `Hoi! Ik ben ${name}.` : 'Hoi! Hoe heet ik?'),
     moods: { happy: 'Blij', curious: 'Nieuwsgierig', sleep: 'Slapen', proud: 'Trots' } as Record<string, string>,
-    moodLines: { happy: 'Joepie!', curious: 'Hm? Een mysterie-rol!', sleep: 'Zzz...', proud: 'Alles af voor vandaag!' } as Record<string, string>,
-    hat: 'Hoed',
+    moodLines: { happy: 'Joepie!', curious: 'Hm? Geheim huiswerk!', sleep: 'Zzz...', proud: 'Alles af voor vandaag!' } as Record<string, string>,
     nothing: 'Niets',
     name: 'Naam?',
     version: (v: string): string => `versie ${v}`
   },
   en: {
     hero: [
-      'Two more spells for today!',
+      'Two more tasks for today!',
       'Test in 3 days. Training round?',
-      'It just says "see Teams"... Decipher it!',
+      'It just says "see Teams"... Find out what it is!',
       'All done! I am proud of you.',
       "Maths tomorrow, don't forget!",
       'Shall we fill in your timetable?'
@@ -42,8 +45,7 @@ const TEXT = {
     poke: ['Hehe, that tickles!', 'Hi!', 'Again!', "I'll help you remember."],
     hello: (name: string): string => (name ? `Hi! I'm ${name}.` : "Hi! What's my name?"),
     moods: { happy: 'Happy', curious: 'Curious', sleep: 'Sleep', proud: 'Proud' } as Record<string, string>,
-    moodLines: { happy: 'Yay!', curious: 'Hm? A mystery scroll!', sleep: 'Zzz...', proud: 'All done for today!' } as Record<string, string>,
-    hat: 'Hat',
+    moodLines: { happy: 'Yay!', curious: 'Hm? Mystery homework!', sleep: 'Zzz...', proud: 'All done for today!' } as Record<string, string>,
     nothing: 'Nothing',
     name: 'Name?',
     version: (v: string): string => `version ${v}`
@@ -51,10 +53,27 @@ const TEXT = {
 }
 const text = (): (typeof TEXT)['nl'] => TEXT[lang()]
 
+/** The theme the page is dressed in; the head script already put it on <html>. */
+let theme: ThemeId = themeFor(document.documentElement.dataset.theme)
+
+/** The hero's last words, per theme: "Your homework, but make it …". */
+const HERO_WORD: Record<ThemeId, Record<Lang, string>> = {
+  magic: { nl: 'magisch', en: 'magic' },
+  garden: { nl: 'in je moestuin', en: 'a garden' },
+  ocean: { nl: 'onder water', en: 'an ocean dive' },
+  space: { nl: 'in de ruimte', en: 'a space mission' },
+  quest: { nl: 'als game', en: 'a game' },
+  notebook: { nl: 'netjes', en: 'neat' }
+}
+
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches
 
-/** One living buddy on a canvas, drawn by the app's own code. */
+/**
+ * One living buddy on a canvas, drawn by the app's own code. Its hat is the page's theme's,
+ * unless it was given one of its own (the buddies on the theme buttons).
+ */
 class Buddy {
+  private source: CompanionLook
   private look: Look
   private mood: Mood = 'idle'
   private since = 0
@@ -64,11 +83,17 @@ class Buddy {
   constructor(
     readonly canvas: HTMLCanvasElement,
     look: CompanionLook,
-    private readonly seed: number
+    private readonly seed: number,
+    private readonly wears?: Headwear
   ) {
     canvas.width = CANVAS_WIDTH
     canvas.height = CANVAS_HEIGHT
-    this.look = toLook(look)
+    this.source = look
+    this.look = toLook(look, this.headwear())
+  }
+
+  private headwear(): Headwear {
+    return this.wears ?? THEMES[theme].headwear
   }
 
   /** Whole device pixels per art pixel, so every pixel is the same size. */
@@ -78,8 +103,9 @@ class Buddy {
     this.canvas.style.height = `${CANVAS_HEIGHT * unit}px`
   }
 
-  dress(look: CompanionLook): void {
-    this.look = toLook(look)
+  dress(look: CompanionLook = this.source): void {
+    this.source = look
+    this.look = toLook(look, this.headwear())
   }
 
   /** A mood; happy and talk are reactions that settle back to idle. */
@@ -99,8 +125,8 @@ class Buddy {
   }
 }
 
-function toLook(look: CompanionLook): Look {
-  return { animal: SPECIES[look.species].art, coat: coatFor(look.species, look.coat), eyes: look.eyes, accessory: look.accessory }
+function toLook(look: CompanionLook, headwear: Headwear): Look {
+  return { animal: SPECIES[look.species].art, coat: coatFor(look.species, look.coat), eyes: look.eyes, accessory: look.accessory, headwear }
 }
 
 const buddies: Buddy[] = []
@@ -238,6 +264,8 @@ function update(cheer: boolean): void {
     button.querySelector('span')!.textContent = SPECIES[id].name[lang()]
     minis.get(id)!.dress({ ...choice, species: id, coat: coatFor(id, choice.coat) })
   }
+  // The buddies on the theme buttons are the one being picked here.
+  for (const buddy of themeBuddies.values()) buddy.dress({ ...choice })
 
   buttons(
     'pick-coat',
@@ -253,7 +281,7 @@ function update(cheer: boolean): void {
   )
   buttons(
     'pick-gear',
-    ACCESSORIES.map((id) => ({ id, label: id === 'hat' ? t.hat : id === 'collar' ? definition.neckwear[lang()] : t.nothing })),
+    ACCESSORIES.map((id) => ({ id, label: id === 'hat' ? wordsFor(lang(), theme).hat : id === 'collar' ? definition.neckwear[lang()] : t.nothing })),
     choice.accessory,
     (id) => (choice.accessory = id as AccessoryId)
   )
@@ -303,6 +331,87 @@ function buttons(
       return button
     })
   )
+}
+
+// Pick your theme: a button per theme, each with a buddy in that theme's headwear.
+
+const themeBuddies = new Map<ThemeId, Buddy>()
+
+function themePicker(): void {
+  const box = document.getElementById('theme-picker')!
+  ALL_THEMES.forEach((id, i) => {
+    const { colors, fonts, headwear } = THEMES[id]
+    const button = document.createElement('button')
+    button.type = 'button'
+    button.className = 'theme'
+    button.dataset.theme = id
+
+    const preview = document.createElement('span')
+    preview.className = 'theme-preview'
+    preview.style.background = colors.desk
+    const canvas = document.createElement('canvas')
+    canvas.setAttribute('aria-hidden', 'true')
+    const buddy = new Buddy(canvas, { ...choice }, i + 11, headwear)
+    buddy.scale(2)
+    buddies.push(buddy)
+    themeBuddies.set(id, buddy)
+    const page = document.createElement('span')
+    page.className = 'theme-page'
+    page.style.background = colors.paper
+    const line = document.createElement('i')
+    line.style.background = colors.ink
+    const soft = document.createElement('i')
+    soft.style.background = colors['ink-soft']
+    page.append(line, soft)
+    const dot = document.createElement('b')
+    dot.style.background = colors.button
+    preview.append(canvas, page, dot)
+
+    const name = document.createElement('span')
+    name.className = 'theme-name'
+    // The spellbook's name in the page's own heading face; the others in their own.
+    name.style.fontFamily = id === 'magic' ? 'var(--display)' : fonts.display
+    name.style.fontWeight = String(id === 'magic' ? 600 : fonts.displayWeight)
+
+    button.append(preview, name)
+    button.addEventListener('click', () => {
+      setTheme(id)
+      buddy.feel('happy')
+    })
+    box.append(button)
+  })
+}
+
+/** Dresses the page in a theme: colours, the hero's words, the screenshot and every buddy's hat. */
+function setTheme(next: ThemeId): void {
+  theme = next
+  document.documentElement.dataset.theme = next
+  try {
+    localStorage.setItem('learnling-theme', next)
+  } catch {
+    // Remembering is a nicety.
+  }
+  for (const buddy of buddies) buddy.dress()
+  showTheme()
+  update(false)
+}
+
+/** Everything on the page that says which theme it is, in the current language. */
+function showTheme(): void {
+  for (const em of document.querySelectorAll<HTMLElement>('[data-word]')) em.textContent = HERO_WORD[theme][em.dataset.word as Lang]
+  for (const l of ['nl', 'en'] as Lang[]) {
+    const shot = document.getElementById(`shot-${l}`) as HTMLImageElement
+    shot.src = `img/app-${theme}-${l}.png`
+    shot.alt =
+      l === 'nl'
+        ? `Learnling in het thema ${THEMES[theme].name.nl}, met twee weken huiswerk`
+        : `Learnling in the ${THEMES[theme].name.en} theme, with two weeks of homework`
+  }
+  for (const button of document.querySelectorAll<HTMLButtonElement>('#theme-picker .theme')) {
+    const id = button.dataset.theme as ThemeId
+    button.setAttribute('aria-pressed', String(id === theme))
+    button.querySelector('.theme-name')!.textContent = THEMES[id].name[lang()]
+  }
 }
 
 // Little pixel icons for the feature cards, drawn like the buddies.
@@ -450,8 +559,9 @@ function setLang(next: Lang): void {
   } catch {
     // Remembering is a nicety.
   }
-  document.title = next === 'nl' ? 'Learnling · je huiswerk in een toverboek' : 'Learnling · your homework in a spellbook'
+  document.title = next === 'nl' ? 'Learnling · je huiswerk, maar dan leuk' : 'Learnling · your homework, but fun'
   update(false)
+  showTheme()
   showVersion()
   say(document.getElementById('hero-bubble')!, document.querySelectorAll<HTMLCanvasElement>('#hero-buddies canvas')[2], text().hero[0])
 }
@@ -462,6 +572,7 @@ for (const button of document.querySelectorAll<HTMLButtonElement>('[data-set-lan
 
 hero()
 picker()
+themePicker()
 icons()
 void download()
 setLang(lang())

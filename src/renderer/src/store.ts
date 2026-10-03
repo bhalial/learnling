@@ -124,11 +124,12 @@ export const useBook = create<BookState>()((set, get) => {
     reaction: null,
     sync: { state: 'idle' },
 
-    boot({ data, demo, today, theme }) {
+    boot({ data, demo, today, theme, lang }) {
       const day = today ?? todayIso()
       // Books saved by an older version lack the newer settings; fill them in.
       const book = isBook(data) ? upgrade(data) : demo ? demoBook(day) : freshBook()
       if (theme) book.theme = themeFor(theme)
+      if (lang === 'en' || lang === 'nl') book.lang = lang
       set({ ready: true, data: book, today: day, pinnedToday: Boolean(today) })
     },
 

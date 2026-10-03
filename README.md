@@ -42,6 +42,7 @@ The book lives in `%APPDATA%/learnling/learnling.json` (previous save next to it
 | `SPELLBOOK_DEMO=empty` | A fresh empty book, in its own data folder. |
 | `SPELLBOOK_TODAY=2026-10-03` | Pretend it is that day, e.g. a Saturday to see the page turn. |
 | `SPELLBOOK_THEME=garden` | Open the book in that theme (`magic`, `garden`, `ocean`, `space`, `quest`, `notebook`). |
+| `SPELLBOOK_LANG=nl` | Open the book in that language (`en`, `nl`). |
 | `SPELLBOOK_SHOT=out.png` | Save a screenshot of the window and quit (`SPELLBOOK_SHOT_DELAY` ms, default 1500). |
 | `SPELLBOOK_SIZE=1280x945` | The window's inside at that size: here a 1280×1024 laptop with the window maximised. |
 | `SPELLBOOK_SHOT_JS=…` | Run this in the page before the screenshot, e.g. to open a dialog. |
@@ -99,6 +100,14 @@ picked with a toggle), `styles.css`, and `main.ts`, which brings the app's own p
 life on the page and points the download button at the newest release. `npm run site` bundles it
 into `site/out` with its fonts (no font CDN, no trackers) and draws `og.png` for shared links.
 Every push to `main` that touches it is published on GitHub Pages by `.github/workflows/site.yml`.
+
+The page has the app's theme picker: picking a theme dresses the whole page in it. Its colours
+come from the app's `themes.ts` (the build writes them to `themes.css`), so page and app never
+drift apart. The screenshots in `site/img` are the demo book, one per theme and language:
+
+```bash
+SPELLBOOK_DEMO=1 SPELLBOOK_TODAY=2026-09-30 SPELLBOOK_THEME=garden SPELLBOOK_LANG=nl SPELLBOOK_SHOT=site/img/app-garden-nl.png npx electron . --force-device-scale-factor=1
+```
 
 ## Magister
 

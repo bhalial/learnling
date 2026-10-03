@@ -1,13 +1,13 @@
 <!doctype html>
-<html lang="nl" data-lang="nl">
+<html lang="nl" data-lang="nl" data-theme="magic">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Learnling · je huiswerk in een toverboek</title>
-    <meta name="description" content="Learnling zet je huiswerk en toetsen van twee weken in één toverboek, met een pixelmaatje dat je helpt onthouden. Gratis voor Windows, met Magister." />
+    <title>Learnling · je huiswerk, maar dan leuk</title>
+    <meta name="description" content="Learnling zet je huiswerk en toetsen van twee weken op één plek, met een pixelmaatje dat je helpt onthouden. Zes thema's, gratis voor Windows, met Magister." />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Learnling · je huiswerk in een toverboek" />
-    <meta property="og:description" content="Twee weken huiswerk en toetsen in één toverboek, met een pixelmaatje. Gratis voor Windows, met Magister." />
+    <meta property="og:title" content="Learnling · je huiswerk, maar dan leuk" />
+    <meta property="og:description" content="Twee weken huiswerk en toetsen op één plek, met een pixelmaatje en zes thema's. Gratis voor Windows, met Magister." />
     <meta property="og:url" content="https://bhalial.github.io/learnling/" />
     <meta property="og:image" content="https://bhalial.github.io/learnling/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -18,16 +18,20 @@
     <link rel="icon" href="icon.png" />
     <link rel="apple-touch-icon" href="icon.png" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="themes.css" />
     <script>
-      // Pick the language before anything shows, so the page never flashes in the other one.
+      // Pick the language and theme before anything shows, so the page never flashes in another.
       ;(function () {
         var saved = null
+        var theme = null
         try {
           saved = localStorage.getItem('learnling-lang')
+          theme = localStorage.getItem('learnling-theme')
         } catch (e) {}
         var lang = saved || ((navigator.language || 'nl').slice(0, 2) === 'nl' ? 'nl' : 'en')
         document.documentElement.dataset.lang = lang
         document.documentElement.lang = lang
+        if (theme) document.documentElement.dataset.theme = theme
       })()
     </script>
   </head>
@@ -47,12 +51,12 @@
       <section class="hero">
         <div class="hero-text">
           <h1>
-            <span lang="nl">Je huiswerk, maar dan <em>magisch</em>.</span>
-            <span lang="en">Your homework, but make it <em>magic</em>.</span>
+            <span lang="nl">Je huiswerk, maar dan <em data-word="nl">magisch</em>.</span>
+            <span lang="en">Your homework, but make it <em data-word="en">magic</em>.</span>
           </h1>
           <p class="lead">
-            <span lang="nl">Learnling zet je huiswerk en toetsen van twee weken in één toverboek. Met een maatje dat je helpt onthouden wat er moet gebeuren, en dat juicht als je iets afvinkt.</span>
-            <span lang="en">Learnling puts two weeks of homework and tests in one spellbook. With a buddy who helps you remember what needs doing, and cheers when you tick something off.</span>
+            <span lang="nl">Learnling zet je huiswerk en toetsen van twee weken op één plek. Met een maatje dat je helpt onthouden wat er moet gebeuren en juicht als je iets afvinkt. In het thema dat jij leuk vindt: een toverboek, een moestuin, een duik in de oceaan en meer.</span>
+            <span lang="en">Learnling puts two weeks of homework and tests in one place. With a buddy who helps you remember what needs doing and cheers when you tick something off. In the theme you like: a spellbook, a vegetable garden, an ocean dive and more.</span>
           </p>
           <div class="cta">
             <a class="button gold" id="download" href="https://github.com/bhalial/learnling/releases/latest">
@@ -89,10 +93,10 @@
         <ul class="cards">
           <li class="card">
             <canvas data-icon="book" aria-hidden="true"></canvas>
-            <h3><span lang="nl">Twee weken, één boek</span><span lang="en">Two weeks, one book</span></h3>
+            <h3><span lang="nl">Twee weken op één plek</span><span lang="en">Two weeks in one place</span></h3>
             <p>
-              <span lang="nl">Deze week links, volgende week rechts, met per dag je lessen erboven. Op zaterdag slaat het boek vanzelf om.</span>
-              <span lang="en">This week on the left, next week on the right, with each day's lessons on top. On Saturday the page turns by itself.</span>
+              <span lang="nl">Deze week links, volgende week rechts, met per dag je lessen erboven. Op zaterdag schuift alles vanzelf een week op.</span>
+              <span lang="en">This week on the left, next week on the right, with each day's lessons on top. On Saturday everything moves on a week by itself.</span>
             </p>
           </li>
           <li class="card">
@@ -105,10 +109,10 @@
           </li>
           <li class="card">
             <canvas data-icon="scroll" aria-hidden="true"></canvas>
-            <h3><span lang="nl">Mysterie-rollen</span><span lang="en">Mystery scrolls</span></h3>
+            <h3><span lang="nl">Geheim huiswerk</span><span lang="en">Mystery homework</span></h3>
             <p>
-              <span lang="nl">Staat er alleen "zie Teams"? Dan wordt het een mysterie-rol. Schrijf in je eigen woorden op wat je echt moet doen, dan weet je het straks nog.</span>
-              <span lang="en">Does it just say "see Teams"? Then it becomes a mystery scroll. Write down what you really need to do in your own words, so you still know later.</span>
+              <span lang="nl">Staat er alleen "zie Teams"? Dan wordt het een mysterie: een rol om te ontcijferen, een onbekend zaadje of een fles met een briefje. Schrijf in je eigen woorden op wat je moet doen, dan weet je het straks nog.</span>
+              <span lang="en">Does it just say "see Teams"? Then it becomes a mystery: a scroll to decipher, an unknown seed or a message in a bottle. Write down what you need to do in your own words, so you still know later.</span>
             </p>
           </li>
           <li class="card">
@@ -131,22 +135,27 @@
             <canvas data-icon="tick" aria-hidden="true"></canvas>
             <h3><span lang="nl">Slepen en afvinken</span><span lang="en">Drag and tick</span></h3>
             <p>
-              <span lang="nl">Sleep een taak naar een andere dag, ook met je vinger op een touchscreen. Afvinken voelt als een spreuk uitspreken.</span>
-              <span lang="en">Drag a task to another day, even with your finger on a touchscreen. Ticking it off feels like casting a spell.</span>
+              <span lang="nl">Sleep een taak naar een andere dag, ook met je vinger op een touchscreen. Bij elke vink juicht je maatje mee.</span>
+              <span lang="en">Drag a task to another day, even with your finger on a touchscreen. Your buddy cheers with every tick.</span>
             </p>
           </li>
         </ul>
       </section>
 
-      <section class="peek">
+      <section class="peek" id="themes">
         <h2>
-          <span lang="nl">Zo ziet het eruit</span>
-          <span lang="en">This is what it looks like</span>
+          <span lang="nl">Kies je thema</span>
+          <span lang="en">Pick your theme</span>
         </h2>
+        <p class="intro">
+          <span lang="nl">Zes thema's, één planner. Elk thema heeft eigen kleuren, eigen woorden en iets op het hoofd van je maatje. Kies er hier een en kijk hoe de hele pagina meeverandert.</span>
+          <span lang="en">Six themes, one planner. Each has its own colours, its own words and something for your buddy to wear. Pick one here and watch the whole page change with it.</span>
+        </p>
+        <div class="themes" id="theme-picker" role="group" aria-label="Thema / Theme"></div>
         <figure class="window">
           <div class="window-bar" aria-hidden="true"><i></i><i></i><i></i></div>
-          <img lang="nl" src="img/app-nl.png" width="1800" height="1200" loading="lazy" alt="Learnling met twee weken huiswerk in een open boek en een pixelkat met tovenaarshoed" />
-          <img lang="en" src="img/app-en.png" width="1800" height="1200" loading="lazy" alt="Learnling with two weeks of homework in an open book and a pixel cat in a wizard hat" />
+          <img lang="nl" id="shot-nl" src="img/app-magic-nl.png" width="1440" height="960" loading="lazy" alt="Learnling in het thema Toverboek, met twee weken huiswerk" />
+          <img lang="en" id="shot-en" src="img/app-magic-en.png" width="1440" height="960" loading="lazy" alt="Learnling in the Spellbook theme, with two weeks of homework" />
         </figure>
       </section>
 
@@ -156,8 +165,8 @@
           <span lang="en">Pick your buddy</span>
         </h2>
         <p class="intro">
-          <span lang="nl">Een kat, hond, papegaai, walvis of robot. Kies een kleur, een oogkleur en een hoed, en geef je maatje een naam. In de app kan dat allemaal ook.</span>
-          <span lang="en">A cat, dog, parrot, whale or robot. Pick a colour, an eye colour and a hat, and give your buddy a name. You can do all of this in the app too.</span>
+          <span lang="nl">Een kat, hond, papegaai, walvis of robot. Kies een kleur, een oogkleur en wat je maatje draagt, en geef het een naam. In de app kan dat allemaal ook.</span>
+          <span lang="en">A cat, dog, parrot, whale or robot. Pick a colour, an eye colour and what your buddy wears, and give it a name. You can do all of this in the app too.</span>
         </p>
         <div class="picker">
           <div class="pick-stage">
@@ -200,8 +209,8 @@
           <li>
             <b>1</b>
             <p>
-              <span lang="nl">Download Learnling met de gouden knop bovenaan en open het bestand.</span>
-              <span lang="en">Download Learnling with the gold button at the top and open the file.</span>
+              <span lang="nl">Download Learnling met de knop bovenaan en open het bestand.</span>
+              <span lang="en">Download Learnling with the button at the top and open the file.</span>
             </p>
           </li>
           <li>
@@ -214,8 +223,8 @@
           <li>
             <b>3</b>
             <p>
-              <span lang="nl">Kies je maatje, koppel Magister of vul je rooster in, en je bent klaar. Zet <i>Starten met Windows</i> aan voor het seintje na school.</span>
-              <span lang="en">Pick your buddy, connect Magister or fill in your timetable, and you're done. Turn on <i>Start with Windows</i> for the nudge after school.</span>
+              <span lang="nl">Kies je maatje en je thema, koppel Magister of vul je rooster in, en je bent klaar. Zet <i>Starten met Windows</i> aan voor het seintje na school.</span>
+              <span lang="en">Pick your buddy and your theme, connect Magister or fill in your timetable, and you're done. Turn on <i>Start with Windows</i> for the nudge after school.</span>
             </p>
           </li>
         </ol>

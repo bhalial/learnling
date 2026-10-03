@@ -1,4 +1,8 @@
-/* Learnling's product page: the app's desk, paper and wax, a round friendly display face, and the pixel buddies. */
+/*
+ * Learnling's product page: the app's desk, paper and accents, a round friendly display face,
+ * and the pixel buddies. These are the spellbook's colours; themes.css (made by build.ts from
+ * the app's themes) swaps them all when another theme is picked.
+ */
 
 @font-face {
   font-family: 'Fredoka';
@@ -56,13 +60,13 @@
   --cream: #f3e3c0;
   --cream-soft: #c9b48e;
   --wax: #a32c25;
-  --gold: #e3b54a;
-  --gold-light: #f6d77a;
-  --gold-deep: #b8862a;
   --quill: #2b4a8a;
-  --hat: #5b3f9a;
-  --hat-light: #7f62c4;
+  --on-cream: #2b2118;
+  --button: #e3b54a;
+  --on-button: #2b2118;
+  --accent: #e3b54a;
   --display: 'Fredoka', 'Alegreya Sans', system-ui, sans-serif;
+  --display-weight: 600;
   --body: 'Alegreya Sans', system-ui, sans-serif;
   --hand: 'Caveat', cursive;
   /* Stepped corners, the pixel way of rounding. */
@@ -87,9 +91,10 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(1200px 700px at 70% -10%, rgb(227 181 74 / 0.13), transparent 60%),
-    radial-gradient(900px 600px at 0% 40%, rgb(91 63 154 / 0.14), transparent 60%),
+    radial-gradient(1200px 700px at 70% -10%, color-mix(in oklab, var(--accent) 13%, transparent), transparent 60%),
+    radial-gradient(900px 600px at 0% 40%, color-mix(in oklab, var(--quill) 14%, transparent), transparent 60%),
     var(--desk);
+  transition: background-color 0.3s;
   color: var(--cream);
   font: 19px/1.5 var(--body);
   -webkit-font-smoothing: antialiased;
@@ -97,7 +102,9 @@ body {
 }
 
 a {
-  color: var(--gold-light);
+  color: var(--cream);
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
 }
 
 canvas {
@@ -115,9 +122,9 @@ canvas {
   align-items: center;
   justify-content: space-between;
   padding: 12px clamp(16px, 4vw, 40px);
-  background: rgb(36 25 17 / 0.82);
+  background: color-mix(in oklab, var(--desk) 85%, transparent);
   backdrop-filter: blur(8px);
-  border-bottom: 2px solid rgb(201 180 142 / 0.12);
+  border-bottom: 2px solid color-mix(in oklab, var(--cream-soft) 15%, transparent);
 }
 
 .brand {
@@ -142,7 +149,7 @@ canvas {
   font: 600 16px var(--display);
   min-width: 46px;
   height: 40px;
-  border: 2px solid rgb(243 227 192 / 0.4);
+  border: 2px solid color-mix(in oklab, var(--cream) 40%, transparent);
   background: transparent;
   color: var(--cream);
   cursor: pointer;
@@ -152,7 +159,7 @@ canvas {
 html[data-lang='nl'] [data-set-lang='nl'],
 html[data-lang='en'] [data-set-lang='en'] {
   background: var(--cream);
-  color: var(--ink);
+  color: var(--on-cream);
   border-color: var(--cream);
 }
 
@@ -170,7 +177,7 @@ h1,
 h2,
 h3 {
   font-family: var(--display);
-  font-weight: 600;
+  font-weight: var(--display-weight);
   line-height: 1.1;
   margin: 0;
 }
@@ -187,7 +194,7 @@ h2::after {
   width: 96px;
   height: 6px;
   margin: 16px auto 0;
-  background: repeating-linear-gradient(90deg, var(--gold) 0 12px, transparent 12px 18px);
+  background: repeating-linear-gradient(90deg, var(--accent) 0 12px, transparent 12px 18px);
 }
 
 /* Buttons */
@@ -199,26 +206,26 @@ h2::after {
   font: 600 24px var(--display);
   text-decoration: none;
   padding: 16px 28px 18px;
-  color: var(--ink);
-  background: var(--gold);
+  color: var(--on-button);
+  background: var(--button);
   border: 0;
   cursor: pointer;
   clip-path: var(--notch);
   box-shadow:
-    inset 0 -6px 0 var(--gold-deep),
-    inset 0 4px 0 var(--gold-light);
-  filter: drop-shadow(0 6px 0 #140d08);
+    inset 0 -6px 0 color-mix(in oklab, var(--button) 72%, black),
+    inset 0 4px 0 color-mix(in oklab, var(--button) 70%, white);
+  filter: drop-shadow(0 6px 0 color-mix(in oklab, var(--desk) 50%, black));
   transition: transform 0.08s, filter 0.08s;
 }
 
 .button:hover {
   transform: translateY(-2px);
-  filter: drop-shadow(0 8px 0 #140d08);
+  filter: drop-shadow(0 8px 0 color-mix(in oklab, var(--desk) 50%, black));
 }
 
 .button:active {
   transform: translateY(5px);
-  filter: drop-shadow(0 1px 0 #140d08);
+  filter: drop-shadow(0 1px 0 color-mix(in oklab, var(--desk) 50%, black));
 }
 
 .button::before {
@@ -247,8 +254,8 @@ h2::after {
 
 .hero h1 em {
   font-style: normal;
-  color: var(--gold);
-  text-shadow: 4px 4px 0 var(--leather);
+  color: var(--accent);
+  text-shadow: 4px 4px 0 color-mix(in oklab, var(--leather) 70%, transparent);
 }
 
 .lead {
@@ -275,8 +282,8 @@ h2::after {
 .elsewhere {
   margin: 12px 0 0;
   font-size: 16px;
-  color: var(--note);
-  background: rgb(163 44 37 / 0.35);
+  color: var(--cream);
+  background: color-mix(in oklab, var(--wax) 25%, transparent);
   padding: 8px 12px;
   display: inline-block;
 }
@@ -430,7 +437,7 @@ h2::after {
 .card p {
   margin: 0;
   font-size: 18px;
-  color: #4a3b2c;
+  color: var(--ink);
 }
 
 /* The app in a window */
@@ -462,6 +469,129 @@ h2::after {
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* Pick your theme: each button shows the theme's ground, a page and its button colour, with a
+   buddy in the theme's headwear and the name in the theme's own heading face. */
+
+.themes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 auto 40px;
+}
+
+.theme {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  clip-path: var(--notch);
+  filter: drop-shadow(0 5px 0 rgb(0 0 0 / 0.3));
+  transition: transform 0.12s;
+}
+
+.theme:hover {
+  transform: translateY(-3px);
+}
+
+.theme[aria-pressed='true'] {
+  transform: translateY(-3px);
+  box-shadow: inset 0 0 0 3px var(--ink);
+}
+
+.theme-preview {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 108px;
+  padding: 6px 8px 0;
+  overflow: hidden;
+}
+
+.theme-page {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 8px;
+}
+
+.theme-page i {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  width: 80%;
+}
+
+.theme-page i + i {
+  width: 50%;
+}
+
+.theme-preview b {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-bottom: 14px;
+}
+
+.theme-name {
+  font-size: 19px;
+  line-height: 1.1;
+  padding: 0 4px 4px;
+}
+
+/* What the buddies stand on: books in the spellbook, and each theme's own ground. */
+
+html[data-theme='garden'] .books span {
+  background: #7a4f2c;
+}
+html[data-theme='garden'] .books span:nth-child(1) {
+  border-radius: 999px 999px 3px 3px;
+  background: #94623a;
+}
+html[data-theme='ocean'] .books span {
+  background: #dcbf82;
+}
+html[data-theme='ocean'] .books span:nth-child(1) {
+  border-radius: 999px 999px 3px 3px;
+  background: #e9cf96;
+}
+html[data-theme='space'] .books span {
+  background: #222b55;
+}
+html[data-theme='space'] .books span:nth-child(1) {
+  background: #2b3566;
+  border-top: 4px solid #ff9a3c;
+}
+html[data-theme='quest'] .books span {
+  border-radius: 0;
+  border: 3px solid #0e0820;
+  background: #ffd23f;
+  box-shadow: inset -5px -5px 0 #c99a2e, inset 5px 5px 0 #ffe98a;
+}
+html[data-theme='notebook'] .books span {
+  border: 2px solid #2b2b33;
+  box-shadow: none;
+}
+html[data-theme='notebook'] .books span:nth-child(1) {
+  background: #b3d4ff;
+}
+html[data-theme='notebook'] .books span:nth-child(2) {
+  background: #ffb3a7;
+}
+html[data-theme='notebook'] .books span:nth-child(3) {
+  background: #c6ebc0;
 }
 
 /* Pick your buddy */
@@ -532,14 +662,15 @@ h2::after {
   font: 600 17px var(--display);
   color: var(--ink);
   background: var(--paper-deep);
-  border: 2px solid rgb(43 33 24 / 0.25);
+  border: 2px solid color-mix(in oklab, var(--ink) 25%, transparent);
   padding: 8px 12px;
   cursor: pointer;
   clip-path: var(--notch);
 }
 
 .choices button[aria-pressed='true'] {
-  background: var(--gold);
+  background: var(--button);
+  color: var(--on-button);
   border-color: var(--ink);
 }
 
@@ -561,12 +692,12 @@ h2::after {
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 3px solid rgb(43 33 24 / 0.25);
+  border: 3px solid color-mix(in oklab, var(--ink) 25%, transparent);
 }
 
 .swatches button[aria-pressed='true'] {
   border-color: var(--ink);
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--paper);
   outline-offset: -7px;
 }
 
@@ -606,11 +737,11 @@ h2::after {
   place-items: center;
   width: 64px;
   height: 64px;
-  font: 700 34px var(--display);
-  color: var(--ink);
-  background: var(--gold);
+  font: var(--display-weight) 34px var(--display);
+  color: var(--on-button);
+  background: var(--button);
   clip-path: var(--notch);
-  box-shadow: inset 0 -5px 0 var(--gold-deep);
+  box-shadow: inset 0 -5px 0 color-mix(in oklab, var(--button) 72%, black);
 }
 
 .steps p {
@@ -677,12 +808,12 @@ footer .small {
   position: absolute;
   width: 6px;
   height: 6px;
-  background: var(--gold-light);
+  background: var(--accent);
   box-shadow:
-    6px 0 var(--gold-light),
-    -6px 0 var(--gold-light),
-    0 6px var(--gold-light),
-    0 -6px var(--gold-light);
+    6px 0 var(--accent),
+    -6px 0 var(--accent),
+    0 6px var(--accent),
+    0 -6px var(--accent);
   animation: twinkle 2.8s steps(4) infinite;
   opacity: 0;
   pointer-events: none;
@@ -714,6 +845,9 @@ footer .small {
   .cards {
     grid-template-columns: 1fr 1fr;
   }
+  .themes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 620px) {
@@ -729,6 +863,9 @@ footer .small {
   }
   .species {
     grid-template-columns: repeat(3, 1fr);
+  }
+  .themes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .button {
     font-size: 21px;
