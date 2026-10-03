@@ -157,7 +157,7 @@ export const useBook = create<BookState>()((set, get) => {
       change((data) => {
         const old = data.tasks.find((task) => task.id === id)
         if (!old) return data
-        // Words she deciphered stay hers: editing them changes her note, not the given text.
+        // Deciphered words stay the student's own: editing them changes the note, not the given text.
         const text = draft.text.trim()
         const next: Task = old.own.note
           ? { ...old, given: { ...old.given, ...draft, text: old.given.text }, own: { ...old.own, note: text || undefined } }

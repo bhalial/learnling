@@ -27,7 +27,7 @@ export function TaskSheet() {
   )
 }
 
-/** Work from Magister: the teacher's words as they are, plus room for her own. */
+/** Work from Magister: the teacher's words as they are, plus room for the student's own. */
 function MagisterTask({ task }: { task: Task }) {
   const data = useBook((s) => s.data)
   const today = useBook((s) => s.today)
@@ -97,7 +97,7 @@ function TaskForm({ sheet }: { sheet: NonNullable<Sheet> }) {
   const [subjectId, setSubjectId] = useState(existing?.given.subjectId ?? '')
   const [kind, setKind] = useState<Kind>(existing?.given.kind ?? 'homework')
   const [text, setText] = useState(existing ? wording(existing) : '')
-  // Until she picks a day herself, the due day follows the next lesson of the chosen subject.
+  // Until a day is picked by hand, the due day follows the next lesson of the chosen subject.
   const [due, setDue] = useState<IsoDate | undefined>(presetDue)
 
   const suggested = subjectId ? nextLesson(data, subjectId, today) : null

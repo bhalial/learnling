@@ -3,7 +3,7 @@ import type { CompanionLook, Species } from '../companions/types'
 import type { Lang } from '../types'
 import { Companion } from './Companion'
 
-/** Every animal alive side by side, in her colours; tap one to make it hers. The chosen one cheers. */
+/** Every animal alive side by side, in the chosen colours; tap one to pick it. The chosen one cheers. */
 export function SpeciesPicker({ look, lang, onPick }: { look: CompanionLook; lang: Lang; onPick: (species: Species) => void }) {
   return (
     <div className="grid grid-cols-5 gap-2">

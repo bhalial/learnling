@@ -3,7 +3,7 @@ import { HEIGHT, TOP, WIDTH, type PixelAnimal } from './species'
 import { compose, mirror, type Grid, type Placed } from './sprite'
 
 /**
- * The cat, sitting and facing her. Head and body are mirrored shapes; the shared face,
+ * The cat, sitting and facing you. Head and body are mirrored shapes; the shared face,
  * nose, tail and gear are layers on top.
  *
  *   o outline   b fur   d fur shade   l fur light   p inner ear   w white   v white shade

@@ -7,7 +7,7 @@ const HOUR = 3_600_000
 
 let ready = false
 
-/** A line in `updates.log` next to her book, so a failed update can be looked into later. */
+/** A line in `updates.log` next to the book, so a failed update can be looked into later. */
 function log(...parts: unknown[]): void {
   try {
     appendFileSync(join(app.getPath('userData'), 'updates.log'), `${new Date().toISOString()} ${parts.map(String).join(' ')}\n`)

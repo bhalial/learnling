@@ -16,7 +16,7 @@ function copyTree(from: string, to: string): void {
       else copyFileSync(source, target)
     } catch {
       // A file the old app still holds open. Only the Magister login lives in these
-      // files, and at worst she logs in once more; the book itself is copied below.
+      // files, and at worst it means logging in once more; the book itself is copied below.
     }
   }
 }
@@ -24,7 +24,7 @@ function copyTree(from: string, to: string): void {
 /**
  * Learnling was called Spellbook until 3 October 2026 and kept everything in a folder
  * of that name. On the first start under the new name the old folder is copied over:
- * her book, and with it the Magister login (its cookies only decrypt together with the
+ * the book, and with it the Magister login (its cookies only decrypt together with the
  * "Local State" file next to them). The old folder stays where it is, as a backup.
  *
  * Runs before the app is ready, so nothing has opened the new folder yet.

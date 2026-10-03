@@ -25,8 +25,8 @@ export interface Lesson {
 }
 
 /**
- * What was set: typed in by her now, and later also delivered by a Magister
- * sync. A sync may overwrite this part, never `Own`.
+ * What was set: typed in by hand, or delivered by a Magister sync.
+ * A sync may overwrite this part, never `Own`.
  */
 export interface Given {
   subjectId: string
@@ -40,14 +40,14 @@ export interface Given {
   gone?: boolean
 }
 
-/** What she does with it. Belongs to her alone; a sync never touches it. */
+/** What the student does with it. Theirs alone; a sync never touches it. */
 export interface Own {
-  /** The day she plans to do it. Without one, it sits on its due day. */
+  /** The day it is planned for. Without one, it sits on its due day. */
   plan?: IsoDate
   doneAt?: string
-  /** Her own words, e.g. the homework she deciphered. */
+  /** The student's own words, e.g. deciphered homework. */
   note?: string
-  /** She has looked at it since it arrived from Magister. */
+  /** Looked at since it arrived from Magister. */
   seen?: boolean
 }
 
@@ -62,7 +62,7 @@ export interface Task {
   createdAt: string
 }
 
-/** Her companion: which animal, how it looks, and the name she gave it. */
+/** The companion: which animal, how it looks, and the name it was given. */
 export interface CompanionSettings extends CompanionLook {
   name: string
 }

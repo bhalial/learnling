@@ -62,14 +62,14 @@ describe('mergeSync', () => {
     expect(added).toBe(0)
   })
 
-  it('updates the teacher’s half and leaves hers alone', () => {
+  it('updates the teacher’s half and leaves the student’s alone', () => {
     const first = mergeSync(linked(), [item(2, '2026-10-02', BIO, 1, 'Lees §2.1')], range, '2026-09-30', uid, 'now').data
     const id = first.tasks[0].id
-    const hers = {
+    const worked = {
       ...first,
       tasks: first.tasks.map((t) => (t.id === id ? { ...t, own: { ...t.own, doneAt: 'x', note: 'mine', plan: '2026-10-01', seen: true } } : t))
     }
-    const { data, changed } = mergeSync(hers, [item(2, '2026-10-02', BIO, 1, 'Lees §2.1 en §2.2')], range, '2026-09-30', uid, 'now')
+    const { data, changed } = mergeSync(worked, [item(2, '2026-10-02', BIO, 1, 'Lees §2.1 en §2.2')], range, '2026-09-30', uid, 'now')
     expect(changed).toBe(1)
     const task = data.tasks.find((t) => t.id === id)!
     expect(task.given.text).toBe('Lees §2.1 en §2.2')

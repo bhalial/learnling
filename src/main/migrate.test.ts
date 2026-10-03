@@ -21,7 +21,7 @@ beforeEach(() => {
 afterEach(() => rmSync(root, { recursive: true, force: true }))
 
 describe('adoptSpellbook', () => {
-  it('copies her book and the Magister login, but not the caches', () => {
+  it('copies the book and the Magister login, but not the caches', () => {
     put(join(oldDir, 'spellbook.json'), '{"version":1}')
     put(join(oldDir, 'spellbook.json.bak'), '{"version":1,"old":true}')
     put(join(oldDir, 'Local State'))

@@ -81,7 +81,7 @@ describe('placement', () => {
     expect(shownOn(task({}, { plan: '2026-09-30' }))).toBe('2026-09-30')
   })
 
-  it('treats empty homework as a mystery until she deciphers it', () => {
+  it('treats empty homework as a mystery until it is deciphered', () => {
     expect(isMystery(task({ text: '' }))).toBe(true)
     expect(isMystery(task({ text: '' }, { note: 'p. 52' }))).toBe(false)
     expect(isMystery(task({ kind: 'test', text: '' }))).toBe(false)

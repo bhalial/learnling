@@ -24,7 +24,7 @@ const spellbook = {
   },
 
   magister: {
-    /** Opens the real Magister login (at her school when known); resolves with the school's host, or null if she closed it. */
+    /** Opens the real Magister login (at the school when known); resolves with the school's host, or null if it was closed. */
     connect(school?: string): Promise<string | null> {
       return ipcRenderer.invoke('magister:connect', school)
     },

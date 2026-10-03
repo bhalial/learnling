@@ -9,7 +9,7 @@ export function fromMagister(data: LessonSource, date: IsoDate): boolean {
   return Boolean(data.lessons && from && to && date >= from && date <= to)
 }
 
-/** The lessons of a day: Magister's real ones where synced, her timetable elsewhere. */
+/** The lessons of a day: Magister's real ones where synced, the hand-made timetable elsewhere. */
 export function lessonsOn(data: LessonSource, date: IsoDate): Lesson[] {
   if (fromMagister(data, date)) return data.lessons?.[date] ?? []
   const day = weekday(date)

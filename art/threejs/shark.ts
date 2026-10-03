@@ -82,7 +82,7 @@ export const shark: SpeciesDefinition = {
       }
     }
 
-    // The face sits on the front of the snout so both eyes look at her.
+    // The face sits on the front of the snout so both eyes look at you.
     const face = eyes(body, { head: 0.5, y: 0.16, z: 0.73, iris: '#2f3a52', spacing: 0.38, yaw: 0.3, blinkEvery: 4.6, blinkOffset: 2 })
     blush(body, 0.4, 0.03, 0.75)
 

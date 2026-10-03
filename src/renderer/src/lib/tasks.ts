@@ -5,20 +5,20 @@ import { isVague } from './text'
 /** How many training rounds a trial gets before its date. */
 export const TRAINING_ROUNDS: Partial<Record<Kind, number>> = { test: 3, quiz: 2 }
 
-/** Kinds that land on the day she adds them, because she does homework the same day. */
+/** Kinds that land on the day they are added: homework is mostly done the same day. */
 const SAME_DAY: Kind[] = ['homework', 'learn', 'read']
 
 export const isTrial = (kind: Kind): boolean => kind === 'test' || kind === 'quiz'
 
 export const isDone = (task: Task): boolean => Boolean(task.own.doneAt)
 
-/** Trials sit on their date; everything else on the day she planned it, or its due day. */
+/** Trials sit on their date; everything else on the day it was planned for, or its due day. */
 export function shownOn(task: Task): IsoDate {
   return isTrial(task.given.kind) ? task.given.due : (task.own.plan ?? task.given.due)
 }
 
 /**
- * Work that was set without saying what, and that she has not deciphered yet.
+ * Work that was set without saying what, and that has not been deciphered yet.
  * From Magister that includes a short line that only points to Teams.
  */
 export function isMystery(task: Task): boolean {
@@ -27,7 +27,7 @@ export function isMystery(task: Task): boolean {
   return task.origin === 'magister' ? isVague(text) : !text.trim()
 }
 
-/** Her words win over the given text. */
+/** The student's own words win over the given text. */
 export const wording = (task: Task): string => task.own.note?.trim() || task.given.text
 
 /** Where a freshly added task goes: today for same-day kinds, otherwise its due day. */
@@ -53,7 +53,7 @@ export function trainingDays(due: IsoDate, today: IsoDate, rounds: number): IsoD
 
 /**
  * Rebuilds the training rounds of one task after it was added or changed.
- * Finished rounds are kept (she earned those ticks); open ones are planned
+ * Finished rounds are kept (those ticks were earned); open ones are planned
  * anew. A task that is no longer a trial loses its open rounds.
  */
 export function retrain(tasks: Task[], test: Task, today: IsoDate, uid: () => string, now: string): Task[] {
@@ -95,7 +95,7 @@ export function needsAttention(tasks: Task[], today: IsoDate): Task[] {
     .sort((a, b) => shownOn(a).localeCompare(shownOn(b)))
 }
 
-/** Trials, then the rest in the order she added them. */
+/** Trials, then the rest in the order they were added. */
 export function dayOrder(a: Task, b: Task): number {
   const trial = Number(isTrial(b.given.kind)) - Number(isTrial(a.given.kind))
   return trial || a.createdAt.localeCompare(b.createdAt)

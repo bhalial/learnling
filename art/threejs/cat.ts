@@ -10,7 +10,7 @@ const COATS: Record<string, { fur: string; light: string; eye: string; name: { e
   cream: { fur: '#efe2cc', light: '#fffaf0', eye: '#5aa7e0', name: { en: 'Cream', nl: 'Room' } }
 }
 
-/** The pose turns a little to show the tail; the head turns back to look at her. */
+/** The pose turns a little to show the tail; the head turns back to look at you. */
 const POSE = -0.42
 
 export const cat: SpeciesDefinition = {
@@ -34,7 +34,7 @@ export const cat: SpeciesDefinition = {
     body.add(at(part(ellipsoid(0.36, 0.44, 0.2), c.light, { outline: 0.03 }), 0, 0.56, 0.47))
     for (const side of [-1, 1]) body.add(at(part(ellipsoid(0.19, 0.13, 0.26), c.light), side * 0.27, 0.09, 0.5))
 
-    // The tail: a chain of segments that curls up behind her and sways.
+    // The tail: a chain of segments that curls up behind it and sways.
     const tailBase = turn(at(new THREE.Group(), 0.12, 0.2, -0.5), -1.05, 0, -0.55)
     body.add(tailBase)
     const tail: THREE.Group[] = []
@@ -102,7 +102,7 @@ export const cat: SpeciesDefinition = {
         body.scale.set(1 + breath * 0.008, 1 + breath * (sleeping ? 0.03 : 0.018), 1 + breath * 0.008)
         root.position.y = mood === 'happy' ? hop(moodTime) : 0
 
-        // The head turns back against the pose so she keeps looking at you.
+        // The head turns back against the pose so it keeps looking at you.
         let wantTilt = 0.05 * Math.sin(t * 0.7)
         let wantLook = -POSE * 0.8 + 0.18 * Math.sin(t * 0.37) + 0.06 * Math.sin(t * 1.3)
         let wantNod = 0

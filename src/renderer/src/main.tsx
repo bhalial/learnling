@@ -25,8 +25,8 @@ async function start(): Promise<void> {
     window.spellbook.saveNow(useBook.getState().data)
   })
 
-  // Read Magister at start, every half hour, and when she comes back after a while.
-  // Once Magister wants a fresh login, wait for her to log in instead of asking again and again.
+  // Read Magister at start, every half hour, and when the window comes back after a while.
+  // Once Magister wants a fresh login, wait for the login instead of asking again and again.
   const syncIfStale = (minutes: number): void => {
     const { data, sync } = useBook.getState()
     const { magister } = data
@@ -55,7 +55,7 @@ async function start(): Promise<void> {
 let reminding = false
 
 /**
- * Once per school day, at her chosen time or the first moment after it, the cat
+ * Once per school day, at the chosen time or the first moment after it, the cat
  * reads Magister and says what is waiting. Nothing waiting, no message.
  */
 async function remind(): Promise<void> {

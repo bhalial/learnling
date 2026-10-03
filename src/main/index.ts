@@ -20,15 +20,15 @@ const today = process.env.SPELLBOOK_TODAY ?? null
 const shot = process.env.SPELLBOOK_SHOT
 
 // Started by Windows at login, or restarted after an update that installed while the book was
-// put away: stay in the tray until she opens it.
+// put away: stay in the tray until it is opened.
 const startHidden = process.argv.includes('--hidden') || process.argv.includes('--updated')
 
 const DATA_FILE = 'learnling.json'
 
-// A demo run keeps its own data folder so it can never touch her real book.
+// A demo run keeps its own data folder so it can never touch the real book.
 if (process.env.SPELLBOOK_DEMO) app.setPath('userData', join(tmpdir(), `spellbook-demo-${process.env.SPELLBOOK_DEMO}`))
 else {
-  // The app used to be called Spellbook: the first start under the new name brings her book over.
+  // The app used to be called Spellbook: the first start under the new name brings the book over.
   try {
     if (adoptSpellbook(join(app.getPath('appData'), 'spellbook'), app.getPath('userData'), DATA_FILE)) {
       console.log('brought the book over from the Spellbook folder')

@@ -4,13 +4,13 @@ import type { MagisterSync } from '../renderer/src/types'
 
 // Magister has no public API. Learnling only ever *reads*, and it does so the way
 // the Magister web app itself does: inside a real Magister page, with the token
-// that page keeps in sessionStorage. Her login lives in this persistent session;
+// that page keeps in sessionStorage. The login lives in this persistent session;
 // no password ever passes through Learnling.
 const PARTITION = 'persist:magister'
 const ACCOUNTS = 'accounts.magister.net'
 
 /**
- * How long her login cookies are kept across app restarts. Magister ends the
+ * How long the login cookies are kept across app restarts. Magister ends the
  * session on its own side within hours to a day, so this only bridges restarts.
  */
 const REMEMBER_DAYS = 30
@@ -58,7 +58,7 @@ function isLoginPage(url: string): boolean {
 
 /**
  * Magister's login cookie only lives as long as the app runs. Rewriting the
- * accounts cookies with an expiry date keeps her logged in across restarts,
+ * accounts cookies with an expiry date keeps the user logged in across restarts,
  * until Magister itself ends the session.
  */
 async function rememberLogin(): Promise<void> {
@@ -111,8 +111,8 @@ const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout
 
 /**
  * Loads the school's Magister in a hidden window and waits for a usable token.
- * A hidden window never shows the login page: if Magister wants her to log in,
- * the navigation is stopped and `login` says so. Nothing pops up behind her back.
+ * A hidden window never shows the login page: if Magister wants a fresh login,
+ * the navigation is stopped and `login` says so. Nothing pops up behind the user's back.
  */
 async function openSchool(school: string, seconds: number): Promise<{ win: BrowserWindow; ready: boolean; login: boolean }> {
   const win = magisterWindow(false)
@@ -136,9 +136,9 @@ async function openSchool(school: string, seconds: number): Promise<{ win: Brows
 }
 
 /**
- * Opens the real Magister login: straight at her school when it is known, else
- * at the school search. Resolves with the school's host once she is in, or null
- * when she gives up. Closing the window after logging in still counts: the
+ * Opens the real Magister login: straight at the school when it is known, else
+ * at the school search. Resolves with the school's host once logged in, or null
+ * when the user gives up. Closing the window after logging in still counts: the
  * school seen on the way is then checked in the background.
  */
 export function connect(parent: BrowserWindow, knownSchool?: string): Promise<string | null> {
@@ -182,7 +182,7 @@ export function connect(parent: BrowserWindow, knownSchool?: string): Promise<st
     win.on('closed', async () => {
       if (done) return
       clearInterval(poll)
-      // She may have closed the window right after logging in; see whether the school lets us in.
+      // The window may have been closed right after logging in; see whether the school lets us in.
       if (school) {
         log('window closed; checking', school, 'in the background')
         const { win: hidden, ready } = await openSchool(school, 15)
@@ -197,7 +197,7 @@ export function connect(parent: BrowserWindow, knownSchool?: string): Promise<st
   })
 }
 
-/** Forgets her Magister login on this computer. */
+/** Forgets the Magister login on this computer. */
 export async function disconnect(): Promise<void> {
   await magisterSession().clearStorageData()
 }

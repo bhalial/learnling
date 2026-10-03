@@ -3,7 +3,7 @@ import { copyFileSync, existsSync, readFileSync, renameSync, writeFileSync } fro
 /**
  * Reads the book from disk. A file that fails to parse (power cut mid-write on
  * an older version, a hand edit gone wrong) falls back to the previous save,
- * so she never opens an empty book because of one bad write.
+ * so nobody ever opens an empty book because of one bad write.
  */
 export function readData(file: string): unknown {
   for (const candidate of [file, `${file}.bak`]) {

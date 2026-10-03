@@ -36,7 +36,7 @@ export const firstLine = (text: string): string => text.split('\n')[0] ?? ''
 export const pointsElsewhere = (text: string): boolean => /\b(teams|classroom|studiewijzer|onedrive|elo)\b/i.test(text)
 
 /**
- * Text from Magister that does not tell her what to do: nothing at all, or a
- * short line that only sends her somewhere else.
+ * Text from Magister that does not say what to do: nothing at all, or a
+ * short line that only points somewhere else.
  */
 export const isVague = (text: string): boolean => !text.trim() || (pointsElsewhere(text) && text.length < 80)

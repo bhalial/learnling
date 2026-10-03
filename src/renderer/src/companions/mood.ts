@@ -4,7 +4,7 @@ import { addDays, windowStart } from '../lib/dates'
 import { isDone, isMystery, isTrial, shownOn } from '../lib/tasks'
 import type { Mood } from './types'
 
-/** How the companion answers each thing she does. */
+/** How the companion answers each thing the student does. */
 export const REACTION_MOOD: Record<ReactionKind, Mood> = {
   yay: 'happy',
   decoded: 'happy',

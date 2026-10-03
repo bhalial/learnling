@@ -65,7 +65,7 @@ function SettingsForm() {
   const [testSent, setTestSent] = useState(false)
   const monday = mondayOf(today)
 
-  // The real message if something is waiting, otherwise a sample, so she can see what it looks like.
+  // The real message if something is waiting, otherwise a sample, to show what it looks like.
   const sendTest = (): void => {
     const message = reminderMessage(data, today, sync, t) ?? { title: data.companion.name || 'Learnling', body: t.reminder.sample }
     void window.spellbook.notify(message.title, message.body)

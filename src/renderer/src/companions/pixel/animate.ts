@@ -9,7 +9,7 @@ import type { Grid, Palette } from './sprite'
 
 export interface Pose {
   eyes: 'open' | 'blink' | 'happy'
-  /** -1 looks to her left, 1 to her right (towards the book). */
+  /** -1 looks left on screen, 1 right (towards the book). */
   gaze: number
   /** 1 lifts the head a pixel: breathing in, or a proud chin. */
   bob: number
@@ -58,7 +58,7 @@ export function momentOf(mood: Mood, now: number, sinceMood: number, seed = 0): 
     case 'proud':
       return { pose: { ...base, eyes: 'happy', bob: 1, tail: step(now, 1200) % 2 }, lift: 0, effect: 'sparkle', phase: loop(now, 1800) }
     default: {
-      // Now and then a look aside: to her left, back, to her right.
+      // Now and then a look aside: left, back, right.
       const look = step(now + 2500 + seed * 700, 1500) % 6
       return { ...still, pose: { ...base, gaze: blinking ? 0 : look === 1 ? -1 : look === 4 ? 1 : 0 } }
     }

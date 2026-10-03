@@ -5,13 +5,13 @@ import { cleanSubjectName, distinctColors, subjectInUse } from './subjects'
 import { initialPlan, isDone, isTrial, retrain } from './tasks'
 import { plainText, withoutLabel } from './text'
 
-/** Magister's InfoType. 0 is "nothing set"; 6 (info) and 7 (note) are not work for her. */
+/** Magister's InfoType. 0 is "nothing set"; 6 (info) and 7 (note) are not work to do. */
 const KINDS: Record<number, Kind> = { 1: 'homework', 2: 'test', 3: 'test', 4: 'quiz', 5: 'quiz' }
 
 /** Lesson statuses for a cancelled lesson, from unofficial documentation; not seen live yet. */
 const CANCELLED = new Set([4, 5])
 
-/** Magister times are UTC; the lesson's day is the day on her clock. */
+/** Magister times are UTC; the lesson's day is the day on the local clock. */
 export const localDate = (timestamp: string): IsoDate => todayIso(new Date(timestamp))
 
 export interface SyncOutcome {
@@ -23,7 +23,7 @@ export interface SyncOutcome {
 
 /**
  * Folds one Magister read into the book. Only `given` halves and lessons are
- * written; whatever she did herself (`own`) survives every sync untouched.
+ * written; whatever the student did (`own`) survives every sync untouched.
  */
 export function mergeSync(
   data: SpellbookData,
@@ -91,7 +91,7 @@ export function mergeSync(
       const next: Task = {
         ...old,
         given: { ...old.given, ...given, gone: undefined },
-        // A changed text or day is news again; the rest of her half stays as it was.
+        // A changed text or day is news again; the rest of the student's half stays as it was.
         own: { ...old.own, seen: same ? old.own.seen : false }
       }
       tasks = tasks.map((t) => (t.id === old.id ? next : t))

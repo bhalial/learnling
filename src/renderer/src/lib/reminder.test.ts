@@ -10,7 +10,7 @@ const at = (day: string, time: string): Date => new Date(`${day}T${time}:00`)
 const reminder = { enabled: true, time: '16:00' }
 
 describe('reminderDue', () => {
-  it('goes out at her time on a school day, and after it if the laptop was asleep', () => {
+  it('goes out at the chosen time on a school day, and after it if the laptop was asleep', () => {
     expect(reminderDue(reminder, MONDAY, at(MONDAY, '15:59'))).toBe(false)
     expect(reminderDue(reminder, MONDAY, at(MONDAY, '16:00'))).toBe(true)
     expect(reminderDue(reminder, MONDAY, at(MONDAY, '19:30'))).toBe(true)
@@ -26,7 +26,7 @@ describe('reminderDue', () => {
     expect(reminderDue({ ...reminder, enabled: false }, MONDAY, at(MONDAY, '16:00'))).toBe(false)
   })
 
-  it('follows the time she picks', () => {
+  it('follows the chosen time', () => {
     expect(reminderDue({ ...reminder, time: '09:30' }, MONDAY, at(MONDAY, '09:30'))).toBe(true)
     expect(reminderDue({ ...reminder, time: '09:30' }, MONDAY, at(MONDAY, '09:29'))).toBe(false)
   })
@@ -39,7 +39,7 @@ describe('reminderMessage', () => {
     expect(reminderMessage(freshBook(), MONDAY, { state: 'idle' }, t)).toBeNull()
   })
 
-  it('asks for a Magister login first, signed with her companion’s name', () => {
+  it('asks for a Magister login first, signed with the companion’s name', () => {
     const data = { ...freshBook(), companion: { ...freshBook().companion, name: 'Mochi' } }
     expect(reminderMessage(data, MONDAY, { state: 'login' }, t)).toEqual({ title: 'Mochi', body: t.cat.login })
   })

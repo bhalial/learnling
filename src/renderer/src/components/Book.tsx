@@ -96,7 +96,7 @@ function DayRow({ date, weekend = false }: { date: IsoDate; weekend?: boolean })
       )}
 
       <div className={`flex min-w-0 flex-1 flex-col gap-0.5 ${isPast && !isOver ? 'opacity-70' : ''}`}>
-        {/* The day's lessons in order, like a line in her timetable: a double period once with
+        {/* The day's lessons in order, like a line in a timetable: a double period once with
             ×2, a cancelled one struck through. */}
         {lessons.length > 0 && (
           <ol aria-label={t.lessons} className="m-0 flex list-none flex-wrap items-baseline gap-x-1.5 p-0 pb-1.5 pt-1 text-[14px]">
