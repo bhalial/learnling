@@ -70,7 +70,7 @@ function CatPanel() {
 
   return (
     <section className="flex flex-col gap-3">
-      <div className="pinned-note mx-1.5 mt-1.5 bg-note px-3.5 pb-2.5 pt-3.5 text-[15px] leading-snug text-ink" aria-live="polite">
+      <div className="pinned-note mt-1.5 bg-note px-3.5 pb-2.5 pt-3.5 text-[15px] leading-snug text-ink" aria-live="polite">
         <p className="m-0">{line.text}</p>
         {line.setup && (
           <button type="button" onClick={() => openSettings(true)} className="mt-2 h-11 rounded-sm border-[1.5px] border-ink bg-paper-deep px-3.5 font-fell text-[17px]">
@@ -154,9 +154,14 @@ function Shelf() {
     <section className="loose-page bg-paper px-[18px] pb-3 pt-4 text-ink">
       <h2 className="m-0 font-fell text-[21px] font-normal text-wax">{t.attention}</h2>
       <p className="m-0 mb-1 text-[14px] italic text-ink-soft">{t.attentionHint}</p>
-      {late.map((task) => (
-        <TaskCard key={task.id} task={task} place="shelf" />
-      ))}
+      {/* Several waiting: each its own room, with a thin line between them. */}
+      <ul className="m-0 flex list-none flex-col divide-y divide-ink/15 p-0">
+        {late.map((task) => (
+          <li key={task.id} className="py-2.5 first:pt-1 last:pb-0">
+            <TaskCard task={task} place="shelf" />
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }

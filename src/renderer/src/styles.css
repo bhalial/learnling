@@ -351,22 +351,20 @@
     display: none;
   }
 
-  /* Today: a filled badge behind the date. */
+  /* Today: a badge round the date, its left edge on the day's name like everything in the column. */
   .ink-circle {
-    z-index: 0;
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5em;
+    height: 1.5em;
+    padding: 0 0.22em;
+    border-radius: var(--today-radius, 10px);
+    background: var(--today, var(--color-wax));
     color: var(--on-today, var(--color-on-wax));
   }
 
   .ink-circle::after {
-    left: -8px;
-    top: -5px;
-    width: calc(100% + 16px);
-    height: calc(100% + 10px);
-    border: 0;
-    border-radius: var(--today-radius, 10px);
-    background: var(--today, var(--color-wax));
-    transform: none;
-    z-index: -1;
+    display: none;
   }
 }
 
@@ -445,21 +443,11 @@
     box-shadow: 0 6px 0 #0e0820;
   }
 
-  /* The companion's note is a game's dialogue box, with the blinking "more" arrow. */
+  /* The companion's note is a game's dialogue box. */
   .pinned-note {
     border: 3px solid #f3eaff;
     border-radius: 10px;
     box-shadow: 0 5px 0 #0e0820;
-  }
-
-  .pinned-note::after {
-    content: '';
-    position: absolute;
-    left: 16px;
-    bottom: 10px;
-    border: 6px solid transparent;
-    border-top: 8px solid #ffd23f;
-    border-bottom: 0;
   }
 
   .btn-new {
@@ -603,34 +591,44 @@
     background: #ece6da;
   }
 
+  /* An open exercise book: two pages side by side, one shadow under both. */
   .book-pages {
     gap: 0;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgb(60 50 30 / 0.14);
   }
 
-  /* The spiral down the middle. */
+  /* The fold down the middle, where the pages curve into the binding. */
   .book-pages::before {
     content: '';
     display: block;
     position: absolute;
-    inset: 14px auto 14px calc(50% - 11px);
-    width: 22px;
+    inset: 0 auto 0 calc(50% - 28px);
+    width: 56px;
     z-index: 1;
-    background: radial-gradient(ellipse 9px 5px at 50% 50%, transparent 55%, #8f8a7c 60%, #8f8a7c 88%, transparent 92%) center top / 22px 26px repeat-y;
+    background: linear-gradient(
+      90deg,
+      rgb(60 50 30 / 0),
+      rgb(60 50 30 / 0.07) 38%,
+      rgb(60 50 30 / 0.16) 50%,
+      rgb(60 50 30 / 0.07) 62%,
+      rgb(60 50 30 / 0)
+    );
   }
 
+  /* Dotted paper, kept faint and wide apart: it should feel like a planner, not compete with the writing. */
   .page {
     background-color: var(--color-paper);
-    background-image: radial-gradient(circle, #d8d3c3 1px, transparent 1.4px);
-    background-size: 18px 18px;
-    box-shadow: 0 8px 20px rgb(60 50 30 / 0.14);
+    background-image: radial-gradient(circle, #e8e4d8 0.9px, transparent 1.3px);
+    background-size: 26px 26px;
   }
 
   .page:first-of-type {
-    border-radius: 12px 2px 2px 12px;
+    border-radius: 12px 0 0 12px;
   }
 
   .page:last-of-type {
-    border-radius: 2px 12px 12px 2px;
+    border-radius: 0 12px 12px 0;
   }
 
   .app-title {
@@ -639,8 +637,8 @@
   }
 
   /* Today, circled in red pen. */
-  .ink-circle::after {
-    border: 2px solid var(--color-wax);
+  .ink-circle {
+    box-shadow: inset 0 0 0 2px var(--color-wax);
   }
 
   .pinned-note {

@@ -23,7 +23,7 @@ export function TopBar() {
   const filled = total ? Math.round((done / total) * marks) : 0
 
   return (
-    <header className="flex h-[68px] shrink-0 items-center gap-5 px-6 text-cream">
+    <header className="flex h-[68px] shrink-0 items-center gap-5 px-5 text-cream">
       <h1 className="app-title m-0 whitespace-nowrap font-fell text-[30px] font-normal tracking-[0.01em]">{t.title}</h1>
       <MagisterStatus />
 

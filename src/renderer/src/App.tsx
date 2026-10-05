@@ -18,6 +18,11 @@ export function App() {
   const [lab, setLab] = useState(location.hash.startsWith('#lab'))
 
   useEffect(() => applyTheme(theme), [theme])
+  // The page's language, for screen readers and for breaking long words in the right places.
+  const lang = useBook((s) => s.data.lang)
+  useEffect(() => {
+    document.documentElement.lang = lang
+  }, [lang])
 
   useEffect(() => {
     const onHash = (): void => setLab(location.hash.startsWith('#lab'))

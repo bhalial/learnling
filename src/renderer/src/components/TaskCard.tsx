@@ -58,16 +58,23 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
     setDeciphering(false)
   }
 
+  // On the shelf, a narrow card, the button sits in the top corner beside the label, so the
+  // task's own words get the whole width of the card.
+  const shelf = place === 'shelf'
+  const corner = shelf ? 'absolute right-0 top-0' : ''
+  // A done task on the page is one quiet line, and a lower row.
+  const quiet = done && place === 'page'
+
   return (
     <div
       ref={setNodeRef}
       {...listeners}
       style={{ '--subject': subject?.color ?? '#7a8594', '--subject-ink': subjectInkFor(subject?.color ?? '#7a8594', data.theme) } as CSSProperties}
-      className={`flex min-h-[46px] touch-manipulation items-center gap-2.5 rounded-md ${done ? 'is-done' : ''} ${
+      className={`flex ${quiet ? 'min-h-9' : 'min-h-[46px]'} touch-manipulation gap-2.5 rounded-md ${shelf ? 'relative items-start' : 'items-center'} ${done ? 'is-done' : ''} ${
         isDragging || gone ? 'opacity-40' : ''
       } ${place === 'overlay' ? 'bg-paper px-3 shadow-xl' : ''}`}
     >
-      <span className="blot size-3.5 shrink-0 bg-[var(--subject)] opacity-90" />
+      <span className={`blot size-3.5 shrink-0 bg-[var(--subject)] opacity-90 ${shelf ? 'mt-[3px]' : ''}`} />
 
       {deciphering ? (
         <form onSubmit={save} className="flex min-w-0 flex-1 items-center gap-2">
@@ -86,11 +93,19 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
             </svg>
           </button>
         </form>
+      ) : quiet ? (
+        // Done is done: one quiet line, the subject and the struck-through words.
+        <button type="button" onClick={edit} className="flex min-w-0 flex-1 items-baseline gap-2 overflow-hidden whitespace-nowrap text-left">
+          <span className="subject-ink shrink-0 text-[11px] font-bold uppercase tracking-[0.1em]" title={subject?.name}>
+            {subject && labelName(subject)}
+          </span>
+          <span className="truncate text-[15px] text-done line-through">{text}</span>
+        </button>
       ) : (
         <button type="button" onClick={edit} className="flex min-w-0 flex-1 flex-col items-start text-left">
           {/* Subject, kind and what is special about it; too much for one line wraps rather than
               vanish. Homework is what nearly everything is, so only the other kinds are named. */}
-          <span className="flex max-w-full flex-wrap items-baseline gap-x-2 overflow-hidden whitespace-nowrap">
+          <span className={`flex max-w-full flex-wrap items-baseline gap-x-2 overflow-hidden whitespace-nowrap ${shelf ? 'min-h-11 pr-12' : ''}`}>
             <span className="subject-ink text-[11px] font-bold uppercase tracking-[0.1em]" title={subject?.name}>
               {subject && labelName(subject)}
             </span>
@@ -104,7 +119,7 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
             {task.own.note && <span className="text-[13px] italic text-quill">{t.mine}</span>}
           </span>
           <span
-            className={`block max-w-full leading-tight ${place === 'shelf' ? '[overflow-wrap:anywhere]' : 'truncate'} ${
+            className={`block max-w-full leading-tight ${shelf ? '[overflow-wrap:anywhere]' : 'truncate'} ${
               task.own.note
                 ? 'font-hand text-[22px] leading-none text-quill'
                 : mystery
@@ -123,16 +138,16 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
           onClick={() => setDeciphering(true)}
           aria-label={t.decipher}
           className={`flex h-11 shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-sm border-[1.5px] border-ink bg-paper-deep font-fell text-[16px] ${
-            place === 'shelf' ? 'w-11' : 'px-3'
+            shelf ? `w-11 ${corner}` : 'mr-[5px] px-3'
           }`}
         >
           <DecipherIcon />
-          {place !== 'shelf' && t.decipher}
+          {!shelf && t.decipher}
         </button>
       )}
 
       {gone && !done && (
-        <button type="button" onClick={() => removeTask(task.id)} aria-label={t.dismiss} title={t.dismiss} className="grid size-11 shrink-0 place-items-center text-ink-soft">
+        <button type="button" onClick={() => removeTask(task.id)} aria-label={t.dismiss} title={t.dismiss} className={`grid size-11 shrink-0 place-items-center text-ink-soft ${corner}`}>
           <svg viewBox="0 0 24 24" className="size-5 fill-none stroke-current stroke-2" aria-hidden="true">
             <path d="M6 6 L18 18 M18 6 L6 18" strokeLinecap="round" />
           </svg>
@@ -145,14 +160,14 @@ export function TaskCard({ task, place }: { task: Task; place: Place }) {
           onClick={() => toggleDone(task.id)}
           aria-label={`${done ? t.markOpen : t.markDone}: ${subject?.name ?? ''}, ${text}`}
           aria-pressed={done}
-          className="size-11 shrink-0"
+          className={`${quiet ? 'h-9 w-11' : 'size-11'} shrink-0 ${corner}`}
         >
-          <TickBox />
+          <TickBox small={quiet} />
         </button>
       )}
 
       {trial && !gone && (
-        <span className="grid size-11 shrink-0 place-items-center">
+        <span className={`grid size-11 shrink-0 place-items-center ${corner}`}>
           <Seal kind={kind === 'test' ? 'test' : 'quiz'} />
         </span>
       )}

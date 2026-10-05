@@ -34,7 +34,7 @@ function Page({ monday, title, className }: { monday: IsoDate; title: string; cl
 
   return (
     <section className={`page flex min-w-0 flex-1 flex-col pb-3 pt-4 ${className}`}>
-      <header className="page-rule flex items-baseline justify-between gap-3 pb-2.5">
+      <header className="page-rule flex items-baseline justify-between gap-3 px-2 pb-2.5">
         <h2 className="m-0 whitespace-nowrap font-fell text-[26px] font-normal">{title}</h2>
         <span className="whitespace-nowrap text-[14px] italic text-ink-soft">
           {t.week(isoWeek(monday))} · {range(monday, addDays(monday, 4), lang)}
@@ -63,7 +63,8 @@ function DayRow({ date, weekend = false }: { date: IsoDate; weekend?: boolean })
   const isToday = date === today
   const isPast = date < today
 
-  // Weekend days are quieter: a smaller date and no lessons.
+  // Weekend days are quieter: a smaller date and no lessons. The column is 60px wide: room for
+  // the widest of its words in any theme's font ("Vandaag" in the questlog's).
   const label: ReactNode = (
     <>
       <span className="text-[13px] uppercase tracking-[0.15em] text-ink-soft">
@@ -83,13 +84,13 @@ function DayRow({ date, weekend = false }: { date: IsoDate; weekend?: boolean })
       className={`day-row flex gap-3 rounded-md border-t border-ink/20 px-2 py-1.5 first:border-t-0 ${isOver ? 'drop-target' : ''}`}
     >
       {isPast ? (
-        <div className="flex w-[50px] shrink-0 flex-col gap-0.5 opacity-60">{label}</div>
+        <div className="flex w-[60px] shrink-0 flex-col gap-0.5 pt-1 opacity-60">{label}</div>
       ) : (
         <button
           type="button"
           onClick={() => openSheet({ mode: 'new', due: date })}
           aria-label={t.addOn(shortDay(date, data.lang))}
-          className="flex min-h-11 w-[50px] shrink-0 flex-col items-start gap-0.5 rounded-sm text-left"
+          className="flex min-h-11 w-[60px] shrink-0 flex-col items-start gap-0.5 rounded-sm pt-1 text-left"
         >
           {label}
         </button>

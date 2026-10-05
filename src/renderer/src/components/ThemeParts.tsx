@@ -291,11 +291,11 @@ export function Platform() {
 // ---------- the tick box and the test seal
 
 /** The box a task is ticked off in. The spellbook's is drawn by hand; the garden's sprouts. */
-export function TickBox() {
+export function TickBox({ small = false }: { small?: boolean }) {
   const theme = useTheme()
   if (theme === 'magic') {
     return (
-      <svg viewBox="0 0 42 42" className="size-11" aria-hidden="true">
+      <svg viewBox="0 0 42 42" className={small ? 'mx-auto size-9' : 'size-11'} aria-hidden="true">
         <path
           d="M8 9 C 14 7.5, 26 8, 34 8.5 C 35.5 16, 35 26, 34.5 34 C 26 35.5, 15 35, 8.5 34.5 C 7.5 26, 8 16, 8 9 Z"
           className="fill-none stroke-ink stroke-2"
@@ -373,7 +373,8 @@ export function Seal({ kind, size = 40 }: { kind: 'test' | 'quiz'; size?: number
           background: badge.ground,
           color: badge.mark,
           borderRadius: badge.square ? size / 4 : '50%',
-          boxShadow: badge.square ? `inset 0 0 0 ${edge}px ${badge.rim}, 0 3px 0 ${badge.rim}` : `0 0 0 ${edge + 1}px ${badge.rim}`
+          // The rim inside the badge, so it lines up with the tick boxes above and below it.
+          boxShadow: badge.square ? `inset 0 0 0 ${edge}px ${badge.rim}, 0 3px 0 ${badge.rim}` : `inset 0 0 0 ${edge + 1}px ${badge.rim}`
         }}
       >
         <Icon name={badge.icon} size={Math.round(size * 0.5)} width={2.2} />
