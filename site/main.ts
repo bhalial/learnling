@@ -79,6 +79,8 @@ class Buddy {
   private since = 0
   private shown = ''
   private settle = 0
+  /** Hears every change of mood, also the settling back to idle. */
+  onFeel?: (mood: Mood) => void
 
   constructor(
     readonly canvas: HTMLCanvasElement,
@@ -114,6 +116,11 @@ class Buddy {
     this.since = performance.now()
     clearTimeout(this.settle)
     if (mood === 'happy' || mood === 'talk') this.settle = window.setTimeout(() => this.feel('idle'), mood === 'happy' ? 2200 : 2600)
+    this.onFeel?.(mood)
+  }
+
+  get feeling(): Mood {
+    return this.mood
   }
 
   draw(now: number): void {
@@ -213,6 +220,7 @@ const minis = new Map<Species, Buddy>()
 
 function picker(): void {
   big = new Buddy(document.getElementById('pick-big') as HTMLCanvasElement, choice, 7)
+  big.onFeel = showMood
   buddies.push(big)
   const fit = (): void => big.scale(innerWidth < 620 ? 5 : 6)
   fit()
@@ -288,7 +296,7 @@ function update(cheer: boolean): void {
   buttons(
     'pick-mood',
     Object.keys(t.moods).map((id) => ({ id, label: t.moods[id] })),
-    '',
+    big.feeling,
     (id) => {
       big.feel(id as Mood)
       say(bubble(), big.canvas, t.moodLines[id])
@@ -316,6 +324,7 @@ function buttons(
     ...items.map((item) => {
       const button = document.createElement('button')
       button.type = 'button'
+      button.dataset.id = item.id
       button.setAttribute('aria-pressed', String(item.id === chosen))
       if (item.swatch) {
         button.style.background = item.swatch
@@ -331,6 +340,13 @@ function buttons(
       return button
     })
   )
+}
+
+/** Lights the mood button the big buddy is in now; none once a reaction has settled back to idle. */
+function showMood(mood: Mood): void {
+  for (const button of document.querySelectorAll<HTMLButtonElement>('#pick-mood button')) {
+    button.setAttribute('aria-pressed', String(button.dataset.id === mood))
+  }
 }
 
 // Pick your theme: a button per theme, each with a buddy in that theme's headwear.
@@ -560,6 +576,9 @@ function setLang(next: Lang): void {
     // Remembering is a nicety.
   }
   document.title = next === 'nl' ? 'Learnling · je huiswerk, maar dan leuk' : 'Learnling · your homework, but fun'
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-set-lang]')) {
+    button.setAttribute('aria-pressed', String(button.dataset.setLang === next))
+  }
   update(false)
   showTheme()
   showVersion()
