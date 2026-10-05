@@ -154,6 +154,8 @@ const en = {
     clear: 'Today’s page is clear. Go play some Minecraft!',
     empty: 'Your planner is empty. Tap “New task” when a teacher gives homework.',
     yay: (n: number) => (n === 0 ? 'Nice! That was the last one for today.' : `Nice! ${n} left for today.`),
+    /** What follows a companion's own cheer (companions/voices.ts). */
+    yayRest: (n: number) => (n === 0 ? 'That was the last one for today.' : `${n} left for today.`),
     decoded: 'Filled in! Now it can’t sneak away.',
     dress: 'Ooh, that suits you.',
     added: 'In your planner!',
@@ -313,6 +315,7 @@ const nl: Dict = {
     clear: 'De pagina van vandaag is leeg. Ga lekker Minecraften!',
     empty: 'Je planner is nog leeg. Tik op “Nieuwe taak” als je huiswerk krijgt.',
     yay: (n) => (n === 0 ? 'Top! Dat was de laatste voor vandaag.' : `Top! Nog ${n} voor vandaag.`),
+    yayRest: (n) => (n === 0 ? 'Dat was de laatste voor vandaag.' : `Nog ${n} voor vandaag.`),
     decoded: 'Ingevuld! Nu kan het niet meer wegsluipen.',
     dress: 'Ooh, staat je goed.',
     added: 'Staat in je planner!',

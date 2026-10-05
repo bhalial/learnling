@@ -1,3 +1,4 @@
+import { VOICES } from '../companions/voices'
 import type { Dict } from '../i18n'
 import type { Reaction, SyncState } from '../store'
 import type { IsoDate, SpellbookData } from '../types'
@@ -33,7 +34,14 @@ export function nudge(data: SpellbookData, today: IsoDate, t: Dict): string | nu
   return null
 }
 
-/** What the cat says in the book: a fresh reaction first, then setup, then the nudge. */
+/** One of `lines`, the same one for as long as `seed` stays the same. */
+const pick = (lines: string[], seed: number): string => lines[Math.abs(Math.floor(seed)) % lines.length]
+
+/**
+ * What the cat says in the book: a fresh reaction first, then setup, then the nudge. A
+ * reaction and the all-done line take turns between the theme's words and the animal's own
+ * (companions/voices.ts); what needs doing is always said in the theme's plain words.
+ */
 export function catLine(
   data: SpellbookData,
   today: IsoDate,
@@ -41,10 +49,16 @@ export function catLine(
   sync: SyncState,
   t: Dict
 ): { text: string; setup?: boolean } {
+  const voice = VOICES[data.companion.species][data.lang]
   if (reaction) {
-    if (reaction.kind === 'yay') return { text: t.cat.yay(openOn(data, today)) }
+    // A reaction's moment picks the line, so it holds while the note is up and differs the next time.
+    if (reaction.kind === 'yay') {
+      const left = openOn(data, today)
+      return { text: pick([t.cat.yay(left), ...voice.yay.map((cheer) => `${cheer} ${t.cat.yayRest(left)}`)], reaction.at) }
+    }
     if (reaction.kind === 'synced') return { text: t.cat.synced(reaction.n ?? 0) }
-    return { text: t.cat[reaction.kind] }
+    if (reaction.kind === 'tooLate') return { text: t.cat.tooLate }
+    return { text: pick([t.cat[reaction.kind], ...voice[reaction.kind]], reaction.at) }
   }
   if (sync.state === 'login') return { text: t.cat.login }
 
@@ -53,5 +67,7 @@ export function catLine(
 
   const line = nudge(data, today, t)
   if (line) return { text: line }
-  return { text: data.tasks.length ? t.cat.clear : t.cat.empty }
+  // The all-done line changes from day to day, not while you look at it.
+  if (data.tasks.length) return { text: pick([t.cat.clear, ...voice.clear], daysBetween('2026-01-01', today)) }
+  return { text: t.cat.empty }
 }

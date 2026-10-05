@@ -100,12 +100,24 @@ With reduced motion each mood is a single still picture.
   collar with tag, bow tie, scarf. Pick a colour that shows on every coat (the parrot's bow
   tie is purple because red vanished on the scarlet macaw).
 
+## Voices
+
+Every animal talks its own way (`companions/voices.ts`): the cat purrs, the dog woofs and
+wags, the parrot says things twice, the whale is slow, patient and makes fish puns, the robot
+reports in status lines. Its lines are for the moments it reacts (a tick, dressing up, a new or
+moved task, a mystery filled in, undoing a tick) and for an all-done day; they take turns with
+the theme's line for the same moment, so the note stays fresh. Anything that tells the student
+what needs doing (a mystery waiting, a test coming, a late task) stays in the theme's plain
+words. A voice line has to fit every theme: no spells, seeds or missions in it, and only the cat
+purrs.
+
 ## Adding an animal
 
 1. Draw `companions/pixel/<animal>.ts` exporting a `PixelAnimal`: its layers, four coats
    and a `frame(pose, accessory, headwear)` that uses `face()` and `hat()`.
 2. Add the id to `Species` in `types.ts`, and the animal to `SPECIES` (names, coats,
-   neckwear) and `ALL_SPECIES` in `companions/index.ts`.
+   neckwear) and `ALL_SPECIES` in `companions/index.ts`, and give it a voice in
+   `companions/voices.ts`, in English and Dutch.
 3. `npm test`: the companion tests check every pose, coat, eye colour, gear and headwear
    for missing colours.
 4. Look at it:
