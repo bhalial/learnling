@@ -90,6 +90,14 @@ function createWindow(): void {
       win?.webContents.toggleDevTools()
       event.preventDefault()
     }
+    // Zooming goes through the book, so the buttons and the keys agree and the size is kept.
+    if (input.type === 'keyDown' && input.control && !input.alt) {
+      const step = input.key === '=' || input.key === '+' ? 1 : input.key === '-' ? -1 : input.key === '0' ? 0 : null
+      if (step !== null) {
+        win?.webContents.send('zoom-key', step)
+        event.preventDefault()
+      }
+    }
   })
 
   if (shot) {

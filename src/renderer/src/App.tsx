@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { DndContext, DragOverlay, MouseSensor, TouchSensor, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core'
 import { useBook } from './store'
 import { applyTheme } from './themes'
+import { zoomFor } from './lib/zoom'
 import { Book } from './components/Book'
+import { BuddySheet } from './components/BuddySheet'
 import { CompanionLab } from './components/CompanionLab'
 import { Settings } from './components/Settings'
 import { Side } from './components/Side'
@@ -20,6 +22,8 @@ export function App() {
   useEffect(() => applyTheme(theme), [theme])
   // The page's language, for screen readers and for breaking long words in the right places.
   const lang = useBook((s) => s.data.lang)
+  const zoom = useBook((s) => s.data.zoom)
+  useEffect(() => window.spellbook.zoom(zoomFor(zoom)), [zoom])
   useEffect(() => {
     document.documentElement.lang = lang
   }, [lang])
@@ -59,6 +63,7 @@ export function App() {
       <DragOverlay dropAnimation={null}>{dragged && <TaskCard task={dragged} place="overlay" />}</DragOverlay>
       <TaskSheet />
       <Settings />
+      <BuddySheet />
     </DndContext>
   )
 }

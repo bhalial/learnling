@@ -1,5 +1,5 @@
 import { useState, type CSSProperties, type ReactNode } from 'react'
-import { ALL_EYE_COLORS, EYE_COLOR_NAMES, eyeSwatch, eyesFor } from '../companions'
+import { SPECIES } from '../companions'
 import { clock, weekdayName } from '../i18n'
 import { addDays, mondayOf } from '../lib/dates'
 import { reminderMessage } from '../lib/reminder'
@@ -10,7 +10,6 @@ import { ALL_THEMES, THEMES } from '../themes'
 import type { Lang, Weekday } from '../types'
 import { Companion } from './Companion'
 import { Modal, SheetHeader } from './Modal'
-import { SpeciesPicker } from './SpeciesPicker'
 
 export function Settings() {
   const open = useBook((s) => s.settingsOpen)
@@ -46,7 +45,7 @@ function SettingsForm() {
   const today = useBook((s) => s.today)
   const sync = useBook((s) => s.sync)
   const {
-    setCompanion,
+    openBuddy,
     setLang,
     setTheme,
     addSubject,
@@ -188,36 +187,19 @@ function SettingsForm() {
 
       <section>
         <h3 className={heading}>{t.setup.companion}</h3>
-        <p className="m-0 mb-2 text-[15px] italic text-ink-soft">{t.setup.companionHint}</p>
-        <SpeciesPicker look={data.companion} lang={data.lang} headwear={THEMES[data.theme].headwear} onPick={(species) => setCompanion({ species })} />
-        <div className="mt-3 flex items-center gap-4">
-          <span className="text-[17px]">{t.setup.eyeColor}</span>
-          <div className="flex gap-2.5">
-            {ALL_EYE_COLORS.map((color) => (
-              <button
-                key={color}
-                type="button"
-                onClick={() => setCompanion({ eyes: color })}
-                aria-label={EYE_COLOR_NAMES[color][data.lang]}
-                title={EYE_COLOR_NAMES[color][data.lang]}
-                aria-pressed={eyesFor(data.companion.eyes) === color}
-                className={`blot-lg size-9 ${eyesFor(data.companion.eyes) === color ? 'outline-2 outline-offset-2 outline-ink outline-solid' : ''}`}
-                style={{ background: eyeSwatch(color) }}
-              />
-            ))}
-          </div>
+        {/* The companion has its own screen; here only the way there. */}
+        <div className="flex items-center gap-4">
+          <span className="desk grid place-items-center rounded-md px-2 pt-1" aria-hidden="true">
+            <Companion look={data.companion} mood="idle" scale={2} headwear={THEMES[data.theme].headwear} />
+          </span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="font-hand text-[26px] leading-none text-quill">{data.companion.name || SPECIES[data.companion.species].name[data.lang]}</span>
+            <span className="text-[15px] italic text-ink-soft">{SPECIES[data.companion.species].name[data.lang]}</span>
+          </span>
+          <button type="button" onClick={() => openBuddy(true)} className={secondary}>
+            {t.setup.companionOpen}
+          </button>
         </div>
-        <label className="mt-3 flex items-center gap-4">
-          <span className="text-[17px]">{t.setup.catName}</span>
-          <input
-            value={data.companion.name}
-            onChange={(e) => setCompanion({ name: e.target.value })}
-            placeholder={t.setup.catNamePlaceholder}
-            maxLength={24}
-            spellCheck={false}
-            className="h-12 w-72 border-0 border-b-[1.5px] border-ink bg-transparent px-1 font-hand text-[26px] text-quill outline-none placeholder:font-sans placeholder:text-[16px] placeholder:italic placeholder:text-ink-soft/60"
-          />
-        </label>
       </section>
 
       <section>

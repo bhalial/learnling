@@ -96,6 +96,8 @@ export interface SpellbookData {
   lessons?: Record<IsoDate, Lesson[]>
   reminder: { enabled: boolean; time: string; lastSent?: IsoDate }
   app: { tray: boolean; autostart: boolean }
+  /** How big the app is drawn (lib/zoom.ts); 1 when not set. */
+  zoom?: number
 }
 
 export interface Boot {

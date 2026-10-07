@@ -34,7 +34,7 @@ function Page({ monday, title, className }: { monday: IsoDate; title: string; cl
 
   return (
     <section className={`page flex min-w-0 flex-1 flex-col pb-3 pt-4 ${className}`}>
-      <header className="page-rule flex items-baseline justify-between gap-3 px-2 pb-2.5">
+      <header className="page-rule flex flex-wrap items-baseline justify-between gap-x-3 px-2 pb-2.5">
         <h2 className="m-0 whitespace-nowrap font-fell text-[26px] font-normal">{title}</h2>
         <span className="whitespace-nowrap text-[14px] italic text-ink-soft">
           {t.week(isoWeek(monday))} · {range(monday, addDays(monday, 4), lang)}

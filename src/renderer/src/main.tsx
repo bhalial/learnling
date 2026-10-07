@@ -5,6 +5,7 @@ import { wordsFor } from './i18n'
 import { reminderDue, reminderMessage } from './lib/reminder'
 import { useBook } from './store'
 import { applyTheme } from './themes'
+import { zoomFor } from './lib/zoom'
 import './styles.css'
 
 const MINUTE = 60_000
@@ -14,6 +15,8 @@ async function start(): Promise<void> {
   book.boot(await window.spellbook.boot())
   // Dressed in its theme before the first paint; App keeps it in step after that.
   applyTheme(useBook.getState().data.theme)
+  window.spellbook.zoom(zoomFor(useBook.getState().data.zoom))
+  window.spellbook.onZoomKey((step) => useBook.getState().zoomBy(step))
   void window.spellbook.applySettings(useBook.getState().data.app)
 
   // Save shortly after each change, and once more, blocking, when the window closes.

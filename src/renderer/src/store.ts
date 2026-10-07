@@ -9,6 +9,7 @@ import { mergeSync } from './lib/magister'
 import { demoBook, freshBook } from './lib/seed'
 import { distinctColors, freeColor, recolor, subjectInUse } from './lib/subjects'
 import { initialPlan, isDone, isMystery, isTrial, retrain } from './lib/tasks'
+import { stepZoom } from './lib/zoom'
 
 export interface Draft {
   subjectId: string
@@ -38,6 +39,8 @@ interface BookState {
   pinnedToday: boolean
   sheet: Sheet
   settingsOpen: boolean
+  /** The companion's own screen: what it is, how it looks, what it is called. */
+  buddyOpen: boolean
   reaction: Reaction | null
   sync: SyncState
 
@@ -45,6 +48,7 @@ interface BookState {
   refreshToday(): void
   openSheet(sheet: Sheet): void
   openSettings(open: boolean): void
+  openBuddy(open: boolean): void
   clearReaction(at: number): void
 
   setLang(lang: Lang): void
@@ -70,6 +74,8 @@ interface BookState {
   removeLesson(day: Weekday, index: number): void
 
   setReminder(patch: Partial<SpellbookData['reminder']>): void
+  /** One zoom step bigger (+1) or smaller (-1), or back to normal (0). */
+  zoomBy(step: number): void
   setApp(patch: Partial<SpellbookData['app']>): void
   connectMagister(): Promise<void>
   syncMagister(): Promise<void>
@@ -121,6 +127,7 @@ export const useBook = create<BookState>()((set, get) => {
     pinnedToday: false,
     sheet: null,
     settingsOpen: false,
+    buddyOpen: false,
     reaction: null,
     sync: { state: 'idle' },
 
@@ -139,6 +146,8 @@ export const useBook = create<BookState>()((set, get) => {
 
     openSheet: (sheet) => set({ sheet }),
     openSettings: (settingsOpen) => set({ settingsOpen }),
+    // One sheet at a time: the companion's screen replaces Settings when opened from there.
+    openBuddy: (buddyOpen) => set(buddyOpen ? { buddyOpen, settingsOpen: false } : { buddyOpen }),
     clearReaction: (at) => {
       if (get().reaction?.at === at) set({ reaction: null })
     },
@@ -257,6 +266,8 @@ export const useBook = create<BookState>()((set, get) => {
       })),
 
     setReminder: (patch) => change((data) => ({ ...data, reminder: { ...data.reminder, ...patch } })),
+
+    zoomBy: (step) => change((data) => ({ ...data, zoom: stepZoom(data.zoom ?? 1, step) })),
 
     setApp(patch) {
       change((data) => ({ ...data, app: { ...data.app, ...patch } }))

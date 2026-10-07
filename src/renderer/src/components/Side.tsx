@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { ACCESSORIES, SPECIES, swatchOf } from '../companions'
+import { SPECIES } from '../companions'
 import { REACTION_MOOD, restingMood } from '../companions/mood'
 import type { Mood } from '../companions/types'
 import { shortDay } from '../i18n'
@@ -18,9 +18,9 @@ const TALK_MS = 2500
 export function Side() {
   return (
     <aside className="-ml-2 flex w-[268px] shrink-0 flex-col gap-5 overflow-y-auto px-2 pb-4 pt-1.5 text-cream">
-      <CatPanel />
-      <Shelf />
       <FurtherAhead />
+      <Shelf />
+      <CatPanel />
     </aside>
   )
 }
@@ -31,7 +31,7 @@ function CatPanel() {
   const reaction = useBook((s) => s.reaction)
   const sync = useBook((s) => s.sync)
   const clearReaction = useBook((s) => s.clearReaction)
-  const setCompanion = useBook((s) => s.setCompanion)
+  const openBuddy = useBook((s) => s.openBuddy)
   const openSettings = useBook((s) => s.openSettings)
   const t = useWords()
   const { companion } = data
@@ -63,13 +63,11 @@ function CatPanel() {
     return () => clearInterval(timer)
   }, [])
 
-  // Dressing up is play, not planning: tucked away until asked for.
-  const [dressing, setDressing] = useState(false)
-
   const mood: Mood = reaction ? REACTION_MOOD[reaction.kind] : talking ? 'talk' : restingMood(data, today, hour)
 
   return (
-    <section className="flex flex-col gap-3">
+    // At the foot of the panel, below what needs doing; tap it for its own screen.
+    <section className="mt-auto flex flex-col gap-3">
       <div className="pinned-note mt-1.5 bg-note px-3.5 pb-2.5 pt-3.5 text-[15px] leading-snug text-ink" aria-live="polite">
         <p className="m-0">{line.text}</p>
         {line.setup && (
@@ -83,61 +81,18 @@ function CatPanel() {
       <div className="flex flex-col items-center justify-end">
         {/* Sits on the theme's platform (books, a launch pad, a garden bed…): its paws
             overlap the top by two art pixels. */}
-        <div className="z-10 -mb-2.5">
+        <button
+          type="button"
+          onClick={() => openBuddy(true)}
+          aria-label={t.dress(companion.name, species.name[data.lang])}
+          title={t.dress(companion.name, species.name[data.lang])}
+          className="z-10 -mb-2.5 rounded-md"
+        >
           <Companion look={companion} mood={mood} pulse={reaction?.at ?? 0} scale={5} headwear={THEMES[data.theme].headwear} />
-        </div>
+        </button>
         <div className="[zoom:0.85]">
           <Platform />
         </div>
-      </div>
-
-      <div className="flex flex-col gap-2.5">
-        <button
-          type="button"
-          onClick={() => setDressing(!dressing)}
-          aria-expanded={dressing}
-          className="flex min-h-11 items-center gap-2 self-start font-fell text-[18px] italic"
-        >
-          {t.dress(companion.name, species.name[data.lang])}
-          <svg viewBox="0 0 24 24" className={`size-4 fill-none stroke-current stroke-[2.5] transition-transform ${dressing ? 'rotate-180' : ''}`} aria-hidden="true">
-            <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </button>
-        {dressing && (
-          <>
-            <div className="flex gap-3.5 pl-1">
-              {species.coats.map((coat) => (
-                <button
-                  key={coat.id}
-                  type="button"
-                  onClick={() => setCompanion({ coat: coat.id })}
-                  aria-label={coat.name[data.lang]}
-                  title={coat.name[data.lang]}
-                  aria-pressed={companion.coat === coat.id}
-                  className={`blot-lg size-11 shadow-[inset_-4px_-5px_0_rgb(0_0_0/0.18)] ${
-                    companion.coat === coat.id ? 'outline-[2.5px] outline-offset-4 outline-gold outline-solid' : ''
-                  }`}
-                  style={{ background: swatchOf(companion.species, coat.id) }}
-                />
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {ACCESSORIES.map((accessory) => (
-                <button
-                  key={accessory}
-                  type="button"
-                  onClick={() => setCompanion({ accessory })}
-                  aria-pressed={companion.accessory === accessory}
-                  className={`h-11 whitespace-nowrap border-b-2 px-2.5 text-[15px] ${
-                    companion.accessory === accessory ? 'border-gold text-cream' : 'border-transparent text-cream-soft'
-                  }`}
-                >
-                  {accessory === 'hat' ? t.hat : accessory === 'collar' ? species.neckwear[data.lang] : t.nothing}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
       </div>
     </section>
   )
@@ -180,7 +135,7 @@ function FurtherAhead() {
 
   return (
     <section className="flex flex-col gap-1">
-      <h2 className="m-0 font-fell text-[19px] font-normal italic">{t.further}</h2>
+      <h2 className="m-0 font-fell text-[21px] font-normal">{t.further}</h2>
       {ahead.map((task) => {
         const subject = data.subjects.find((s) => s.id === task.given.subjectId)
         return (

@@ -1,12 +1,13 @@
 import { clock } from '../i18n'
 import { windowStart } from '../lib/dates'
 import { progress } from '../lib/tasks'
+import { ZOOMS, zoomFor } from '../lib/zoom'
 import { useBook, useWords } from '../store'
-import { NewIcon, ProgressMarks } from './ThemeParts'
+import { Icon, NewIcon, ProgressMarks } from './ThemeParts'
 
 /**
  * The bar over the book, kept to what is used every day: the title, Magister, the week's
- * progress, the button for new homework and the way into Settings. Language and the week
+ * progress, the button for new homework, zoom and the way into Settings. Language and the week
  * numbers live in Settings and on the pages, so this still fits a small laptop.
  */
 export function TopBar() {
@@ -41,6 +42,8 @@ export function TopBar() {
         {t.newTask}
       </button>
 
+      <Zoom />
+
       <button
         type="button"
         onClick={() => openSettings(true)}
@@ -54,6 +57,46 @@ export function TopBar() {
         </svg>
       </button>
     </header>
+  )
+}
+
+/**
+ * Smaller and bigger, like Ctrl - and Ctrl +. Away from normal size it shows how big, and
+ * that number takes it back.
+ */
+function Zoom() {
+  const zoom = zoomFor(useBook((s) => s.data.zoom))
+  const zoomBy = useBook((s) => s.zoomBy)
+  const t = useWords()
+  const button = 'grid size-10 shrink-0 place-items-center rounded-full text-cream-soft disabled:opacity-35'
+
+  return (
+    <div className="flex shrink-0 items-center" role="group">
+      <button type="button" onClick={() => zoomBy(-1)} disabled={zoom === ZOOMS[0]} aria-label={t.zoomOut} title={`${t.zoomOut} (Ctrl −)`} className={button}>
+        <Icon name="zoomOut" className="size-[22px]" width={1.8} />
+      </button>
+      {zoom !== 1 && (
+        <button
+          type="button"
+          onClick={() => zoomBy(0)}
+          aria-label={t.zoomReset(Math.round(zoom * 100))}
+          title={t.zoomReset(Math.round(zoom * 100))}
+          className="h-10 shrink-0 rounded-full px-1 text-[13px] tabular-nums text-cream-soft"
+        >
+          {Math.round(zoom * 100)}%
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={() => zoomBy(1)}
+        disabled={zoom === ZOOMS[ZOOMS.length - 1]}
+        aria-label={t.zoomIn}
+        title={`${t.zoomIn} (Ctrl +)`}
+        className={button}
+      >
+        <Icon name="zoomIn" className="size-[22px]" width={1.8} />
+      </button>
+    </div>
   )
 }
 

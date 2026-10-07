@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, webFrame } from 'electron'
 import type { Boot, MagisterSync, SpellbookData } from '../renderer/src/types'
 
 const spellbook = {
@@ -17,6 +17,16 @@ const spellbook = {
 
   applySettings(settings: SpellbookData['app']): Promise<void> {
     return ipcRenderer.invoke('app:settings', settings)
+  },
+
+  /** Draws the whole app at this size; 1 is as designed. */
+  zoom(factor: number): void {
+    webFrame.setZoomFactor(factor)
+  },
+
+  /** Ctrl + / Ctrl - / Ctrl 0 on the keyboard: a step of +1, -1, or 0 for normal size. */
+  onZoomKey(listener: (step: number) => void): void {
+    ipcRenderer.on('zoom-key', (_event, step: number) => listener(step))
   },
 
   notify(title: string, body: string): Promise<void> {
