@@ -55,6 +55,12 @@ All of this is `face()` in `face.ts`; never draw eyes in an animal file.
 - **Low on the face**: the bottom of the eyes on row 21 of the head, level with the nose,
   14 pixels apart. The lower the eyes, the younger and sweeter the face.
 - **Closed eyes are arcs**: a relaxed curve for blinking and sleep, `^ ^` for happy.
+- **Each animal has its own eye shape** (`eyes` on the animal, the shapes in `face.ts`): the
+  cat the tall classic eye above, the dog round eyes with a crescent of colour, the parrot a
+  big dark centre in a thin ring of colour, the whale small bright beads, and the robot square
+  screen lights in the eye colour, which close in that colour too. The tall classic eye looked
+  like a cat's on every animal, so it stays the cat's. Placement is shared: every shape sits
+  centred on the same spot, its bottom on row 21.
 - **Looking aside moves the whole eye** one pixel; the shines go with it.
 - **Blush on every animal**: three pink pixels under the outer corner of each eye.
 - **Mouths are small**: a little smile, open with a tongue when happy or talking, a small

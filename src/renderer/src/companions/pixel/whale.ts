@@ -72,6 +72,8 @@ const SCARF: Grid = [
 const SCARF_END: Grid = ['ooo', 'oro', 'oRo', 'oro', 'oRo', 'ooo']
 
 export const whale: PixelAnimal = {
+  // Small bright beads, the whale's gentle look.
+  eyes: 'bead',
   coats: {
     ocean: { o: '#2c4a6e', b: '#5f8fc0', d: '#4a76a6', l: '#86b0d8', w: '#f2f5f7', v: '#d3dde7' },
     storm: { o: '#4c5560', b: '#9aa5b1', d: '#808b98', l: '#b9c2cb', w: '#f4f5f6', v: '#d9dee3' },
@@ -88,7 +90,7 @@ export const whale: PixelAnimal = {
       // Where the others sway a tail, the whale also paddles its flippers.
       { grid: FLIPPER, x: 0, y: top + 24 - pose.tail },
       { grid: flipX(FLIPPER), x: 31, y: top + 24 - pose.tail },
-      ...face(pose, top),
+      ...face(pose, top, this.eyes),
       { grid: MOUTH[pose.mouth], x: 11, y: top + 22 }
     ]
     if (accessory === 'collar') layers.push({ grid: SCARF, x: 6, y: top + 29 }, { grid: SCARF_END, x: 9, y: top + 31 })

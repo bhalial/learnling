@@ -81,6 +81,8 @@ const MOUTH = {
 const BOW_TIE: Grid = ['oo....oo', 'orroorro', 'orrRRrro', 'orroorro', 'oo....oo']
 
 export const robot: PixelAnimal = {
+  // Screen lights in the eye colour, that close in it too.
+  eyes: 'screen',
   coats: {
     tin: { o: '#4a5260', b: '#b8c2cc', d: '#8f9aa8', l: '#dde3e9', f: '#f5f8fa', c: '#5a6472', a: '#ff6b81' },
     mint: { o: '#2f6656', b: '#8fd3c1', d: '#6bb8a4', l: '#bdeadd', f: '#f4fbf8', c: '#2f6656', a: '#ffb347' },
@@ -103,7 +105,7 @@ export const robot: PixelAnimal = {
       { grid: ARM, x: 3, y: TOP + 29 - swing },
       { grid: flipX(ARM), x: 29, y: TOP + 29 - (1 - swing) },
       { grid: HEAD, x: 0, y: head },
-      ...face(pose, head),
+      ...face(pose, head, this.eyes),
       { grid: MOUTH[pose.mouth], x: 15, y: head + 23 }
     ]
     if (accessory === 'collar') layers.push({ grid: BOW_TIE, x: 14, y: TOP + 28 })

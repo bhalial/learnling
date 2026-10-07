@@ -1,6 +1,6 @@
 import type { AccessoryId } from '../types'
 import type { Pose } from './animate'
-import { EYE_COLORS, SHARED, type Headwear } from './face'
+import { EYE_COLORS, SHARED, type EyeStyle, type Headwear } from './face'
 import type { Palette } from './sprite'
 
 /** Every pixel animal is drawn on the same frame, with room above the head for the hat. */
@@ -14,6 +14,8 @@ export interface PixelAnimal {
   coats: Record<string, Palette>
   /** Where a thought (z, ?, sparkle) floats: above the head, to the right. */
   anchor: readonly [number, number]
+  /** The animal's own eyes (face.ts); the cat's classic ones when not given. */
+  eyes?: EyeStyle
   /** `headwear` is what the hat slot holds; the theme decides it, the wizard hat by default. */
   frame(pose: Pose, accessory: AccessoryId, headwear?: Headwear): string[]
 }

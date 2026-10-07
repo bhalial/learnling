@@ -97,7 +97,7 @@ export const cat: PixelAnimal = {
       { grid: TAIL[pose.tail], x: 29, y: TOP + 26 },
       { grid: SITTING, x: 0, y: TOP + 27 },
       { grid: HEAD, x: 0, y: head },
-      ...face(pose, head),
+      ...face(pose, head, this.eyes),
       { grid: MOUTH[pose.mouth], x: 15, y: head + 21 }
     ]
     if (accessory === 'collar') layers.push({ grid: COLLAR, x: 8, y: TOP + 29 })

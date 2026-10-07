@@ -79,6 +79,8 @@ const BEAK = {
 const BOW_TIE: Grid = ['qq....qq', 'quuqquuq', 'quuUUuuq', 'quuqquuq', 'qq....qq']
 
 export const parrot: PixelAnimal = {
+  // A bird's eye: a big dark centre in a ring of colour.
+  eyes: 'bird',
   coats: {
     scarlet: {
       o: '#7a1d16', b: '#e0442f', d: '#b8301f', l: '#f07a5c', x: '#e0442f', c: '#e85a3c',
@@ -107,7 +109,7 @@ export const parrot: PixelAnimal = {
       { grid: FOOT, x: 12, y: TOP + 37 },
       { grid: FOOT, x: 20, y: TOP + 37 },
       { grid: HEAD, x: 0, y: head },
-      ...face(pose, head),
+      ...face(pose, head, this.eyes),
       { grid: BEAK[pose.mouth], x: 15, y: head + 19 }
     ]
     if (accessory === 'collar') layers.push({ grid: BOW_TIE, x: 14, y: TOP + 29 })

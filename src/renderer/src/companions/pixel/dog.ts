@@ -86,6 +86,8 @@ const COLLAR: Grid = [
 const NOSE = { N: '#2e2220' }
 
 export const dog: PixelAnimal = {
+  // Round eyes with a crescent of colour: a puppy's, not the cat's tall ones.
+  eyes: 'round',
   coats: {
     golden: { ...NOSE, o: '#8a5a26', b: '#e2ad62', d: '#c48a42', l: '#f2cd8e', w: '#fbeed3', v: '#ecd8b0', e: '#b97f3e', E: '#9a6530' },
     chocolate: { ...NOSE, o: '#3e2414', b: '#8a5636', d: '#6e4128', l: '#a66e4a', w: '#d9b48e', v: '#c49c76', e: '#5c3720', E: '#4a2b18' },
@@ -99,7 +101,7 @@ export const dog: PixelAnimal = {
       { grid: TAIL[pose.tail], x: 29, y: TOP + 28 },
       { grid: SITTING, x: 0, y: TOP + 27 },
       { grid: HEAD, x: 0, y: head },
-      ...face(pose, head),
+      ...face(pose, head, this.eyes),
       { grid: MOUTH[pose.mouth], x: 14, y: head + 21 },
       { grid: EAR, x: 0, y: head + 8 },
       { grid: flipX(EAR), x: 29, y: head + 8 }

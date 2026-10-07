@@ -23,6 +23,28 @@ const CLOSED: Record<'blink' | 'happy', Grid> = {
   happy: ['......', '......', '..kk..', '.k..k.', 'k....k', '......', '......']
 }
 
+/**
+ * Each animal's own eyes. The tall eye with the colour glowing along the bottom (`classic`)
+ * is the cat's; the dog's are round, the parrot's are a bird's, the whale's small beads,
+ * and the robot's are lights. All keep the face's rules: dark eyes that shine, never a
+ * small pupil in a pale iris (the parrot's coloured ring is thin round a big dark centre).
+ * A robot's lights are drawn in the eye colour, and close in it too.
+ */
+export type EyeStyle = 'classic' | 'round' | 'bird' | 'bead' | 'screen'
+
+const LIGHT_CLOSED: Record<'blink' | 'happy', Grid> = {
+  blink: ['......', '......', '......', '......', 'gggggg', '......', '......'],
+  happy: ['......', '......', '..gg..', '.g..g.', 'g....g', '......', '......']
+}
+
+const EYES: Record<EyeStyle, { open: Grid; blink?: Grid; happy?: Grid }> = {
+  classic: { open: EYE },
+  round: { open: ['.kkkk.', 'khhkkk', 'khhkkk', 'kkkkkk', 'kjjjhk', '.kggk.'] },
+  bird: { open: ['.ggg.', 'gkhkg', 'gkkkg', 'gkkkg', '.ggg.'] },
+  bead: { open: ['.kkk.', 'khhkk', 'khkkk', 'kkkhk', '.kkk.'] },
+  screen: { open: ['GGGGGG', 'gGgggg', 'gggggg', 'gggggg', 'jjjjjj'], ...LIGHT_CLOSED }
+}
+
 /** Eye colours, each in three tones: deep, rich, light. */
 export const EYE_COLORS: Record<string, Palette> = {
   green: { j: '#2f7d3c', g: '#4fb34c', G: '#97dc72' },
@@ -37,13 +59,16 @@ export const EYE_COLORS: Record<string, Palette> = {
  * the same place: low on the face, their bottom on row 21, 14 pixels apart. The younger a
  * face looks, the lower its eyes sit.
  */
-export function face(pose: Pose, head: number): Placed[] {
-  const eye = pose.eyes === 'open' ? EYE : CLOSED[pose.eyes]
+export function face(pose: Pose, head: number, style: EyeStyle = 'classic'): Placed[] {
+  const set = EYES[style]
+  const eye = pose.eyes === 'open' ? set.open : (set[pose.eyes] ?? CLOSED[pose.eyes])
   const look = pose.eyes === 'open' ? pose.gaze : 0
   const top = head + 22 - eye.length
+  // Narrower or wider eyes stay centred on the classic eye's spot.
+  const shift = Math.floor((6 - eye[0].length) / 2)
   return [
-    { grid: eye, x: 8 + look, y: top },
-    { grid: eye, x: 22 + look, y: top },
+    { grid: eye, x: 8 + shift + look, y: top },
+    { grid: eye, x: 22 + shift + look, y: top },
     { grid: ['ppp'], x: 6, y: head + 22 },
     { grid: ['ppp'], x: 27, y: head + 22 }
   ]
