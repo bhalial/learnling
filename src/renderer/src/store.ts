@@ -37,6 +37,7 @@ interface BookState {
   today: IsoDate
   /** Set when SPELLBOOK_TODAY pins the date, so the clock never moves it. */
   pinnedToday: boolean
+  platform: Boot['platform']
   sheet: Sheet
   settingsOpen: boolean
   /** The companion's own screen: what it is, how it looks, what it is called. */
@@ -125,19 +126,20 @@ export const useBook = create<BookState>()((set, get) => {
     data: freshBook(),
     today: todayIso(),
     pinnedToday: false,
+    platform: 'desktop',
     sheet: null,
     settingsOpen: false,
     buddyOpen: false,
     reaction: null,
     sync: { state: 'idle' },
 
-    boot({ data, demo, today, theme, lang }) {
+    boot({ data, demo, today, theme, lang, platform }) {
       const day = today ?? todayIso()
       // Books saved by an older version lack the newer settings; fill them in.
       const book = isBook(data) ? upgrade(data) : demo ? demoBook(day) : freshBook()
       if (theme) book.theme = themeFor(theme)
       if (lang === 'en' || lang === 'nl') book.lang = lang
-      set({ ready: true, data: book, today: day, pinnedToday: Boolean(today) })
+      set({ ready: true, data: book, today: day, pinnedToday: Boolean(today), platform })
     },
 
     refreshToday() {

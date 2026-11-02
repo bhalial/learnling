@@ -37,7 +37,7 @@ mkdirSync(join(out, 'fonts'), { recursive: true })
 
 await build({ entryPoints: [join(root, 'main.ts')], bundle: true, minify: true, format: 'iife', target: 'es2020', outfile: join(out, 'app.js') })
 
-for (const file of ['index.html', 'styles.css']) copyFileSync(join(root, file), join(out, file))
+for (const file of ['index.html', 'privacy.html', 'styles.css']) copyFileSync(join(root, file), join(out, file))
 cpSync(join(root, 'img'), join(out, 'img'), { recursive: true })
 copyFileSync(join(root, '..', 'resources', 'icon.png'), join(out, 'icon.png'))
 

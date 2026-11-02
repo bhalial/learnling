@@ -89,13 +89,15 @@ const en = {
     at: 'at',
     test: 'Send a test',
     sample: 'This is how I’ll tell you after school what is waiting.',
-    sent: 'Sent! Nothing popped up? Then Windows is holding notifications back: check Do not disturb.'
+    sent: 'Sent! Nothing popped up? Then Windows is holding notifications back: check Do not disturb.',
+    sentChrome: 'Sent! Nothing popped up? Then your computer is holding notifications back: check Do not disturb.'
   },
   background: {
     title: 'In the background',
     tray: 'Keep running next to the clock when the window closes',
     autostart: 'Start with Windows',
-    autostartDev: 'Works in the installed app.'
+    autostartDev: 'Works in the installed app.',
+    chrome: 'Reminders keep coming as long as Chrome is open, also when Learnling’s window is closed.'
   },
   on: 'On',
   off: 'Off',
@@ -256,13 +258,15 @@ const nl: Dict = {
     at: 'om',
     test: 'Stuur een test',
     sample: 'Zo vertel ik je na school wat er op je wacht.',
-    sent: 'Verstuurd! Niks gezien? Dan houdt Windows meldingen tegen: kijk bij Niet storen.'
+    sent: 'Verstuurd! Niks gezien? Dan houdt Windows meldingen tegen: kijk bij Niet storen.',
+    sentChrome: 'Verstuurd! Niks gezien? Dan houdt je computer meldingen tegen: kijk bij Niet storen.'
   },
   background: {
     title: 'Op de achtergrond',
     tray: 'Blijf naast de klok draaien als het venster dichtgaat',
     autostart: 'Starten met Windows',
-    autostartDev: 'Werkt in de geïnstalleerde app.'
+    autostartDev: 'Werkt in de geïnstalleerde app.',
+    chrome: 'Herinneringen komen zolang Chrome openstaat, ook als het venster van Learnling dicht is.'
   },
   on: 'Aan',
   off: 'Uit',

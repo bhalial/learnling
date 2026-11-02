@@ -22,7 +22,8 @@
 @import '@fontsource/rubik/latin-500.css';
 @import '@fontsource/rubik/latin-700.css';
 @import '@fontsource/bungee/latin-400.css';
-@import 'tailwindcss';
+/* Classes are looked for in src/renderer, also when the Chrome extension builds from extension/. */
+@import 'tailwindcss' source('..');
 
 /*
  * The spellbook's colours and fonts. Every theme sets its own over these (themes.ts,

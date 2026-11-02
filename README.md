@@ -1,8 +1,8 @@
 # Learnling
 
 A two-week homework planner with a study buddy, for secondary-school students in the
-Netherlands. A Windows desktop app (Electron + React + Tailwind 4), touchscreen-friendly, in
-English and Dutch.
+Netherlands. A Windows desktop app (Electron + React + Tailwind 4) and a Chrome extension for
+Chromebooks and Chrome elsewhere, touchscreen-friendly, in English and Dutch.
 
 **Website and download: <https://bhalial.github.io/learnling/>**
 
@@ -27,6 +27,7 @@ npm run pack       # unpacked Windows app in dist/win-unpacked/
 npm run dist       # the installer: dist/Learnling-Setup-<version>.exe
 npm run icon       # redraw resources/icon.ico + icon.png from icon.svg
 npm run site       # the product page, in site/out
+npm run extension  # the Chrome extension, in extension/out
 npm test           # date and planning rules
 npm run typecheck
 ```
@@ -130,6 +131,30 @@ away (the real message, or a sample when nothing is waiting); the timing rules a
 `src/renderer/src/lib/reminder.ts`. With *Keep running next to the clock* on, closing
 the window hides it to the tray so reminders keep coming; *Start with Windows* only takes effect
 in the installed app.
+
+## Chrome extension
+
+The same book as a Manifest V3 extension, for Chromebooks and Chrome (or Edge) on any computer.
+`extension/` holds only what differs from the Windows app; the page is the very same renderer:
+
+- `bridge.ts` is `window.spellbook` done with Chrome's APIs: the book in `chrome.storage.local`,
+  zoom on the page's own tab, notifications through `chrome.notifications`. No tray and no
+  autostart, so Settings shows one line about reminders instead (`Boot.platform`).
+- `background.ts`, the service worker: the toolbar button opens the book in a window of its own;
+  a minute alarm sends the after-school reminder when the book is closed (`remind.ts`, tested;
+  an open book reminds by itself).
+- Magister is optional: Chrome asks for `*.magister.net` only when someone presses *Connect
+  Magister*. `content.ts` then runs on the school's Magister pages and hands Magister's own token
+  over; the service worker keeps it in `chrome.storage.session` (memory only). `magister.ts` is the
+  counterpart of `src/main/magister.ts`: the login in a window of its own, a renewal in a tab in
+  the background that closes before any login page would show, and the reads in `agenda.ts`.
+  *Disconnect* also takes the permission back.
+
+`npm run extension` builds it into `extension/out`. To try it: `chrome://extensions` → *Developer
+mode* → *Load unpacked* → `extension/out`. Development switches go in the page's address, e.g.
+`app.html?demo=1&today=2026-09-30&theme=garden&lang=nl`; demo books are never saved. A release
+attaches `Learnling-extension-<version>.zip` to the GitHub release, which goes to the Chrome Web
+Store by hand (listing text and answers: [docs/webstore.md](docs/webstore.md)).
 
 ## Themes
 

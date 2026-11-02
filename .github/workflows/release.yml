@@ -26,3 +26,14 @@ jobs:
       - run: npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # The Chrome extension, zipped for the Chrome Web Store (uploaded there by hand), on the
+      # release electron-builder just made. Same job, so the release is there before the upload.
+      - run: npm run extension
+      - name: Attach the Chrome extension
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          Compress-Archive -Path extension/out/* -DestinationPath "Learnling-extension-$version.zip"
+          gh release upload "v$version" "Learnling-extension-$version.zip" --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

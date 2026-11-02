@@ -7,3 +7,5 @@ art/pixel/preview.html
 __pycache__/
 # Built by npm run site
 site/out
+# Built by npm run extension
+extension/out

@@ -5,7 +5,8 @@ import type { MagisterSync } from '../renderer/src/types'
 // Magister has no public API. Learnling only ever *reads*, and it does so the way
 // the Magister web app itself does: inside a real Magister page, with the token
 // that page keeps in sessionStorage. The login lives in this persistent session;
-// no password ever passes through Learnling.
+// no password ever passes through Learnling. The Chrome extension reads Magister the
+// same way (extension/magister.ts, extension/agenda.ts); keep the two alike.
 const PARTITION = 'persist:magister'
 const ACCOUNTS = 'accounts.magister.net'
 

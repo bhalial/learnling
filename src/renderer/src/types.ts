@@ -107,6 +107,8 @@ export interface Boot {
   /** SPELLBOOK_THEME and SPELLBOOK_LANG: the theme and language to open the book in. */
   theme: string | null
   lang: string | null
+  /** The Windows app, or the Chrome extension (no tray, no starting with the computer). */
+  platform: 'desktop' | 'extension'
 }
 
 /** One appointment as the main process hands it over: Magister's fields, trimmed. */

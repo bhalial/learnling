@@ -1,6 +1,7 @@
 /**
  * Renders resources/icon.svg to the app icon: a multi-size .ico (exe, installer,
- * window, tray) and a 256px .png (notifications, and a preview to look at).
+ * window, tray), a 256px .png (notifications, and a preview to look at), and the
+ * Chrome extension's sizes in resources/extension.
  * Electron is the rasterizer, offscreen: a hidden normal window never gets
  * composited on Windows, so capturePage would wait forever there.
  *
@@ -9,11 +10,12 @@
  *
  *   npx electron scripts/make-icon.js
  */
-const { readFileSync, writeFileSync } = require('node:fs')
+const { mkdirSync, readFileSync, writeFileSync } = require('node:fs')
 const { join } = require('node:path')
 const { app, BrowserWindow } = require('electron')
 
 const SIZES = [16, 24, 32, 48, 64, 128, 256]
+const EXTENSION_SIZES = [16, 32, 48, 128]
 const resources = join(__dirname, '..', 'resources')
 
 app.disableHardwareAcceleration()
@@ -62,7 +64,9 @@ app
     const rendered = await renderAll(readFileSync(join(resources, 'icon.svg'), 'utf8'))
     writeFileSync(join(resources, 'icon.ico'), await pngToIco(SIZES.map((size) => rendered.get(size))))
     writeFileSync(join(resources, 'icon.png'), rendered.get(256))
-    console.log('wrote resources/icon.ico and resources/icon.png')
+    mkdirSync(join(resources, 'extension'), { recursive: true })
+    for (const size of EXTENSION_SIZES) writeFileSync(join(resources, 'extension', `icon-${size}.png`), rendered.get(size))
+    console.log('wrote resources/icon.ico, resources/icon.png and resources/extension/icon-*.png')
     app.quit()
   })
   .catch((error) => {

@@ -44,6 +44,7 @@ function SettingsForm() {
   const data = useBook((s) => s.data)
   const today = useBook((s) => s.today)
   const sync = useBook((s) => s.sync)
+  const platform = useBook((s) => s.platform)
   const {
     openBuddy,
     setLang,
@@ -169,19 +170,24 @@ function SettingsForm() {
           <button type="button" onClick={sendTest} className="mt-2 h-11 px-1 text-[16px] italic text-quill underline-offset-4 hover:underline">
             {t.reminder.test}
           </button>
-          {testSent && <p className="m-0 text-[14px] italic text-ink-soft">{t.reminder.sent}</p>}
+          {testSent && <p className="m-0 text-[14px] italic text-ink-soft">{platform === 'extension' ? t.reminder.sentChrome : t.reminder.sent}</p>}
         </div>
         <div>
           <h3 className={heading}>{t.background.title}</h3>
-          <div className="flex flex-col gap-2">
-            <Toggle on={data.app.tray} onChange={(tray) => setApp({ tray })} label={t.background.tray}>
-              {t.background.tray}
-            </Toggle>
-            <Toggle on={data.app.autostart} onChange={(autostart) => setApp({ autostart })} label={t.background.autostart}>
-              {t.background.autostart}
-            </Toggle>
-            {import.meta.env.DEV && <p className="m-0 text-[14px] italic text-ink-soft">{t.background.autostartDev}</p>}
-          </div>
+          {/* Chrome keeps the extension's reminders going by itself: there is no tray to choose. */}
+          {platform === 'extension' ? (
+            <p className="m-0 max-w-[40ch] text-[16px] leading-snug text-ink-soft">{t.background.chrome}</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <Toggle on={data.app.tray} onChange={(tray) => setApp({ tray })} label={t.background.tray}>
+                {t.background.tray}
+              </Toggle>
+              <Toggle on={data.app.autostart} onChange={(autostart) => setApp({ autostart })} label={t.background.autostart}>
+                {t.background.autostart}
+              </Toggle>
+              {import.meta.env.DEV && <p className="m-0 text-[14px] italic text-ink-soft">{t.background.autostartDev}</p>}
+            </div>
+          )}
         </div>
       </section>
 

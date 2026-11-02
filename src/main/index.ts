@@ -155,7 +155,7 @@ async function capture(file: string): Promise<void> {
   app.quit()
 }
 
-ipcMain.handle('boot', () => ({ data: readData(dataFile()), demo, today, theme, lang }))
+ipcMain.handle('boot', () => ({ data: readData(dataFile()), demo, today, theme, lang, platform: 'desktop' }))
 ipcMain.handle('save', (_event, data: unknown) => writeData(dataFile(), data))
 ipcMain.on('save-now', (event, data: unknown) => {
   writeData(dataFile(), data)
