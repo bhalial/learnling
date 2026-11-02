@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { stepZoom, ZOOMS, zoomFor } from './zoom'
+import { firstZoom, stepZoom, ZOOMS, zoomFor } from './zoom'
 
 describe('zoom', () => {
   it('steps up and down, and stops at the ends', () => {
@@ -17,5 +17,13 @@ describe('zoom', () => {
     expect(zoomFor(1.1)).toBe(1.1)
     expect(zoomFor(3)).toBe(1)
     expect(zoomFor(undefined)).toBe(1)
+  })
+
+  it('starts at 90 % on a short screen, until a size is picked', () => {
+    expect(firstZoom(undefined, 720)).toBe(0.9) // 1366 × 768 Chromebook, minus the shelf
+    expect(firstZoom(undefined, 984)).toBeNull() // 1280 × 1024 laptop, minus the taskbar
+    expect(firstZoom(1, 720)).toBeNull()
+    expect(firstZoom(1.1, 720)).toBeNull()
+    expect(ZOOMS).toContain(firstZoom(undefined, 720))
   })
 })

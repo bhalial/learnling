@@ -5,14 +5,15 @@ import { wordsFor } from './i18n'
 import { reminderDue, reminderMessage } from './lib/reminder'
 import { useBook } from './store'
 import { applyTheme } from './themes'
-import { zoomFor } from './lib/zoom'
+import { firstZoom, zoomFor } from './lib/zoom'
 import './styles.css'
 
 const MINUTE = 60_000
 
 async function start(): Promise<void> {
   const book = useBook.getState()
-  book.boot(await window.spellbook.boot())
+  const booted = await window.spellbook.boot()
+  book.boot(booted)
   // Dressed in its theme before the first paint; App keeps it in step after that.
   applyTheme(useBook.getState().data.theme)
   window.spellbook.zoom(zoomFor(useBook.getState().data.zoom))
@@ -30,6 +31,11 @@ async function start(): Promise<void> {
     clearTimeout(timer)
     window.spellbook.saveNow(useBook.getState().data)
   })
+
+  // A short screen (a Chromebook, say) starts at 90 %, once, and saved like any picked size.
+  // The sample book keeps 100 %, so screenshots stay the same on every screen.
+  const first = booted.demo ? null : firstZoom(useBook.getState().data.zoom, screen.availHeight)
+  if (first) useBook.getState().setZoom(first)
 
   // Read Magister at start, every half hour, and when the window comes back after a while.
   // Once Magister wants a fresh login, wait for the login instead of asking again and again.

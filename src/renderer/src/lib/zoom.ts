@@ -13,3 +13,13 @@ export function stepZoom(current: number, step: number): number {
 
 /** A zoom from a saved book, kept to the steps there are. */
 export const zoomFor = (zoom: unknown): number => (typeof zoom === 'number' && ZOOMS.includes(zoom) ? zoom : 1)
+
+/** Screens shorter than this (a 1366 × 768 Chromebook, say) cut off the bottom of the book at 100 %. */
+const SHORT_SCREEN = 800
+
+/**
+ * The size a book starts at before anyone has picked one: 90 % on a short screen, so it all
+ * fits. Null when a size was picked (even 100 %) or the screen is tall enough.
+ */
+export const firstZoom = (zoom: unknown, screenHeight: number): number | null =>
+  zoom === undefined && screenHeight < SHORT_SCREEN ? 0.9 : null

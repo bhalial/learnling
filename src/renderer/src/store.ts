@@ -9,7 +9,7 @@ import { mergeSync } from './lib/magister'
 import { demoBook, freshBook } from './lib/seed'
 import { distinctColors, freeColor, recolor, subjectInUse } from './lib/subjects'
 import { initialPlan, isDone, isMystery, isTrial, retrain } from './lib/tasks'
-import { stepZoom } from './lib/zoom'
+import { stepZoom, zoomFor } from './lib/zoom'
 
 export interface Draft {
   subjectId: string
@@ -77,6 +77,8 @@ interface BookState {
   setReminder(patch: Partial<SpellbookData['reminder']>): void
   /** One zoom step bigger (+1) or smaller (-1), or back to normal (0). */
   zoomBy(step: number): void
+  /** A size of its own, e.g. the one a short screen starts at (lib/zoom.ts). */
+  setZoom(zoom: number): void
   setApp(patch: Partial<SpellbookData['app']>): void
   connectMagister(): Promise<void>
   syncMagister(): Promise<void>
@@ -270,6 +272,8 @@ export const useBook = create<BookState>()((set, get) => {
     setReminder: (patch) => change((data) => ({ ...data, reminder: { ...data.reminder, ...patch } })),
 
     zoomBy: (step) => change((data) => ({ ...data, zoom: stepZoom(data.zoom ?? 1, step) })),
+
+    setZoom: (zoom) => change((data) => ({ ...data, zoom: zoomFor(zoom) })),
 
     setApp(patch) {
       change((data) => ({ ...data, app: { ...data.app, ...patch } }))
