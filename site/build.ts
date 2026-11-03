@@ -5,7 +5,8 @@
  *
  *   npm run site
  */
-import { copyFileSync, cpSync, mkdirSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { copyFileSync, cpSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { build } from 'esbuild'
 import { ALL_SPECIES, SPECIES } from '../src/renderer/src/companions'
@@ -151,5 +152,13 @@ for (const [colour, offset] of [[[0x5b, 0x2b, 0x23], unit / 2], [[0xe3, 0xb5, 0x
   )
 }
 writeFileSync(join(out, 'og.png'), picture.toPng())
+
+// The pages ask for their styles and script by content. GitHub Pages lets a browser keep files
+// for ten minutes, and a new page with the old styles shows every computer's download at once.
+const stamp = (file: string): string => createHash('sha256').update(readFileSync(join(out, file))).digest('hex').slice(0, 10)
+for (const page of ['index.html', 'privacy.html']) {
+  const html = readFileSync(join(out, page), 'utf8').replace(/(href|src)="(styles\.css|themes\.css|app\.js)"/g, (_, attr, file) => `${attr}="${file}?v=${stamp(file)}"`)
+  writeFileSync(join(out, page), html)
+}
 
 console.log('built', out)
