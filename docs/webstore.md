@@ -1,5 +1,9 @@
 # Chrome Web Store listing
 
+Item `hlfpfjnjocgpkccdmkhhkfdbdphdkodn`, listed at
+<https://chromewebstore.google.com/detail/hlfpfjnjocgpkccdmkhhkfdbdphdkodn> (the site's Chrome button
+links there).
+
 What goes into the Chrome Web Store dashboard for the extension. Upload
 `Learnling-extension-<version>.zip` from the GitHub release (or zip `extension/out` yourself: the
 manifest must sit at the root of the zip).

@@ -80,6 +80,13 @@ html[data-lang='en'] [lang='nl']:not(html) {
   display: none !important;
 }
 
+/* Only this computer's way in: the Windows app, the Chrome extension, or a note on a phone. */
+html[data-platform='windows'] [data-only]:not([data-only~='windows']),
+html[data-platform='chrome'] [data-only]:not([data-only~='chrome']),
+html[data-platform='phone'] [data-only]:not([data-only~='phone']) {
+  display: none !important;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -273,10 +280,6 @@ h2::after {
 
 .version:not(:empty)::before {
   content: ' · ';
-}
-
-.elsewhere[hidden] {
-  display: none;
 }
 
 .elsewhere {

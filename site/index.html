@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Learnling · je huiswerk, maar dan leuk</title>
-    <meta name="description" content="Learnling zet je huiswerk en toetsen van twee weken op één plek, met een pixelmaatje dat je helpt onthouden. Zes thema's, gratis voor Windows, met Magister." />
+    <meta name="description" content="Learnling zet je huiswerk en toetsen van twee weken op één plek, met een pixelmaatje dat je helpt onthouden. Zes thema's, gratis voor Windows en Chromebook, met Magister." />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Learnling · je huiswerk, maar dan leuk" />
-    <meta property="og:description" content="Twee weken huiswerk en toetsen op één plek, met een pixelmaatje en zes thema's. Gratis voor Windows, met Magister." />
+    <meta property="og:description" content="Twee weken huiswerk en toetsen op één plek, met een pixelmaatje en zes thema's. Gratis voor Windows en Chromebook, met Magister." />
     <meta property="og:url" content="https://bhalial.github.io/learnling/" />
     <meta property="og:image" content="https://bhalial.github.io/learnling/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -32,6 +32,10 @@
         document.documentElement.dataset.lang = lang
         document.documentElement.lang = lang
         if (theme) document.documentElement.dataset.theme = theme
+        // Windows gets the app, a Chromebook or Mac the Chrome extension, a phone or tablet a note.
+        var ua = navigator.userAgent
+        var phone = /Android|iPhone|iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+        document.documentElement.dataset.platform = phone ? 'phone' : /Windows/.test(ua) ? 'windows' : 'chrome'
       })()
     </script>
   </head>
@@ -59,18 +63,34 @@
             <span lang="en">Learnling puts two weeks of homework and tests in one place. With a buddy who helps you remember what needs doing and cheers when you tick something off. In the theme you like: a spellbook, a vegetable garden, an ocean dive and more.</span>
           </p>
           <div class="cta">
-            <a class="button gold" id="download" href="https://github.com/bhalial/learnling/releases/latest">
-              <span lang="nl">Download gratis</span>
-              <span lang="en">Download for free</span>
-            </a>
-            <p class="fine">
-              <span lang="nl">Voor Windows 10 en 11 · geen account nodig</span>
-              <span lang="en">For Windows 10 and 11 · no account needed</span>
-              <span class="version" id="version"></span>
+            <div data-only="windows phone">
+              <a class="button gold" id="download" href="https://github.com/bhalial/learnling/releases/latest">
+                <span lang="nl">Download gratis</span>
+                <span lang="en">Download for free</span>
+              </a>
+              <p class="fine">
+                <span lang="nl">Voor Windows 10 en 11 · geen account nodig</span>
+                <span lang="en">For Windows 10 and 11 · no account needed</span>
+                <span class="version" id="version"></span>
+              </p>
+            </div>
+            <div data-only="chrome">
+              <a class="button gold" href="https://chromewebstore.google.com/detail/hlfpfjnjocgpkccdmkhhkfdbdphdkodn">
+                <span lang="nl">Toevoegen aan Chrome</span>
+                <span lang="en">Add to Chrome</span>
+              </a>
+              <p class="fine">
+                <span lang="nl">Voor Chromebook, en Chrome op Mac of Linux · geen account nodig</span>
+                <span lang="en">For Chromebook, and Chrome on Mac or Linux · no account needed</span>
+              </p>
+            </div>
+            <p class="fine" data-only="windows">
+              <span lang="nl">Mag je op deze laptop niets installeren? <a href="https://chromewebstore.google.com/detail/hlfpfjnjocgpkccdmkhhkfdbdphdkodn">Learnling werkt ook in Chrome</a>.</span>
+              <span lang="en">Not allowed to install anything on this laptop? <a href="https://chromewebstore.google.com/detail/hlfpfjnjocgpkccdmkhhkfdbdphdkodn">Learnling works in Chrome too</a>.</span>
             </p>
-            <p class="elsewhere" id="elsewhere" hidden>
-              <span lang="nl">Learnling werkt op een Windows-laptop of -pc. Open deze pagina daar om hem te downloaden.</span>
-              <span lang="en">Learnling runs on a Windows laptop or PC. Open this page there to download it.</span>
+            <p class="elsewhere" data-only="phone">
+              <span lang="nl">Learnling werkt op een Windows-laptop, een Chromebook of in Chrome op een Mac. Open deze pagina daar.</span>
+              <span lang="en">Learnling runs on a Windows laptop, a Chromebook or in Chrome on a Mac. Open this page there.</span>
             </p>
           </div>
         </div>
@@ -205,7 +225,7 @@
           <span lang="nl">Zo begin je</span>
           <span lang="en">How to start</span>
         </h2>
-        <ol class="steps">
+        <ol class="steps" data-only="windows phone">
           <li>
             <b>1</b>
             <p>
@@ -228,9 +248,32 @@
             </p>
           </li>
         </ol>
+        <ol class="steps" data-only="chrome">
+          <li>
+            <b>1</b>
+            <p>
+              <span lang="nl">Klik bovenaan op <i>Toevoegen aan Chrome</i>, en in de Chrome Web Store nog een keer.</span>
+              <span lang="en">Click <i>Add to Chrome</i> at the top, and once more in the Chrome Web Store.</span>
+            </p>
+          </li>
+          <li>
+            <b>2</b>
+            <p>
+              <span lang="nl">Learnling opent meteen in een eigen venster. Later vind je hem onder het puzzelstukje naast de adresbalk; met de punaise zet je hem daar vast.</span>
+              <span lang="en">Learnling opens right away in a window of its own. Later you'll find it under the puzzle piece next to the address bar; the pin keeps it there.</span>
+            </p>
+          </li>
+          <li>
+            <b>3</b>
+            <p>
+              <span lang="nl">Kies je maatje en je thema, koppel Magister of vul je rooster in, en je bent klaar. Het seintje na school komt zolang Chrome openstaat.</span>
+              <span lang="en">Pick your buddy and your theme, connect Magister or fill in your timetable, and you're done. The nudge after school comes as long as Chrome is open.</span>
+            </p>
+          </li>
+        </ol>
         <p class="note">
-          <span lang="nl">Learnling werkt op Windows-laptops en -pc's, nog niet op Mac of Chromebook. Nieuwe versies installeren zichzelf.</span>
-          <span lang="en">Learnling runs on Windows laptops and PCs, not on Mac or Chromebook yet. New versions install themselves.</span>
+          <span lang="nl">Learnling werkt op Windows, en in Chrome op Chromebook, Mac en Linux. Nieuwe versies installeren zichzelf.</span>
+          <span lang="en">Learnling runs on Windows, and in Chrome on Chromebook, Mac and Linux. New versions install themselves.</span>
         </p>
       </section>
 

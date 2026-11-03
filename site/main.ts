@@ -545,11 +545,11 @@ function icons(): void {
 }
 
 // Download: straight to the newest installer on GitHub, when GitHub tells us which it is.
+// Which way in a visitor sees (Windows app, Chrome extension) is picked in the page's head.
 
 let version = ''
 
 async function download(): Promise<void> {
-  if (!/Windows/i.test(navigator.userAgent)) document.getElementById('elsewhere')!.hidden = false
   try {
     const release = await (await fetch('https://api.github.com/repos/bhalial/learnling/releases/latest')).json()
     const installer = (release.assets ?? []).find((asset: { name: string }) => asset.name.endsWith('.exe'))
