@@ -89,7 +89,9 @@ git push --follow-tags
 `npm version` bumps `version` in `package.json`, commits and tags it `v<version>`; pushing the
 tag starts `.github/workflows/release.yml`, which tests, builds the installer on Windows and
 publishes it with `latest.yml` as a GitHub release. The tag must match the version, because
-electron-builder publishes to `v<version>`.
+electron-builder publishes to `v<version>`. Write the release notes first, in
+`docs/releases/<version>.md`: the workflow puts them on the release (electron-builder leaves its
+text empty).
 
 Building notes: electron-builder's own exe editing is off (it needs symlink rights Windows only
 grants in Developer Mode); `scripts/brand.js` runs as the `afterPack` hook and puts the icon and

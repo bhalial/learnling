@@ -26,6 +26,16 @@ jobs:
       - run: npx electron-builder --win --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # electron-builder leaves the release's text empty: it comes from docs/releases/<version>.md,
+      # written by hand with the version bump. Without that file the release stays as it is.
+      - name: Release notes
+        shell: pwsh
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          $notes = "docs/releases/$version.md"
+          if (Test-Path $notes) { gh release edit "v$version" --notes-file $notes }
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # The Chrome extension, zipped for the Chrome Web Store (uploaded there by hand), on the
       # release electron-builder just made. Same job, so the release is there before the upload.
       - run: npm run extension
