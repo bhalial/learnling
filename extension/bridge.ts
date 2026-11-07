@@ -28,7 +28,8 @@ const store = (data: SpellbookData): Promise<void> => (demo ? Promise.resolve() 
 const spellbook: Window['spellbook'] = {
   async boot(): Promise<Boot> {
     const data = demo ? null : ((await chrome.storage.local.get(BOOK))[BOOK] ?? null)
-    return { data, demo: demo === '1', today: params.get('today'), theme: params.get('theme'), lang: params.get('lang'), platform: 'extension' }
+    const { version } = chrome.runtime.getManifest()
+    return { data, demo: demo === '1', today: params.get('today'), theme: params.get('theme'), lang: params.get('lang'), platform: 'extension', version }
   },
 
   save: store,

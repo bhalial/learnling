@@ -167,6 +167,8 @@ const en = {
   cat: {
     setup: 'Hi! Connect Magister or fill in your timetable, then I can help you plan.',
     setupButton: 'Open settings',
+    newsShow: 'Show me',
+    newsHeard: 'Got it',
     mystery: (subject: string) => `${subject} set homework, but nobody wrote down what. Fill it in before you forget!`,
     late: (n: number) => (n === 1 ? 'One task slipped past its day. Drag it to a new one?' : `${n} tasks slipped past their day. Drag them to a new one?`),
     trialSoon: (subject: string, kind: string, when: string) => `${subject} ${kind.toLowerCase()} ${when}. Some practice today?`,
@@ -347,6 +349,8 @@ const nl: Dict = {
   cat: {
     setup: 'Hoi! Koppel Magister of vul je rooster in, dan kan ik je helpen plannen.',
     setupButton: 'Open instellingen',
+    newsShow: 'Laat zien',
+    newsHeard: 'Oké',
     mystery: (subject) => `${subject} gaf huiswerk, maar er staat niet bij wát. Vul het in voor je het vergeet!`,
     late: (n) => (n === 1 ? 'Er is één taak over zijn dag heen geglipt. Naar een nieuwe dag slepen?' : `Er zijn ${n} taken over hun dag heen geglipt. Naar een nieuwe dag slepen?`),
     trialSoon: (subject, kind, when) => `${kind} ${subject.toLowerCase()} ${when}. Vandaag even oefenen?`,

@@ -38,17 +38,19 @@ export function nudge(data: SpellbookData, today: IsoDate, t: Dict): string | nu
 const pick = (lines: string[], seed: number): string => lines[Math.abs(Math.floor(seed)) % lines.length]
 
 /**
- * What the cat says in the book: a fresh reaction first, then setup, then the nudge. A
- * reaction and the all-done line take turns between the theme's words and the animal's own
- * (companions/voices.ts); what needs doing is always said in the theme's plain words.
+ * What the cat says in the book: a fresh reaction first, then setup, then what a new version
+ * brought (`news`, lib/news.ts), then the nudge. A reaction and the all-done line take turns
+ * between the theme's words and the animal's own (companions/voices.ts); what needs doing is
+ * always said in the theme's plain words.
  */
 export function catLine(
   data: SpellbookData,
   today: IsoDate,
   reaction: Reaction | null,
   sync: SyncState,
-  t: Dict
-): { text: string; setup?: boolean } {
+  t: Dict,
+  news?: string
+): { text: string; setup?: boolean; news?: boolean } {
   const voice = VOICES[data.companion.species][data.lang]
   if (reaction) {
     // A reaction's moment picks the line, so it holds while the note is up and differs the next time.
@@ -64,6 +66,7 @@ export function catLine(
 
   const noTimetable = Object.values(data.timetable).every((day) => day.length === 0)
   if (noTimetable && !data.magister) return { text: t.cat.setup, setup: true }
+  if (news) return { text: news, news: true }
 
   const line = nudge(data, today, t)
   if (line) return { text: line }

@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import { SPECIES } from '../companions'
 import { clock, weekdayName } from '../i18n'
 import { addDays, mondayOf, WEEKS } from '../lib/dates'
@@ -70,6 +70,7 @@ function SettingsForm() {
   const today = useBook((s) => s.today)
   const sync = useBook((s) => s.sync)
   const platform = useBook((s) => s.platform)
+  const at = useBook((s) => s.settingsAt)
   const {
     openBuddy,
     setLang,
@@ -95,6 +96,13 @@ function SettingsForm() {
   const [day, setDay] = useState<Weekday>(1)
   const [testSent, setTestSent] = useState(false)
   const monday = mondayOf(today)
+
+  // Opened for one section (the companion's news): go there once the dialog is showing.
+  useEffect(() => {
+    if (!at) return
+    const frame = requestAnimationFrame(() => document.getElementById(`settings-${at}`)?.scrollIntoView({ block: 'start' }))
+    return () => cancelAnimationFrame(frame)
+  }, [at])
 
   // The real message if something is waiting, otherwise a sample, to show what it looks like.
   const sendTest = (): void => {
@@ -175,7 +183,8 @@ function SettingsForm() {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-8">
+      {/* The sticky header covers the top of the sheet, so a jump here stops below it. */}
+      <section id="settings-ahead" className="grid scroll-mt-24 grid-cols-2 gap-8">
         <div>
           <h3 className={heading}>{t.setup.ahead}</h3>
           <p className="m-0 mb-3 text-[15px] italic text-ink-soft">{t.setup.aheadHint}</p>

@@ -91,7 +91,9 @@ tag starts `.github/workflows/release.yml`, which tests, builds the installer on
 publishes it with `latest.yml` as a GitHub release. The tag must match the version, because
 electron-builder publishes to `v<version>`. Write the release notes first, in
 `docs/releases/<version>.md`: the workflow puts them on the release (electron-builder leaves its
-text empty).
+text empty). Updates arrive silently, in the app and in the extension, so when a version brings
+something nobody would find by themselves (a new setting), add a line to `NEWS` in
+`src/renderer/src/lib/news.ts`: the companion says it once in its note, with a button to it.
 
 Building notes: electron-builder's own exe editing is off (it needs symlink rights Windows only
 grants in Developer Mode); `scripts/brand.js` runs as the `afterPack` hook and puts the icon and

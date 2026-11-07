@@ -107,6 +107,8 @@ export interface SpellbookData {
   app: { tray: boolean; autostart: boolean }
   /** How big the app is drawn (lib/zoom.ts); 1 when not set. */
   zoom?: number
+  /** The app version whose news (lib/news.ts) was last heard; missing in a book from before news. */
+  seenVersion?: string
 }
 
 export interface Boot {
@@ -118,6 +120,8 @@ export interface Boot {
   lang: string | null
   /** The Windows app, or the Chrome extension (no tray, no starting with the computer). */
   platform: 'desktop' | 'extension'
+  /** The app's own version, e.g. '0.5.2'. */
+  version: string
 }
 
 /** One appointment as the main process hands it over: Magister's fields, trimmed. */

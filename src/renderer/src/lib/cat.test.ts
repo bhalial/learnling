@@ -57,3 +57,17 @@ describe('voices', () => {
     expect([...said('whale', 'tooLate')]).toEqual([wordsFor('en', 'magic').cat.tooLate])
   })
 })
+
+describe('news', () => {
+  const t = wordsFor('en', 'magic')
+
+  it('comes before what needs doing, after a fresh reaction', () => {
+    const data = book('cat')
+    expect(catLine(data, TODAY, null, { state: 'idle' }, t, 'New: something')).toEqual({ text: 'New: something', news: true })
+    expect(catLine(data, TODAY, { kind: 'added', at: 1 }, { state: 'idle' }, t, 'New: something').news).toBeUndefined()
+  })
+
+  it('waits while Magister wants a login', () => {
+    expect(catLine(book('cat'), TODAY, null, { state: 'login' }, t, 'New: something').text).toBe(t.cat.login)
+  })
+})

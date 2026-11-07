@@ -5,6 +5,7 @@ import type { Mood } from '../companions/types'
 import { shortDay } from '../i18n'
 import { catLine } from '../lib/cat'
 import { addDays, leafStart } from '../lib/dates'
+import { newsFor } from '../lib/news'
 import { isTrial, needsAttention, wording } from '../lib/tasks'
 import { useBook, useWords } from '../store'
 import { THEMES } from '../themes'
@@ -33,9 +34,12 @@ function CatPanel() {
   const clearReaction = useBook((s) => s.clearReaction)
   const openBuddy = useBook((s) => s.openBuddy)
   const openSettings = useBook((s) => s.openSettings)
+  const version = useBook((s) => s.version)
+  const hearNews = useBook((s) => s.hearNews)
   const t = useWords()
   const { companion } = data
   const species = SPECIES[companion.species]
+  const news = newsFor(data.seenVersion, version)
 
   useEffect(() => {
     if (!reaction) return
@@ -43,7 +47,7 @@ function CatPanel() {
     return () => clearTimeout(timer)
   }, [reaction, clearReaction])
 
-  const line = catLine(data, today, reaction, sync, t)
+  const line = catLine(data, today, reaction, sync, t, news?.text[data.lang])
 
   // It talks for a moment whenever its note says something new.
   const [talking, setTalking] = useState(false)
@@ -74,6 +78,24 @@ function CatPanel() {
           <button type="button" onClick={() => openSettings(true)} className="mt-2 h-11 rounded-sm border-[1.5px] border-ink bg-paper-deep px-3.5 font-fell text-[17px]">
             {t.cat.setupButton}
           </button>
+        )}
+        {/* Either answer means it was heard: the news does not come back. */}
+        {line.news && news && (
+          <div className="mt-2 flex flex-wrap items-center gap-x-2">
+            <button
+              type="button"
+              onClick={() => {
+                hearNews()
+                openSettings(true, news.settings)
+              }}
+              className="h-11 rounded-sm border-[1.5px] border-ink bg-paper-deep px-3.5 font-fell text-[17px]"
+            >
+              {t.cat.newsShow}
+            </button>
+            <button type="button" onClick={hearNews} className="h-11 px-2 text-[16px] italic text-quill underline-offset-4 hover:underline">
+              {t.cat.newsHeard}
+            </button>
+          </div>
         )}
         {companion.name && <p className="m-0 mt-1 text-right font-hand text-[22px] leading-none text-quill">— {companion.name}</p>}
       </div>

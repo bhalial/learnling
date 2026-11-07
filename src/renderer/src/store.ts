@@ -38,8 +38,12 @@ interface BookState {
   /** Set when SPELLBOOK_TODAY pins the date, so the clock never moves it. */
   pinnedToday: boolean
   platform: Boot['platform']
+  /** The app's version, for the companion's news (lib/news.ts). */
+  version: string
   sheet: Sheet
   settingsOpen: boolean
+  /** The Settings section to open at, e.g. the one the news is about. */
+  settingsAt: string | null
   /** The companion's own screen: what it is, how it looks, what it is called. */
   buddyOpen: boolean
   /** How many weeks the book is leafed past its first page; back to 0 when the day changes. */
@@ -50,7 +54,10 @@ interface BookState {
   boot(boot: Boot): void
   refreshToday(): void
   openSheet(sheet: Sheet): void
-  openSettings(open: boolean): void
+  /** Opens or closes Settings; `at` scrolls to one section (its id is `settings-<at>`). */
+  openSettings(open: boolean, at?: string): void
+  /** The companion's news was heard: it does not come back until the next version brings some. */
+  hearNews(): void
   openBuddy(open: boolean): void
   clearReaction(at: number): void
   /** A week further on (+1) or back (-1), within the weeks Settings allow. */
@@ -145,20 +152,24 @@ export const useBook = create<BookState>()((set, get) => {
     today: todayIso(),
     pinnedToday: false,
     platform: 'desktop',
+    version: '0.0.0',
     sheet: null,
     settingsOpen: false,
+    settingsAt: null,
     buddyOpen: false,
     leaf: 0,
     reaction: null,
     sync: { state: 'idle' },
 
-    boot({ data, demo, today, theme, lang, platform }) {
+    boot({ data, demo, today, theme, lang, platform, version }) {
       const day = today ?? todayIso()
       // Books saved by an older version lack the newer settings; fill them in.
       const book = isBook(data) ? upgrade(data) : demo ? demoBook(day) : freshBook()
+      // A new book has no news to catch up on; one from an older version hears what is new.
+      if (!isBook(data)) book.seenVersion = version
       if (theme) book.theme = themeFor(theme)
       if (lang === 'en' || lang === 'nl') book.lang = lang
-      set({ ready: true, data: book, today: day, pinnedToday: Boolean(today), platform })
+      set({ ready: true, data: book, today: day, pinnedToday: Boolean(today), platform, version })
     },
 
     refreshToday() {
@@ -166,7 +177,8 @@ export const useBook = create<BookState>()((set, get) => {
     },
 
     openSheet: (sheet) => set({ sheet }),
-    openSettings: (settingsOpen) => set({ settingsOpen }),
+    openSettings: (settingsOpen, at) => set({ settingsOpen, settingsAt: settingsOpen ? (at ?? null) : null }),
+    hearNews: () => change((data) => ({ ...data, seenVersion: get().version })),
     // One sheet at a time: the companion's screen replaces Settings when opened from there.
     openBuddy: (buddyOpen) => set(buddyOpen ? { buddyOpen, settingsOpen: false } : { buddyOpen }),
     clearReaction: (at) => {
