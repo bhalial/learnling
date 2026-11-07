@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { dictionaries } from '../src/renderer/src/i18n'
 import { demoBook, freshBook } from '../src/renderer/src/lib/seed'
 import type { MagisterSync, SpellbookData } from '../src/renderer/src/types'
-import { closedReminder, syncRange } from './remind'
+import { closedReminder, readRange } from './remind'
 
 // 5 October 2026 is a Monday.
 const MONDAY = '2026-10-05'
@@ -61,10 +61,20 @@ describe('closedReminder', () => {
     const result = closedReminder(linked(freshBook()), at('16:05'), { ok: false, reason: 'login' }, uid)
     expect(result?.message?.body).toBe(dictionaries.en.cat.login)
   })
+
+  it('plans a test from Magister in a book stored before training could be set', () => {
+    const { training: _, weeks: __, ...old } = linked(freshBook())
+    const test: MagisterSync = { ...agenda, items: [{ ...agenda.items[0], id: 124, start: '2026-10-09T08:30:00Z', infoType: 2 }] } as MagisterSync
+    const result = closedReminder(old as SpellbookData, at('16:05'), test, uid)!
+    expect(result.book.tasks.filter((task) => task.given.round)).toHaveLength(3)
+  })
 })
 
-describe('syncRange', () => {
-  it('reads this week and four more, from Monday', () => {
-    expect(syncRange('2026-10-07')).toEqual({ from: MONDAY, to: '2026-11-08' })
+describe('readRange', () => {
+  it('reads this week and four more from Monday, or as far as the book reaches', () => {
+    expect(readRange(freshBook(), '2026-10-07')).toEqual({ from: MONDAY, to: '2026-11-08' })
+    expect(readRange({ ...freshBook(), weeks: 8 }, '2026-10-07')).toEqual({ from: MONDAY, to: '2026-11-29' })
+    const { weeks: _, ...old } = freshBook()
+    expect(readRange(old as SpellbookData, '2026-10-07')).toEqual({ from: MONDAY, to: '2026-11-08' })
   })
 })

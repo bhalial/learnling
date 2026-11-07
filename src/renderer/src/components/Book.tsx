@@ -1,7 +1,7 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { range, shortDay, weekdayName } from '../i18n'
-import { addDays, isoWeek, weekday, windowStart } from '../lib/dates'
+import { addDays, isoWeek, leafStart, weekday } from '../lib/dates'
 import { fromMagister, lessonRuns, lessonsOn } from '../lib/lessons'
 import { shortName } from '../lib/subjects'
 import { dayOrder, shownOn } from '../lib/tasks'
@@ -10,35 +10,64 @@ import { subjectInkFor } from '../themes'
 import type { IsoDate } from '../types'
 import { TaskCard } from './TaskCard'
 
-/** Two pages, one week each: this week and next, or the two coming weeks at the weekend. */
+/**
+ * Two pages, one week each: this week and next, or the two coming weeks at the weekend. When
+ * Settings let the book reach further, arrows in the page headers leaf it a week at a time.
+ */
 export function Book() {
   const today = useBook((s) => s.today)
+  const leaf = useBook((s) => s.leaf)
+  const weeks = useBook((s) => s.data.weeks)
+  const leafBy = useBook((s) => s.leafBy)
   const t = useWords()
-  const start = windowStart(today)
-  const titles = weekday(today) >= 6 ? [t.comingWeek, t.weekAfter] : [t.thisWeek, t.nextWeek]
+  const start = leafStart(today, leaf)
+  const named = weekday(today) >= 6 ? [t.comingWeek, t.weekAfter] : [t.thisWeek, t.nextWeek]
+  const title = (n: number): string => named[n] ?? t.inWeeks(n)
 
   return (
     <div className="book-cover min-w-0 flex-1 px-3.5 pb-[18px] pt-3">
       <div className="book-pages flex h-full">
         <span className="ribbon absolute -top-3.5 left-1.5 z-10 h-[150px] w-[22px] bg-wax" aria-hidden="true" />
-        <Page monday={start} title={titles[0]} className="pl-9 pr-8" />
-        <Page monday={addDays(start, 7)} title={titles[1]} className="pl-8 pr-6" />
+        <Page monday={start} title={title(leaf)} className="pl-9 pr-8" back={leaf > 0 ? () => leafBy(-1) : undefined} />
+        <Page monday={addDays(start, 7)} title={title(leaf + 1)} className="pl-8 pr-6" on={leaf < weeks - 2 ? () => leafBy(1) : undefined} />
       </div>
     </div>
   )
 }
 
-function Page({ monday, title, className }: { monday: IsoDate; title: string; className: string }) {
+/** A page-turn arrow: back on the left page, on on the right one. */
+function Turn({ step, onClick }: { step: -1 | 1; onClick: () => void }) {
+  const t = useWords()
+  const label = step < 0 ? t.weekBack : t.weekOn
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className={`-my-2 grid size-11 shrink-0 place-items-center self-center rounded-full text-ink-soft ${step < 0 ? '-ml-3' : '-mr-3'}`}
+    >
+      <svg viewBox="0 0 24 24" className="size-6 fill-none stroke-current stroke-2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d={step < 0 ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'} />
+      </svg>
+    </button>
+  )
+}
+
+function Page({ monday, title, className, back, on }: { monday: IsoDate; title: string; className: string; back?: () => void; on?: () => void }) {
   const lang = useBook((s) => s.data.lang)
   const t = useWords()
 
   return (
     <section className={`page flex min-w-0 flex-1 flex-col pb-3 pt-4 ${className}`}>
-      <header className="page-rule flex flex-wrap items-baseline justify-between gap-x-3 px-2 pb-2.5">
-        <h2 className="m-0 whitespace-nowrap font-fell text-[26px] font-normal">{title}</h2>
+      {/* The title takes the free room, so an arrow sits at the outer edge of its page. */}
+      <header className="page-rule flex flex-wrap items-baseline gap-x-3 px-2 pb-2.5">
+        {back && <Turn step={-1} onClick={back} />}
+        <h2 className="m-0 mr-auto whitespace-nowrap font-fell text-[26px] font-normal">{title}</h2>
         <span className="whitespace-nowrap text-[14px] italic text-ink-soft">
           {t.week(isoWeek(monday))} · {range(monday, addDays(monday, 4), lang)}
         </span>
+        {on && <Turn step={1} onClick={on} />}
       </header>
       <div className="-mx-2 flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-2 pt-3">
         {[0, 1, 2, 3, 4, 5, 6].map((i) => (

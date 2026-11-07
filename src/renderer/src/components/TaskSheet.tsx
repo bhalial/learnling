@@ -2,7 +2,7 @@ import { useState, type CSSProperties, type FormEvent } from 'react'
 import { dueWhen, shortDay } from '../i18n'
 import { addDays, daysBetween, nextSchoolDay, windowStart } from '../lib/dates'
 import { nextLesson } from '../lib/lessons'
-import { isTrial, TRAINING_ROUNDS, trainingDays, wording } from '../lib/tasks'
+import { isTrial, roundsFor, trainingDays, wording } from '../lib/tasks'
 import { useBook, useWords, type Sheet } from '../store'
 import { subjectInkFor } from '../themes'
 import type { IsoDate, Kind, Task } from '../types'
@@ -104,7 +104,7 @@ function TaskForm({ sheet }: { sheet: NonNullable<Sheet> }) {
   const suggested = subjectId ? nextLesson(data, subjectId, today) : null
   const dueDay = due ?? suggested ?? nextSchoolDay(today)
   const trial = isTrial(kind)
-  const rounds = trial && !existing ? trainingDays(dueDay, today, TRAINING_ROUNDS[kind] ?? 0).length : 0
+  const rounds = trial && !existing ? trainingDays(dueDay, today, roundsFor(kind, data.training)).length : 0
 
   const start = windowStart(today)
   const weeks = [0, 7].map((offset) => [0, 1, 2, 3, 4].map((i) => addDays(start, offset + i)))

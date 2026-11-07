@@ -2,7 +2,7 @@ import { todayIso } from '../src/renderer/src/lib/dates'
 import { reminderDue } from '../src/renderer/src/lib/reminder'
 import type { SpellbookData } from '../src/renderer/src/types'
 import { ensureContentScript, readAgenda, schoolOf, storedToken, tokenKey } from './agenda'
-import { closedReminder, syncRange } from './remind'
+import { closedReminder, readRange } from './remind'
 
 // The extension's service worker. Chrome wakes it for the toolbar button, a click on a
 // notification, the minute alarm and a Magister token, and puts it to sleep again soon after.
@@ -47,7 +47,7 @@ async function tick(): Promise<void> {
   if (!reminderDue(book.reminder, today, now)) return
 
   const token = book.magister ? await storedToken(book.magister.school) : null
-  const { from, to } = syncRange(today)
+  const { from, to } = readRange(book, today)
   const agenda = token && book.magister ? await readAgenda(book.magister.school, token.token, from, to) : null
   const result = closedReminder(book, now, agenda, () => crypto.randomUUID())
   if (!result) return

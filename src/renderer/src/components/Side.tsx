@@ -4,7 +4,7 @@ import { REACTION_MOOD, restingMood } from '../companions/mood'
 import type { Mood } from '../companions/types'
 import { shortDay } from '../i18n'
 import { catLine } from '../lib/cat'
-import { addDays, windowStart } from '../lib/dates'
+import { addDays, leafStart } from '../lib/dates'
 import { isTrial, needsAttention, wording } from '../lib/tasks'
 import { useBook, useWords } from '../store'
 import { THEMES } from '../themes'
@@ -124,9 +124,11 @@ function Shelf() {
 function FurtherAhead() {
   const data = useBook((s) => s.data)
   const today = useBook((s) => s.today)
+  const leaf = useBook((s) => s.leaf)
   const openSheet = useBook((s) => s.openSheet)
   const t = useWords()
-  const end = addDays(windowStart(today), 13)
+  // Past the pages that are open now, wherever the book is leafed to.
+  const end = addDays(leafStart(today, leaf), 13)
   const ahead = data.tasks
     .filter((task) => isTrial(task.given.kind) && !task.given.gone && task.given.due > end)
     .sort((a, b) => a.given.due.localeCompare(b.given.due))

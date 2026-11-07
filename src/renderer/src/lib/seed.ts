@@ -1,6 +1,6 @@
 import type { IsoDate, Kind, SpellbookData, Subject, Task } from '../types'
 import { addDays, windowStart } from './dates'
-import { retrain } from './tasks'
+import { DEFAULT_TRAINING, retrain } from './tasks'
 
 /**
  * Watercolour inks that stay readable on the paper and differ in lightness, not just hue.
@@ -34,6 +34,8 @@ export function freshBook(): SpellbookData {
     timetable: { 1: [], 2: [], 3: [], 4: [], 5: [] },
     tasks: [],
     companion: { name: '', species: 'cat', coat: 'ginger', accessory: 'hat', eyes: 'green' },
+    weeks: 2,
+    training: { ...DEFAULT_TRAINING },
     reminder: { enabled: true, time: '16:00' },
     app: { tray: true, autostart: false }
   }
@@ -113,7 +115,7 @@ export function demoBook(today: IsoDate): SpellbookData {
   const plannedFrom = monday < today ? monday : today
   let all = tasks
   for (const trial of tasks.filter((t) => t.given.kind === 'test' || t.given.kind === 'quiz')) {
-    all = retrain(all, trial, plannedFrom, () => `demo-${++n}`, trial.createdAt)
+    all = retrain(all, trial, plannedFrom, () => `demo-${++n}`, trial.createdAt, book.training)
   }
   // Training that should have happened before today is done in the demo.
   book.tasks = all.map((t) => (t.given.round && (t.own.plan ?? '') < today ? { ...t, own: { ...t.own, doneAt: `${t.own.plan}T17:00:00.000Z` } } : t))

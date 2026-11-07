@@ -67,6 +67,12 @@ export interface Task {
   createdAt: string
 }
 
+/** How many training rounds a test and a quiz get: one a day, on the days before it. */
+export interface Training {
+  test: number
+  quiz: number
+}
+
 /** The companion: which animal, how it looks, and the name it was given. */
 export interface CompanionSettings extends CompanionLook {
   name: string
@@ -94,6 +100,9 @@ export interface SpellbookData {
   magister?: MagisterLink
   /** Real lessons per day from Magister, for the synced range. */
   lessons?: Record<IsoDate, Lesson[]>
+  /** How far the book can be leafed, in weeks from its first page: 2 is just the two open pages. */
+  weeks: number
+  training: Training
   reminder: { enabled: boolean; time: string; lastSent?: IsoDate }
   app: { tray: boolean; autostart: boolean }
   /** How big the app is drawn (lib/zoom.ts); 1 when not set. */

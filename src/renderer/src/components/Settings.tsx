@@ -1,10 +1,11 @@
 import { useState, type CSSProperties, type ReactNode } from 'react'
 import { SPECIES } from '../companions'
 import { clock, weekdayName } from '../i18n'
-import { addDays, mondayOf } from '../lib/dates'
+import { addDays, mondayOf, WEEKS } from '../lib/dates'
 import { reminderMessage } from '../lib/reminder'
 import { PALETTE } from '../lib/seed'
 import { shortName, subjectInUse } from '../lib/subjects'
+import { MAX_TRAINING } from '../lib/tasks'
 import { useBook, useWords } from '../store'
 import { ALL_THEMES, THEMES } from '../themes'
 import type { Lang, Weekday } from '../types'
@@ -40,6 +41,30 @@ function Toggle({ on, onChange, label, children }: { on: boolean; onChange: (on:
   )
 }
 
+const stepButton = 'grid size-11 shrink-0 place-items-center rounded-sm border-[1.5px] border-ink/25 disabled:opacity-30'
+
+/** A number between a minus and a plus button, both big enough to tap. */
+function Stepper({ value, min, max, onChange, label, children }: { value: number; min: number; max: number; onChange: (value: number) => void; label: string; children: ReactNode }) {
+  const t = useWords()
+  return (
+    <div role="group" aria-label={label} className="flex items-center gap-1.5">
+      <button type="button" onClick={() => onChange(value - 1)} disabled={value <= min} aria-label={t.setup.fewer(label)} className={stepButton}>
+        <svg viewBox="0 0 24 24" className="size-4 fill-none stroke-current stroke-[2.4]" strokeLinecap="round" aria-hidden="true">
+          <path d="M5 12h14" />
+        </svg>
+      </button>
+      <output aria-live="polite" className="min-w-[5.5rem] text-center text-[17px]">
+        {children}
+      </output>
+      <button type="button" onClick={() => onChange(value + 1)} disabled={value >= max} aria-label={t.setup.more(label)} className={stepButton}>
+        <svg viewBox="0 0 24 24" className="size-4 fill-none stroke-current stroke-[2.4]" strokeLinecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
 function SettingsForm() {
   const data = useBook((s) => s.data)
   const today = useBook((s) => s.today)
@@ -57,6 +82,8 @@ function SettingsForm() {
     addLesson,
     removeLesson,
     openSettings,
+    setWeeks,
+    setTraining,
     setReminder,
     setApp,
     connectMagister,
@@ -145,6 +172,31 @@ function SettingsForm() {
               </button>
             )
           })}
+        </div>
+      </section>
+
+      <section className="grid grid-cols-2 gap-8">
+        <div>
+          <h3 className={heading}>{t.setup.ahead}</h3>
+          <p className="m-0 mb-3 text-[15px] italic text-ink-soft">{t.setup.aheadHint}</p>
+          <Stepper value={data.weeks} min={WEEKS.min} max={WEEKS.max} onChange={setWeeks} label={t.setup.ahead}>
+            {t.setup.weeks(data.weeks)}
+          </Stepper>
+        </div>
+        <div>
+          <h3 className={heading}>{t.setup.practice}</h3>
+          <p className="m-0 mb-3 text-[15px] italic text-ink-soft">{t.setup.practiceHint}</p>
+          {/* Toets and SO keep their plain names here too, whatever the theme calls them. */}
+          <div className="flex flex-col gap-2">
+            {(['test', 'quiz'] as const).map((kind) => (
+              <div key={kind} className="flex items-center gap-3">
+                <span className="w-16 text-[17px]">{t.kinds[kind]}</span>
+                <Stepper value={data.training[kind]} min={0} max={MAX_TRAINING} onChange={(n) => setTraining({ [kind]: n })} label={t.kinds[kind]}>
+                  {t.setup.days(data.training[kind])}
+                </Stepper>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

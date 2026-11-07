@@ -3,12 +3,12 @@ import { coatFor, eyesFor, settleCompanion } from './companions'
 import { wordsFor, type Dict } from './i18n'
 import { themeFor, type ThemeId } from './themes'
 import type { AccessoryId } from './companions/types'
-import type { Boot, CompanionSettings, IsoDate, Kind, Lang, SpellbookData, Task, Weekday } from './types'
-import { addDays, mondayOf, todayIso, windowStart } from './lib/dates'
-import { mergeSync } from './lib/magister'
+import type { Boot, CompanionSettings, IsoDate, Kind, Lang, SpellbookData, Task, Training, Weekday } from './types'
+import { clampWeeks, todayIso, windowStart } from './lib/dates'
+import { mergeSync, syncRange } from './lib/magister'
 import { demoBook, freshBook } from './lib/seed'
 import { distinctColors, freeColor, recolor, subjectInUse } from './lib/subjects'
-import { initialPlan, isDone, isMystery, isTrial, retrain } from './lib/tasks'
+import { clampTraining, DEFAULT_TRAINING, initialPlan, isDone, isMystery, isTrial, resizeTraining, retrain, roundsFor } from './lib/tasks'
 import { stepZoom, zoomFor } from './lib/zoom'
 
 export interface Draft {
@@ -42,6 +42,8 @@ interface BookState {
   settingsOpen: boolean
   /** The companion's own screen: what it is, how it looks, what it is called. */
   buddyOpen: boolean
+  /** How many weeks the book is leafed past its first page; back to 0 when the day changes. */
+  leaf: number
   reaction: Reaction | null
   sync: SyncState
 
@@ -51,6 +53,8 @@ interface BookState {
   openSettings(open: boolean): void
   openBuddy(open: boolean): void
   clearReaction(at: number): void
+  /** A week further on (+1) or back (-1), within the weeks Settings allow. */
+  leafBy(step: number): void
 
   setLang(lang: Lang): void
   setTheme(theme: ThemeId): void
@@ -74,6 +78,10 @@ interface BookState {
   addLesson(day: Weekday, subjectId: string): void
   removeLesson(day: Weekday, index: number): void
 
+  /** How many weeks the book can be leafed, counted from its first page. */
+  setWeeks(weeks: number): void
+  /** How many training rounds tests and quizzes get; trials still ahead follow along. */
+  setTraining(patch: Partial<Training>): void
   setReminder(patch: Partial<SpellbookData['reminder']>): void
   /** One zoom step bigger (+1) or smaller (-1), or back to normal (0). */
   zoomBy(step: number): void
@@ -89,6 +97,9 @@ const uid = (): string => crypto.randomUUID()
 
 /** One Magister read at a time; timers, focus and the button can all ask for one. */
 let syncing = false
+
+/** A read that waits until the weeks setting stops being tapped. */
+let widen: ReturnType<typeof setTimeout> | undefined
 
 const isBook = (data: unknown): data is SpellbookData =>
   typeof data === 'object' && data !== null && (data as SpellbookData).version === 1
@@ -106,7 +117,12 @@ function upgrade(data: SpellbookData & { cat?: { name: string; fur: string; acce
     ...upgraded,
     theme: themeFor(upgraded.theme),
     companion: settleCompanion(upgraded.companion ?? freshBook().companion),
-    subjects: distinctColors(upgraded.subjects ?? freshBook().subjects)
+    subjects: distinctColors(upgraded.subjects ?? freshBook().subjects),
+    weeks: clampWeeks(upgraded.weeks ?? 2),
+    training: {
+      test: clampTraining(upgraded.training?.test ?? DEFAULT_TRAINING.test),
+      quiz: clampTraining(upgraded.training?.quiz ?? DEFAULT_TRAINING.quiz)
+    }
   }
 }
 
@@ -132,6 +148,7 @@ export const useBook = create<BookState>()((set, get) => {
     sheet: null,
     settingsOpen: false,
     buddyOpen: false,
+    leaf: 0,
     reaction: null,
     sync: { state: 'idle' },
 
@@ -145,7 +162,7 @@ export const useBook = create<BookState>()((set, get) => {
     },
 
     refreshToday() {
-      if (!get().pinnedToday && get().today !== todayIso()) set({ today: todayIso() })
+      if (!get().pinnedToday && get().today !== todayIso()) set({ today: todayIso(), leaf: 0 })
     },
 
     openSheet: (sheet) => set({ sheet }),
@@ -155,6 +172,7 @@ export const useBook = create<BookState>()((set, get) => {
     clearReaction: (at) => {
       if (get().reaction?.at === at) set({ reaction: null })
     },
+    leafBy: (step) => set((state) => ({ leaf: Math.min(state.data.weeks - 2, Math.max(0, state.leaf + step)) })),
 
     setLang: (lang) => change((data) => ({ ...data, lang })),
     // The companion changes its headwear along with the theme, and says so.
@@ -172,7 +190,7 @@ export const useBook = create<BookState>()((set, get) => {
       }
       change((data) => {
         const tasks = [...data.tasks, task]
-        return { ...data, tasks: isTrial(task.given.kind) ? retrain(tasks, task, today, uid, now) : tasks }
+        return { ...data, tasks: isTrial(task.given.kind) ? retrain(tasks, task, today, uid, now, data.training) : tasks }
       }, 'added')
     },
 
@@ -190,7 +208,7 @@ export const useBook = create<BookState>()((set, get) => {
         const trialChanged =
           (isTrial(old.given.kind) || isTrial(next.given.kind)) &&
           (old.given.kind !== next.given.kind || old.given.due !== next.given.due || old.given.subjectId !== next.given.subjectId)
-        return { ...data, tasks: trialChanged ? retrain(tasks, next, today, uid, new Date().toISOString()) : tasks }
+        return { ...data, tasks: trialChanged ? retrain(tasks, next, today, uid, new Date().toISOString(), data.training) : tasks }
       })
     },
 
@@ -269,6 +287,34 @@ export const useBook = create<BookState>()((set, get) => {
         timetable: { ...data.timetable, [day]: data.timetable[day].filter((_, i) => i !== index) }
       })),
 
+    setWeeks(weeks) {
+      change((data) => ({ ...data, weeks: clampWeeks(weeks) }))
+      const { data, leaf, today } = get()
+      if (leaf > data.weeks - 2) set({ leaf: data.weeks - 2 })
+      // A book that now reaches past what Magister last read reads further, once the tapping stops.
+      clearTimeout(widen)
+      if (data.magister && syncRange(today, data.weeks).to > (data.magister.to ?? '')) widen = setTimeout(() => void get().syncMagister(), 1500)
+    },
+
+    setTraining(patch) {
+      const { today } = get()
+      const now = new Date().toISOString()
+      change((data) => {
+        const training: Training = {
+          test: clampTraining(patch.test ?? data.training.test),
+          quiz: clampTraining(patch.quiz ?? data.training.quiz)
+        }
+        // Trials still ahead get the new number; ones that are over keep what they had.
+        let tasks = data.tasks
+        for (const trial of data.tasks) {
+          const { kind, due, gone } = trial.given
+          if (!isTrial(kind) || gone || due <= today || roundsFor(kind, training) === roundsFor(kind, data.training)) continue
+          tasks = resizeTraining(tasks, trial, today, uid, now, training)
+        }
+        return { ...data, training, tasks }
+      })
+    },
+
     setReminder: (patch) => change((data) => ({ ...data, reminder: { ...data.reminder, ...patch } })),
 
     zoomBy: (step) => change((data) => ({ ...data, zoom: stepZoom(data.zoom ?? 1, step) })),
@@ -297,9 +343,7 @@ export const useBook = create<BookState>()((set, get) => {
       syncing = true
       set({ sync: { state: 'busy' } })
 
-      // This week and four more: the book's two weeks plus room for tests further ahead.
-      const from = mondayOf(get().today)
-      const to = addDays(from, 34)
+      const { from, to } = syncRange(get().today, data.weeks)
       const result = await window.spellbook.magister.sync(data.magister.school, from, to).finally(() => {
         syncing = false
       })

@@ -1,9 +1,17 @@
-import type { IsoDate, Kind, Task } from '../types'
+import type { IsoDate, Kind, Task, Training } from '../types'
 import { addDays, isSchoolDay } from './dates'
 import { isVague } from './text'
 
-/** How many training rounds a trial gets before its date. */
-export const TRAINING_ROUNDS: Partial<Record<Kind, number>> = { test: 3, quiz: 2 }
+/** How many training rounds a trial gets before its date, until Settings say otherwise. */
+export const DEFAULT_TRAINING: Training = { test: 3, quiz: 2 }
+
+/** The most rounds Settings offer: two school weeks of practice. */
+export const MAX_TRAINING = 10
+
+export const clampTraining = (rounds: number): number => Math.min(MAX_TRAINING, Math.max(0, Math.round(rounds) || 0))
+
+/** How many training rounds a task of this kind gets. */
+export const roundsFor = (kind: Kind, training: Training): number => (kind === 'test' || kind === 'quiz' ? training[kind] : 0)
 
 /** Kinds that land on the day they are added: homework is mostly done the same day. */
 const SAME_DAY: Kind[] = ['homework', 'learn', 'read']
@@ -38,10 +46,13 @@ export function initialPlan(kind: Kind, due: IsoDate, today: IsoDate, windowFrom
 /**
  * The days to train on before a trial: the last school days before it, topped
  * up with weekend days when the week runs out (a Monday test seen on Saturday).
+ * Days in `taken` already have a round.
  */
-export function trainingDays(due: IsoDate, today: IsoDate, rounds: number): IsoDate[] {
+export function trainingDays(due: IsoDate, today: IsoDate, rounds: number, taken: IsoDate[] = []): IsoDate[] {
+  // slice(-0) would hand back every day, so no rounds is said outright.
+  if (rounds <= 0) return []
   const candidates: IsoDate[] = []
-  for (let day = today; day < due; day = addDays(day, 1)) candidates.push(day)
+  for (let day = today; day < due; day = addDays(day, 1)) if (!taken.includes(day)) candidates.push(day)
 
   const picked = candidates.filter(isSchoolDay).slice(-rounds)
   if (picked.length < rounds) {
@@ -51,35 +62,54 @@ export function trainingDays(due: IsoDate, today: IsoDate, rounds: number): IsoD
   return picked.sort()
 }
 
+const dayOf = (task: Task): IsoDate => task.own.plan ?? task.given.due
+
+/** A trial's rounds, numbered in the order of their days and following the trial's subject and date. */
+function numbered(test: Task, rounds: Task[]): Task[] {
+  const { subjectId, due } = test.given
+  return [...rounds]
+    .sort((a, b) => dayOf(a).localeCompare(dayOf(b)) || a.createdAt.localeCompare(b.createdAt))
+    .map((task, i, all) => ({ ...task, given: { ...task.given, subjectId, due, round: { n: i + 1, of: all.length } } }))
+}
+
+const freshRound = (test: Task, day: IsoDate, uid: () => string, now: string): Task => ({
+  id: uid(),
+  origin: 'self',
+  parentId: test.id,
+  given: { subjectId: test.given.subjectId, kind: 'study', text: '', due: test.given.due },
+  own: { plan: day },
+  createdAt: now
+})
+
 /**
  * Rebuilds the training rounds of one task after it was added or changed.
  * Finished rounds are kept (those ticks were earned); open ones are planned
  * anew. A task that is no longer a trial loses its open rounds.
  */
-export function retrain(tasks: Task[], test: Task, today: IsoDate, uid: () => string, now: string): Task[] {
+export function retrain(tasks: Task[], test: Task, today: IsoDate, uid: () => string, now: string, training: Training): Task[] {
   const rest = tasks.filter((task) => task.parentId !== test.id)
   if (!isTrial(test.given.kind)) return rest
 
   const kept = tasks.filter((task) => task.parentId === test.id && isDone(task))
-  const wanted = TRAINING_ROUNDS[test.given.kind] ?? 0
-  const days = trainingDays(test.given.due, today, Math.max(0, wanted - kept.length))
-  const total = kept.length + days.length
-  const { subjectId, due } = test.given
+  const days = trainingDays(test.given.due, today, roundsFor(test.given.kind, training) - kept.length)
+  return [...rest, ...numbered(test, [...kept, ...days.map((day) => freshRound(test, day, uid, now))])]
+}
 
-  const keptRounds = kept.map((task, i) => ({
-    ...task,
-    given: { ...task.given, subjectId, due, round: { n: i + 1, of: total } }
-  }))
-  const freshRounds = days.map((day, i): Task => ({
-    id: uid(),
-    origin: 'self',
-    parentId: test.id,
-    given: { subjectId, kind: 'study', text: '', due, round: { n: kept.length + i + 1, of: total } },
-    own: { plan: day },
-    createdAt: now
-  }))
+/**
+ * Gives a trial a new number of rounds after Settings changed it. Unlike `retrain` every round
+ * stays where it is, also one that was moved by hand: more rounds go on free days before the
+ * trial, fewer take away the open rounds furthest from it. Ticked-off rounds always stay.
+ */
+export function resizeTraining(tasks: Task[], test: Task, today: IsoDate, uid: () => string, now: string, training: Training): Task[] {
+  const rounds = tasks.filter((task) => task.parentId === test.id)
+  const rest = tasks.filter((task) => task.parentId !== test.id)
+  const wanted = roundsFor(test.given.kind, training)
 
-  return [...rest, ...keptRounds, ...freshRounds]
+  const done = rounds.filter(isDone)
+  const open = rounds.filter((task) => !isDone(task)).sort((a, b) => dayOf(a).localeCompare(dayOf(b)))
+  const kept = [...done, ...open.slice(Math.max(0, open.length - Math.max(0, wanted - done.length)))]
+  const days = trainingDays(test.given.due, today, wanted - kept.length, kept.map(dayOf))
+  return [...rest, ...numbered(test, [...kept, ...days.map((day) => freshRound(test, day, uid, now))])]
 }
 
 /** Unfinished work whose day has passed. Training for a trial that is over is moot. */

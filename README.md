@@ -6,9 +6,11 @@ Chromebooks and Chrome elsewhere, touchscreen-friendly, in English and Dutch.
 
 **Website and download: <https://bhalial.github.io/learnling/>**
 
-The book always shows two weeks: this week and next on school days, the two coming
-weeks from Saturday on. Homework is a task to tick off; homework without a description
-is a mystery to fill in; tests and quizzes get training rounds planned before them. A
+The book opens on two weeks: this week and next on school days, the two coming weeks
+from Saturday on. Settings let it be leafed further ahead, a week at a time, up to ten weeks.
+Homework is a task to tick off; homework without a description is a mystery to fill in; tests
+and quizzes get training rounds on the days before them (three and two, or as many as Settings
+say). A
 companion does the talking: a cat, dog, parrot, whale or robot, renamable and dressable.
 Six themes give it all their own look and words: a spellbook, a vegetable garden, an ocean
 dive, a space mission, a questlog or a plain notebook.

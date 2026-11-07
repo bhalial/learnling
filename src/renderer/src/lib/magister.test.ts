@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { mergeSync } from './magister'
+import { mergeSync, syncRange } from './magister'
 import { freshBook } from './seed'
 import { isMystery } from './tasks'
 import type { MagisterItem, SpellbookData } from '../types'
@@ -92,5 +92,14 @@ describe('mergeSync', () => {
   it('skips information that is not work', () => {
     const { added } = mergeSync(linked(), [item(2, '2026-10-02', BIO, 6, 'Excursie')], range, '2026-09-30', uid, 'now')
     expect(added).toBe(0)
+  })
+})
+
+describe('syncRange', () => {
+  it('reads five weeks, or as far as the book reaches', () => {
+    expect(syncRange('2026-09-30', 2)).toEqual({ from: '2026-09-28', to: '2026-11-01' })
+    expect(syncRange('2026-09-30', 8)).toEqual({ from: '2026-09-28', to: '2026-11-22' })
+    // On Saturday the book starts at the coming week; the read still starts this Monday.
+    expect(syncRange('2026-10-03', 10)).toEqual({ from: '2026-09-28', to: '2026-12-13' })
   })
 })

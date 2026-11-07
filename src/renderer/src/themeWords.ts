@@ -23,7 +23,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'A new spell',
         editTitle: 'Change this spell',
         emptyHint: 'Don’t know yet? Leave it empty and decipher it later.',
-        training: (n) => `I’ll plan ${n} training rounds before it.`,
+        training: (n) => (n === 1 ? 'I’ll plan one training round before it.' : `I’ll plan ${n} training rounds before it.`),
         add: 'Write it in the book'
       },
       cat: {
@@ -52,7 +52,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'Een nieuwe spreuk',
         editTitle: 'Deze spreuk aanpassen',
         emptyHint: 'Weet je het nog niet? Laat het leeg en ontcijfer het later.',
-        training: (n) => `Ik plan er ${n} trainingsrondes voor in.`,
+        training: (n) => (n === 1 ? 'Ik plan er één trainingsronde voor in.' : `Ik plan er ${n} trainingsrondes voor in.`),
         add: 'Schrijf in het boek'
       },
       cat: {
@@ -87,7 +87,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'A new seed',
         editTitle: 'Change this seed',
         emptyHint: 'Don’t know yet? Leave it empty and find out later.',
-        training: (n) => `I’ll plan ${n} waterings before it.`,
+        training: (n) => (n === 1 ? 'I’ll plan one watering before it.' : `I’ll plan ${n} waterings before it.`),
         add: 'Sow it'
       },
       cat: {
@@ -120,7 +120,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'Een nieuw zaadje',
         editTitle: 'Dit zaadje aanpassen',
         emptyHint: 'Weet je het nog niet? Laat het leeg en ontdek het later.',
-        training: (n) => `Ik plan er ${n} keer water geven voor in.`,
+        training: (n) => `Ik plan er ${n === 1 ? 'één' : n} keer water geven voor in.`,
         add: 'Zaai het'
       },
       cat: {
@@ -157,7 +157,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'A new dive',
         editTitle: 'Change this dive',
         emptyHint: 'Don’t know yet? Leave it empty and open it later.',
-        training: (n) => `I’ll plan ${n} practice dives before it.`,
+        training: (n) => (n === 1 ? 'I’ll plan one practice dive before it.' : `I’ll plan ${n} practice dives before it.`),
         add: 'Add to the dive log'
       },
       cat: {
@@ -191,7 +191,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'Een nieuwe duik',
         editTitle: 'Deze duik aanpassen',
         emptyHint: 'Weet je het nog niet? Laat het leeg en maak het later open.',
-        training: (n) => `Ik plan er ${n} proefduiken voor in.`,
+        training: (n) => (n === 1 ? 'Ik plan er één proefduik voor in.' : `Ik plan er ${n} proefduiken voor in.`),
         add: 'Zet in het duiklogboek'
       },
       cat: {
@@ -227,7 +227,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'A new mission',
         editTitle: 'Change this mission',
         emptyHint: 'Don’t know yet? Leave it empty and decode it later.',
-        training: (n) => `I’ll plan ${n} simulations before it.`,
+        training: (n) => (n === 1 ? 'I’ll plan one simulation before it.' : `I’ll plan ${n} simulations before it.`),
         add: 'Add to the log'
       },
       cat: {
@@ -260,7 +260,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'Een nieuwe missie',
         editTitle: 'Deze missie aanpassen',
         emptyHint: 'Weet je het nog niet? Laat het leeg en ontcijfer het later.',
-        training: (n) => `Ik plan er ${n} simulaties voor in.`,
+        training: (n) => (n === 1 ? 'Ik plan er één simulatie voor in.' : `Ik plan er ${n} simulaties voor in.`),
         add: 'Zet in het logboek'
       },
       cat: {
@@ -297,7 +297,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'A new quest',
         editTitle: 'Change this quest',
         emptyHint: 'Don’t know yet? Leave it empty and reveal it later.',
-        training: (n) => `I’ll plan ${n} training levels before it.`,
+        training: (n) => (n === 1 ? 'I’ll plan one training level before it.' : `I’ll plan ${n} training levels before it.`),
         add: 'Add to the questlog'
       },
       cat: {
@@ -331,7 +331,7 @@ export const THEME_WORDS: Record<ThemeId, Record<Lang, ThemeWords>> = {
         newTitle: 'Een nieuwe quest',
         editTitle: 'Deze quest aanpassen',
         emptyHint: 'Weet je het nog niet? Laat het leeg en onthul het later.',
-        training: (n) => `Ik plan er ${n} trainingslevels voor in.`,
+        training: (n) => (n === 1 ? 'Ik plan er één trainingslevel voor in.' : `Ik plan er ${n} trainingslevels voor in.`),
         add: 'Zet in de questlog'
       },
       cat: {

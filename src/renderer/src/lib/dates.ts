@@ -47,6 +47,14 @@ export function windowStart(today: IsoDate): IsoDate {
   return weekday(today) >= 6 ? addDays(monday, 7) : monday
 }
 
+/** How far Settings let the book reach: from just its two open pages up to ten weeks. */
+export const WEEKS = { min: 2, max: 10 }
+
+export const clampWeeks = (weeks: number): number => Math.min(WEEKS.max, Math.max(WEEKS.min, Math.round(weeks) || WEEKS.min))
+
+/** Monday of the left page, with the book leafed `leaf` weeks past its first one. */
+export const leafStart = (today: IsoDate, leaf: number): IsoDate => addDays(windowStart(today), leaf * 7)
+
 export function isoWeek(date: IsoDate): number {
   const thursday = addDays(date, 4 - weekday(date))
   return Math.floor(daysBetween(`${thursday.slice(0, 4)}-01-01`, thursday) / 7) + 1

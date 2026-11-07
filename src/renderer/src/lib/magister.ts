@@ -1,5 +1,5 @@
 import type { IsoDate, Kind, Lesson, MagisterItem, SpellbookData, Subject, Task } from '../types'
-import { todayIso, windowStart } from './dates'
+import { addDays, mondayOf, todayIso, windowStart } from './dates'
 import { previousLesson } from './lessons'
 import { cleanSubjectName, distinctColors, subjectInUse } from './subjects'
 import { initialPlan, isDone, isTrial, retrain } from './tasks'
@@ -13,6 +13,17 @@ const CANCELLED = new Set([4, 5])
 
 /** Magister times are UTC; the lesson's day is the day on the local clock. */
 export const localDate = (timestamp: string): IsoDate => todayIso(new Date(timestamp))
+
+/**
+ * The days one read covers: this week and four more (the open pages plus room for tests further
+ * ahead), or as far as the book can be leafed when that is further.
+ */
+export function syncRange(today: IsoDate, weeks: number): { from: IsoDate; to: IsoDate } {
+  const from = mondayOf(today)
+  const least = addDays(from, 34)
+  const reach = addDays(windowStart(today), weeks * 7 - 1)
+  return { from, to: reach > least ? reach : least }
+}
 
 export interface SyncOutcome {
   data: SpellbookData
@@ -96,7 +107,7 @@ export function mergeSync(
       }
       tasks = tasks.map((t) => (t.id === old.id ? next : t))
       const trialMoved = old.given.kind !== given.kind || old.given.due !== given.due || old.given.subjectId !== given.subjectId
-      if (trialMoved && (isTrial(old.given.kind) || isTrial(kind))) tasks = retrain(tasks, next, today, uid, now)
+      if (trialMoved && (isTrial(old.given.kind) || isTrial(kind))) tasks = retrain(tasks, next, today, uid, now, data.training)
       changed++
       continue
     }
@@ -108,7 +119,7 @@ export function mergeSync(
     const plan = isTrial(kind) ? undefined : setOn && setOn >= today ? setOn : initialPlan('homework', given.due, today, windowStart(today))
     const task: Task = { id: uid(), origin: 'magister', externalId, given, own: plan ? { plan } : {}, createdAt: now }
     tasks.push(task)
-    if (isTrial(kind)) tasks = retrain(tasks, task, today, uid, now)
+    if (isTrial(kind)) tasks = retrain(tasks, task, today, uid, now, data.training)
     added++
   }
 
